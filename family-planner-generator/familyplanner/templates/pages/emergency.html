@@ -1,0 +1,139 @@
+{# title: Emergency Contacts #}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "art.html" import house_family with context %}
+{% set contacts = [("medical", "red", "Emergency", "Police / Fire / Ambulance"),
+                   ("shield", "blue", "Local Police", ""), ("fire", "orange", "Fire Department", ""),
+                   ("medical", "green", "Poison Control", ""), ("hotel", "purple", "Nearest Hospital", ""),
+                   ("user", "pink", "Family Doctor", ""), ("tooth", "purple", "Dentist", ""),
+                   ("paw", "green", "Veterinarian", ""), ("user", "orange", "Other", ""),
+                   ("user", "teal", "Other", "")] %}
+{% set utils = [("drop", "blue", "Water"), ("bolt", "orange", "Electricity"),
+                ("fire", "red", "Gas"), ("trash", "green", "Trash / Recycling"),
+                ("wifi", "purple", "Internet / Cable"), ("phone", "pink", "Phone Provider")] %}
+
+<section class="page emergency-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <h1 class="display" style="color:{{ p.navy }};font-size:26pt">Emergency</h1>
+      <div class="display" style="color:{{ p.teal }};font-size:28pt">Contacts &amp;</div>
+      <div class="display" style="color:{{ p.pink }};font-size:24pt">Important Information</div>
+      <div class="banner" style="--banner-bg:{{ p.navy }};font-size:9pt">
+        Be Prepared. Be Safe. Stay Together.</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Clipboard and first aid kit">
+      <rect x="24" y="10" width="96" height="110" rx="8" fill="#FBFAF4"
+            stroke="{{ p.navy }}" stroke-width="6"/>
+      <rect x="56" y="2" width="32" height="16" rx="5" fill="#9AA7B4"/>
+      {% for i in range(4) %}
+      <rect x="38" y="{{ 32 + i * 22 }}" width="14" height="14" rx="3" fill="none"
+            stroke="{{ p.green }}" stroke-width="4"/>
+      <rect x="60" y="{{ 37 + i * 22 }}" width="44" height="5" rx="2.5" fill="#C3CCD8"/>
+      {% endfor %}
+      <rect x="112" y="86" width="82" height="58" rx="10" fill="{{ p.pink }}"/>
+      <rect x="140" y="76" width="26" height="12" rx="5" fill="{{ p.pink }}"/>
+      <path d="M146 100h14v10h10v14h-10v10h-14v-10h-10v-14h10z" fill="#fff"/>
+    </svg>
+  </header>
+
+  <div class="emg-top">
+    <div class="emg-top-col">
+      <div class="row">{{ chip("home", "teal", "", ".2in") }}{{ field("Home address:") }}</div>
+      <div class="row">{{ chip("pin", "teal", "", ".2in") }}{{ field("City / State / ZIP:") }}</div>
+    </div>
+    <div class="emg-top-col">
+      <div class="row">{{ chip("phone", "teal", "", ".2in") }}{{ field("Home phone:") }}</div>
+      <div class="row">{{ chip("mail", "teal", "", ".2in") }}{{ field("Family email:") }}</div>
+    </div>
+  </div>
+
+  <div class="emg-mid">
+    <div class="card has-tab emg-contacts" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("phone") }} Emergency Contacts</div>
+      <div class="emg-head"><span>Contact</span><span>Name</span><span>Phone number</span></div>
+      {% for icon, colour, label, sub in contacts %}
+      <div class="emg-row">
+        <span class="emg-name">
+          {{ chip(icon, colour, "", ".18in") }}
+          <span>{{ label }}{% if sub %}<em>{{ sub }}</em>{% endif %}</span>
+        </span>
+        <span class="solid-line"></span><span class="solid-line"></span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="emg-right">
+      <div class="card has-tab" style="--c:{{ p.green }}">
+        <div class="card-tab">{{ ico("users") }} Family Contact List</div>
+        <div class="emg-head three"><span>Name</span><span>Relationship</span><span>Phone number</span></div>
+        <div class="fam-rows">
+          {% for _ in range(5) %}
+          <div class="emg-row three">
+            <span class="solid-line"></span><span class="solid-line"></span><span class="solid-line"></span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card has-tab" style="--c:{{ p.orange }}">
+        <div class="card-tab">{{ ico("globe") }} Out of Town Contact</div>
+        <div class="oot">
+          {{ field("Name:") }}{{ field("Relationship:") }}
+          {{ field("Phone number:") }}{{ field("Address:") }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="emg-bottom">
+    <div class="card has-tab" style="--c:{{ p.purple }}">
+      <div class="card-tab">{{ ico("tools") }} Utility &amp; Service Providers</div>
+      <div class="emg-head two"><span>Service</span><span>Phone number</span></div>
+      {% for icon, colour, label in utils %}
+      <div class="emg-row two">
+        <span class="emg-name">{{ chip(icon, colour, "", ".17in") }}<span>{{ label }}</span></span>
+        <span class="solid-line"></span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("info") }} Important Information</div>
+      <div class="info-fields">
+        {{ field("Insurance company:") }}{{ field("Policy number:") }}
+        {{ field("Group number:") }}
+        <div class="row own-rent">
+          <span class="label">Homeowner / Renter:</span>
+          <span class="check"></span><span class="small">Owner</span>
+          <span class="check"></span><span class="small">Renter</span>
+        </div>
+        {{ field("Insurance agent:") }}{{ field("Agent phone:") }}
+      </div>
+    </div>
+    <div class="card has-tab" style="--c:{{ p.blue }}">
+      <div class="card-tab">{{ ico("pencil") }} Notes</div>
+      {{ lines(6) }}
+    </div>
+  </div>
+
+  <div class="emg-plan">
+    <div class="card has-tab" style="--c:{{ p.orange }}">
+      <div class="card-tab">{{ ico("pin") }} Family Emergency Plan</div>
+      <div class="plan-fields">
+        {{ field("Meeting place (near home):") }}
+        {{ field("Meeting place (outside neighborhood):") }}
+        {{ field("Notes / special instructions:") }}
+      </div>
+    </div>
+    <div class="card has-tab" style="--c:{{ p.orange }}">
+      <div class="card-tab">{{ ico("clipboard") }} Emergency Checklist</div>
+      {{ checklist(items=["Keep emergency kit stocked",
+                          "Review plan with family regularly",
+                          "Keep important documents in a safe place",
+                          "Ensure smoke & CO detectors work",
+                          "Keep this information up to date"],
+                   colour="orange", dotted=false) }}
+    </div>
+  </div>
+
+  {{ footer("Prepared today, protected tomorrow.") }}
+</section>

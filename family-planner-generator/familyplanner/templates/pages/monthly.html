@@ -1,0 +1,111 @@
+{% from "macros.html" import masthead, divider, footer, ico, chip, lines, numbered, checklist with context %}
+{% from "art.html" import month_art with context %}
+{% set names = day_names(cfg.sunday_first) %}
+{% set hues = ["teal", "pink", "orange", "green", "blue", "purple", "orange"] %}
+{% if not cfg.sunday_first %}{% set hues = hues[1:] + hues[:1] %}{% endif %}
+
+<section class="page month-page">
+
+  {{ masthead(
+       line1=month.name|upper,
+       script_line="Family Planner",
+       banner=month.tagline,
+       line1_colour="navy",
+       line2_colour=month.accent,
+       banner_colour="teal",
+       art=month_art(month)) }}
+
+  <div class="focus-strip">
+    {% for icon, label, colour in [
+         ("target", "Monthly Focus", "teal"),
+         ("family", "Our Family Goal", "pink"),
+         ("star", "We Will Celebrate", "orange"),
+         ("heart", "We Are Grateful For", "green")] %}
+    <div class="focus-cell">
+      {{ chip(icon, colour, "wash", ".26in") }}
+      <div class="focus-body">
+        <div class="caps tiny" style="color:{{ p[colour] }}">{{ label }}</div>
+        <span class="solid-line"></span>
+        <span class="solid-line"></span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="cal">
+    <div class="cal-head">
+      {% for name in names %}
+      <div style="background:{{ p[hues[loop.index0]] }}">{{ name|upper }}</div>
+      {% endfor %}
+    </div>
+    <div class="cal-body">
+      {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
+      <div class="cal-row">
+        {% for day in week %}
+        <div class="cal-cell">
+          {% if cfg.dated_months and day.number %}
+          <span class="n pill">{{ day.number }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="grid cols-3 month-row-a">
+    <div class="card has-tab" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("calendar") }} Family Events &amp; Appointments</div>
+      <div class="evt-head">
+        <span>Date</span><span>Event / Appointment</span>
+      </div>
+      <div class="evt-rows">
+        {% for _ in range(6) %}
+        <div class="evt-row"><span class="solid-line"></span><span class="solid-line"></span></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("check") }} Top Priorities</div>
+      {{ numbered(5, "pink", hollow=true) }}
+    </div>
+
+    <div class="card has-tab" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("users") }} Things To Do Together</div>
+      {{ checklist(n=6, colour="green") }}
+    </div>
+  </div>
+
+  <div class="grid cols-3 month-row-b">
+    <div class="card has-tab" style="--c:{{ p.orange }}">
+      <div class="card-tab">{{ ico("utensils") }} Meal Plan Highlights</div>
+      <div class="meal-rows">
+        {% for meal in ["Breakfast", "Lunch", "Dinner", "Snacks"] %}
+        <div class="field">
+          <span class="label">{{ meal|upper }}</span><span class="solid-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card has-tab" style="--c:{{ p.purple }}">
+      <div class="card-tab">{{ ico("star") }} This Month We Will:</div>
+      <div class="heart-rows">
+        {% for colour in ["teal", "pink", "orange", "green", "purple"] %}
+        <div class="row">
+          <svg class="ico bullet" style="fill:{{ p[colour] }}"><use href="#i-heart"/></svg>
+          <span class="solid-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card has-tab" style="--c:{{ p.blue }}">
+      <div class="card-tab">{{ ico("pencil") }} Notes &amp; Reminders</div>
+      {{ lines(5) }}
+    </div>
+  </div>
+
+  {{ footer(month.footer) }}
+</section>

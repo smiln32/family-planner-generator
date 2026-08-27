@@ -1,0 +1,61 @@
+{# title: Grocery Shopping List #}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "art.html" import house_family with context %}
+{% set sections = [
+     ("apple", "green", "Fruits & Vegetables"), ("milk", "teal", "Dairy & Eggs"),
+     ("meat", "pink", "Meat, Poultry & Seafood"), ("bread", "purple", "Pantry & Dry Goods"),
+     ("bottle", "orange", "Beverages"), ("spray", "blue", "Household & Cleaning"),
+     ("cookie", "orange", "Snacks & Treats"), ("baby", "green", "Baby & Kids"),
+     ("paw", "pink", "Pet Supplies")] %}
+
+<section class="page grocery-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:30pt">Grocery</div>
+      <h1 class="display word-tint" style="font-size:38pt">
+        {% for ch in "SHOPPING" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">List</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Bag of groceries">
+      <path d="M56 62h88l-8 84a8 8 0 0 1-8 7H72a8 8 0 0 1-8-7z" fill="#D8B27E"/>
+      <path d="M56 62h88v14H56z" fill="#C79A5E"/>
+      <path d="M88 106c0-8 5-14 12-14s12 6 12 14c0 10-12 19-12 19s-12-9-12-19z" fill="#fff" opacity=".85"/>
+      <circle cx="78" cy="46" r="17" fill="{{ p.red }}"/>
+      <path d="M78 29c-3-8 1-13 8-14-1 8-4 12-8 14z" fill="{{ p.green }}"/>
+      <path d="M118 60c-13-6-20-18-20-32 13 3 20 15 20 32z" fill="{{ p.green }}"/>
+      <rect x="126" y="20" width="20" height="42" rx="6" fill="#DCEEF8"/>
+      <rect x="130" y="14" width="12" height="10" rx="3" fill="#BFE3E6"/>
+    </svg>
+  </header>
+
+  <div class="grocery-date">{{ field("Date:") }}</div>
+
+  <div class="grid cols-3 grocery-grid">
+    {% for icon, colour, label in sections %}
+    <div class="card has-tab" style="--c:{{ p[colour] }}">
+      <div class="card-tab">{{ ico(icon) }} {{ label }}</div>
+      {{ checklist(n=6, colour=colour) }}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="grid grocery-bottom">
+    <div class="card has-tab" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("star") }} Extras / Other Items</div>
+      <div class="grocery-cols">
+        {% for col in range(2) %}
+        <div class="grocery-col">{{ checklist(n=4, colour="teal") }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card has-tab" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("clipboard") }} Notes</div>
+      {{ lines(4) }}
+    </div>
+  </div>
+
+  {{ footer("Plan it. Buy it. Enjoy it.") }}
+</section>

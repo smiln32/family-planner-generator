@@ -1,0 +1,45 @@
+{# title: How To Use This Planner #}
+{% from "macros.html" import divider, footer, chip with context %}
+{% from "art.html" import person with context %}
+{% set steps = [
+  ("target", "teal", "Set Your Family Goals",
+   "Start by defining your family's vision, values, and goals for the year. This will keep everyone focused and aligned."),
+  ("calendar", "pink", "Plan Together",
+   "Use the monthly and weekly pages to plan schedules, meals, activities, and important dates together as a family."),
+  ("clipboard", "orange", "Stay Organized",
+   "Track chores, finances, health, and appointments to keep your home and family running smoothly."),
+  ("heart", "green", "Make Time For Each Other",
+   "Schedule family time and celebrate milestones to build stronger bonds and happy memories."),
+  ("chart", "purple", "Review & Reflect",
+   "At the end of each month and year, reflect on your progress, celebrate achievements, and plan for an even better tomorrow.")] %}
+
+<section class="page howto-page">
+  <div class="howto-top">
+    <svg class="crest" viewBox="0 0 200 96" role="img" aria-label="Family under a roof">
+      <path d="M100 6 34 44h6v40h6V44h108v40h6V44h6z" fill="{{ p.navy }}"/>
+      <path d="M112 8c0-5 4-8 8-8 2 0 4 1 5 2 1-1 3-2 5-2 4 0 8 3 8 8 0 6-8 11-13 15-5-4-13-9-13-15z"
+            fill="{{ p.pink }}"/>
+      {{ person(74, 84, 30, p.teal) }}
+      {{ person(91, 84, 38, p.pink) }}
+      {{ person(109, 84, 30, p.orange) }}
+      {{ person(126, 84, 26, p.green) }}
+    </svg>
+    <h1 class="display" style="color:{{ p.navy }};font-size:44pt">How to Use</h1>
+    <div class="script" style="color:{{ p.teal }};font-size:46pt">This Planner</div>
+    {{ divider() }}
+  </div>
+
+  <div class="howto-rows">
+    {% for icon, colour, title, body in steps %}
+    <div class="howto-row" style="--c:{{ p[colour] }}">
+      {{ chip(icon, colour, "", ".62in") }}
+      <div class="howto-box">
+        <div class="howto-title">{{ loop.index }}. {{ title|upper }}</div>
+        <p class="howto-body">{{ body }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="howto-tagline script">Plan together. Stay organized. Achieve together.</div>
+</section>

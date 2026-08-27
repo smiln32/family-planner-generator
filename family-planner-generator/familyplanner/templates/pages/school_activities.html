@@ -1,0 +1,94 @@
+{# title: School and Activities Schedule #}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "art.html" import house_family with context %}
+{% set slots = [("sun", "orange", "Before School"), ("backpack", "teal", "School Hours"),
+                ("book", "green", "After School"), ("star", "pink", "Activities & Classes"),
+                ("moon", "purple", "Evening"), ("heart", "pink", "Notes")] %}
+
+<section class="page school-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <h1 class="display" style="color:{{ p.navy }};font-size:30pt">School &amp;</h1>
+      <div class="display word-tint" style="font-size:38pt">
+        {% for ch in "ACTIVITIES" %}<span>{{ ch }}</span>{% endfor %}
+      </div>
+      <div class="banner" style="--banner-bg:{{ p.navy }};font-size:14pt">Schedule</div>
+      <div class="strapline script">Plan today. Stay organized. Make memories together.</div>
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Backpack and books">
+      <path d="M62 44h76a20 20 0 0 1 20 20v62a14 14 0 0 1-14 14H56a14 14 0 0 1-14-14V64a20 20 0 0 1 20-20z"
+            fill="{{ p.teal }}"/>
+      <path d="M78 44V30a22 22 0 0 1 44 0v14h-16V30a6 6 0 0 0-12 0v14z" fill="{{ p.teal }}"/>
+      <rect x="66" y="76" width="68" height="20" rx="6" fill="#fff" opacity=".85"/>
+      <rect x="66" y="104" width="68" height="30" rx="6" fill="#fff" opacity=".6"/>
+      <path d="m100 20 12 6-12 6-12-6z" fill="{{ p.orange }}"/>
+      <rect x="150" y="104" width="44" height="10" rx="3" fill="{{ p.pink }}"/>
+      <rect x="152" y="114" width="44" height="10" rx="3" fill="{{ p.orange }}"/>
+      <rect x="150" y="124" width="44" height="10" rx="3" fill="{{ p.blue }}"/>
+    </svg>
+  </header>
+
+  <div class="school-meta">
+    <div class="meta-cell">
+      {{ chip("calendar", "teal", "", ".3in") }}
+      <div class="meta-fields">{{ field("Week of:") }}{{ field("Month:") }}</div>
+    </div>
+    <div class="meta-cell">
+      {{ chip("clock", "purple", "", ".3in") }}
+      <div class="meta-fields">{{ field("School start:") }}{{ field("School end:") }}</div>
+    </div>
+  </div>
+
+  <table class="tbl school-tbl">
+    <thead>
+      <tr>
+        <th style="background:{{ p.navy }}">Time</th>
+        {% for name in day_names(false) %}
+        <th style="background:{{ p[['pink','orange','green','teal','purple','orange','green'][loop.index0]] }}">
+          {{ name }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for icon, colour, label in slots %}
+      <tr>
+        <td class="slotcell">
+          <svg class="ico slot-ico" style="fill:{{ p[colour] }}"><use href="#i-{{ icon }}"/></svg>
+          <span>{{ label }}</span>
+        </td>
+        {% for _ in range(7) %}<td></td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="grid cols-3 school-bottom">
+    <div class="card has-tab" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("star") }} Activities List</div>
+      <div class="star-rows">
+        {% for colour in ["orange", "green", "purple", "pink", "teal"] %}
+        <div class="row">
+          <svg class="ico bullet" style="fill:{{ p[colour] }}"><use href="#i-star"/></svg>
+          <span class="dot-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("bell") }} Important Reminders</div>
+      {{ checklist(n=5, colour="pink") }}
+    </div>
+    <div class="card has-tab tinted" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("calendar") }} Special Events</div>
+      {{ lines(5) }}
+    </div>
+  </div>
+
+  <div class="card has-tab school-notes" style="--c:{{ p.navy }}">
+    <div class="card-tab">{{ ico("pencil") }} Notes</div>
+    {{ lines(3) }}
+  </div>
+
+  {{ footer("Stronger together \u00b7 Busy but blessed \u00b7 One family, one team", caps=true) }}
+</section>

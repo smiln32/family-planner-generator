@@ -1,0 +1,122 @@
+# ---------------------------------------------------------------------------
+# Family Success Planner - configuration
+#
+#   python planner.py build                 # uses ./family.yaml if it exists
+#   python planner.py build -c mine.yaml
+#
+# Every setting below is optional; delete anything you don't want to change.
+# ---------------------------------------------------------------------------
+
+# The planner year. Monthly grids and the year-at-a-glance page are dated from
+# this, so 2028 or 2031 works exactly as well as 2027.
+year: 2027
+
+# Shown on the cover.
+title: Family Success Planner
+subtitle: Plan Together. Grow Together. Succeed Together.
+
+# Printed on the cover as "The <name> Family" and used in the output filename.
+# Leave blank for a generic planner.
+family_name: ""
+
+# "sunday" matches the reference planner. "monday" gives ISO weeks.
+week_starts: sunday
+
+# true  -> monthly grids carry real dates for `year`
+# false -> blank grids you fill in yourself (good for gifting or reprinting)
+dated_months: true
+
+# One row per person on the health tracker. Names are optional - an empty
+# string prints a blank line to write on. Add or remove entries to change how
+# many rows the tracker has.
+members:
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+
+# letter (8.5x11in) or a4
+page_size: letter
+
+# Overrides the generated filename stem. Leave blank for "<year>-<family>-Family-Planner".
+output_name: ""
+
+# Typefaces. Either a set name:
+#   classic  rounded  modern  elegant  bubbly  neat
+# or any three Google Fonts families of your own:
+#   fonts:
+#     display: Chewy
+#     script: Gloria Hallelujah
+#     body: Rubik
+# Run `python planner.py typefaces` to see the sets, then
+# `python planner.py fonts` to download whichever you picked.
+fonts: classic
+
+# A colour preset applied before `palette:` below. One of:
+#   classic  pastel  bold  ocean  berry  forest  slate
+# Run `python planner.py themes` to see them. Anything under `palette:`
+# overrides the theme, so you can start from `forest` and change one colour.
+theme: classic
+
+# ---------------------------------------------------------------------------
+# Colours. Every page pulls from this palette, so changing `teal` here restyles
+# the teal elements across all 30 pages at once.
+#
+# These are the twelve tokens and their `classic` values. Uncomment only the
+# ones you want to change - anything you set here is applied ON TOP of `theme`
+# above, so uncommenting the whole block would pin every colour and make the
+# theme setting do nothing.
+# ---------------------------------------------------------------------------
+palette: {}
+  # navy:   "#16325F"
+  # teal:   "#14A0A5"
+  # pink:   "#EF3E63"
+  # orange: "#F7A81B"
+  # green:  "#6DB033"
+  # purple: "#7C4DA0"
+  # blue:   "#2F6FD1"
+  # red:    "#D93025"
+  # brown:  "#8A5A2B"
+  # ink:    "#1F2933"
+  # paper:  "#FFFFFF"
+  # rule:   "#B9C3CF"
+
+# ---------------------------------------------------------------------------
+# Which pages to build, in order. "months" expands to the twelve monthly
+# planners. Run `python planner.py pages` to see the result.
+# Comment out a line to drop that page from the book.
+# ---------------------------------------------------------------------------
+pages:
+  - cover
+  - belongs_to
+  - how_to_use
+  - vision_mission
+  - year_goals
+  - values
+  - annual_calendar
+  - budget
+  - chores
+  - meal_plan
+  - grocery
+  - health_tracker
+  - emergency
+  - school_activities
+  - family_time
+  - months
+  - vacation
+  - home_maintenance
+  - year_end
+
+# ---------------------------------------------------------------------------
+# Per-month styling. Positional - the first entry is January. You may supply
+# fewer than twelve; the rest keep their defaults. Any key you leave out keeps
+# its default too. Run `python planner.py months` to see the current table.
+#
+#   accent: a palette colour name
+#   motif:  snowman | hearts | sprout | tulips | flowers | sun | beach
+#           school | pumpkin | leaves | snowflake
+# ---------------------------------------------------------------------------
+months:
+  - {}                                       # January - keep defaults
+  - {tagline: "Love Grows Here"}             # February

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ cfg.year }} {{ cfg.title }}{% if cfg.family_name %} - {{ cfg.family_name }}{% endif %}</title>
+<style>
+{{ fonts_css|safe }}
+
+:root {
+  --page-w: {{ page_width_in }}in;
+  --page-h: {{ page_height_in }}in;
+  /* One printed margin for every sheet in the book. */
+  --page-pad-top: 0.3in;
+  --page-pad-side: 0.32in;
+  --page-pad-bottom: 0.26in;
+{% for name, value in cfg.palette.items() %}
+  --{{ name }}: {{ value }};
+{% endfor %}
+  --font-display: {{ font_display|safe }};
+  --font-script: {{ font_script|safe }};
+  --font-body: {{ font_body|safe }};
+}
+
+{{ css|safe }}
+
+{% if standalone %}
+/* One page on its own, for the preview pane: no contact-sheet chrome, so the
+   sheet fills its frame exactly and the frame never needs to scroll. */
+@media screen {
+  body { padding: 0; background: #fff; }
+  .page { margin: 0; box-shadow: none; }
+}
+{% endif %}
+</style>
+</head>
+<body>
+{% include "icons.html" %}
+{% for body in bodies %}
+{{ body|safe }}
+{% endfor %}
+</body>
+</html>

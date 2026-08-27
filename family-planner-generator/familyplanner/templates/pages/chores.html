@@ -1,0 +1,73 @@
+{# title: Household Chores Planner #}
+{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "art.html" import house_family with context %}
+{% set chores = [("broom", "pink"), ("utensils", "orange"), ("washer", "green"),
+                 ("trash", "teal"), ("spray", "purple"), ("cart", "pink"),
+                 ("bed", "orange"), ("plant", "green"), ("paw", "teal"), ("box", "purple")] %}
+
+<section class="page chores-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:30pt">Household</div>
+      <h1 class="display word-tint" style="font-size:40pt">
+        {% for ch in "CHORES" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">Planner</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Potted plant">
+      <path d="M100 108c-30-8-46-30-46-58 28 5 46 27 46 58z" fill="{{ p.green }}"/>
+      <path d="M100 108c30-8 46-30 46-58-28 5-46 27-46 58z" fill="{{ p.green }}"/>
+      <path d="M100 108c-9-30 0-52 17-64 5 27 0 49-17 64z" fill="{{ p.green }}" opacity=".85"/>
+      <path d="M66 100h68l-8 44a6 6 0 0 1-6 5H80a6 6 0 0 1-6-5z" fill="{{ p.orange }}"/>
+      <rect x="62" y="92" width="76" height="14" rx="5" fill="{{ p.orange }}"/>
+      <path d="M92 122c0-6 4-10 8-10s8 4 8 10c0 7-8 14-8 14s-8-7-8-14z" fill="#fff" opacity=".9"/>
+    </svg>
+  </header>
+
+  <table class="tbl chores-tbl">
+    <thead>
+      <tr>
+        <th style="background:{{ p.teal }}">Chores</th>
+        <th style="background:{{ p.green }}">Who</th>
+        <th style="background:{{ p.purple }}" colspan="7">Days of the Week</th>
+        <th style="background:{{ p.orange }}">Notes</th>
+      </tr>
+      <tr class="day-head">
+        <th></th><th></th>
+        {% for initial in day_initials(false) %}
+        <th style="color:{{ p[['pink','orange','green','teal','blue','purple','pink'][loop.index0]] }}">
+          {{ initial }}</th>
+        {% endfor %}
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for icon, colour in chores %}
+      <tr>
+        <td><div class="chore-cell">{{ chip(icon, colour, "", ".26in") }}<span class="dot-line"></span></div></td>
+        <td><span class="dot-line"></span></td>
+        {% for i in range(7) %}
+        <td class="box-cell">
+          <span class="check c"
+                style="--c:{{ p[['pink','orange','green','teal','blue','purple','pink'][i]] }}"></span>
+        </td>
+        {% endfor %}
+        <td><span class="dot-line"></span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="card chores-note" style="--c:{{ p.teal }}">
+    <div class="chores-note-lead caps">Let's work<br>together<br>as a family!</div>
+    <div class="chores-note-body">
+      <div class="caps tiny" style="color:{{ p.teal }}">Notes &amp; Reminders</div>
+      <span class="dot-line"></span><span class="dot-line"></span><span class="dot-line"></span>
+    </div>
+    {{ chip("clipboard", "teal", "wash", ".55in") }}
+  </div>
+
+  {{ footer("Many hands make a happy home.") }}
+</section>

@@ -1,0 +1,143 @@
+{# title: Year-End Family Reflection #}
+{% from "macros.html" import divider, footer, ico, chip, numbered, lines with context %}
+{% from "art.html" import person with context %}
+
+<section class="page yearend-page">
+  <header class="masthead">
+    <svg class="mark" viewBox="0 0 200 150" role="img" aria-label="Family reading together">
+      <rect x="8" y="10" width="70" height="60" rx="5" fill="#CDEBFB" stroke="#E3D9C4" stroke-width="7"/>
+      <circle cx="30" cy="30" r="9" fill="#FFF0B8"/>
+      <ellipse cx="54" cy="46" rx="17" ry="8" fill="#fff" opacity=".85"/>
+      <rect x="96" y="14" width="30" height="24" rx="3" fill="#fff" stroke="#C79A5E" stroke-width="5"/>
+      <rect x="140" y="20" width="26" height="20" rx="3" fill="#fff" stroke="#C79A5E" stroke-width="5"/>
+      <rect x="10" y="104" width="182" height="42" rx="10" fill="{{ p.teal }}"/>
+      {{ person(58, 118, 66, p.green) }}
+      {{ person(100, 118, 50, p.orange) }}
+      {{ person(140, 118, 66, p.pink) }}
+      <rect x="72" y="96" width="58" height="34" rx="4" fill="#FBFAF4"
+            stroke="{{ p.navy }}" stroke-width="5"/>
+      <path d="M101 96v34" stroke="{{ p.navy }}" stroke-width="4"/>
+    </svg>
+    <div class="headings">
+      <h1 class="display" style="color:{{ p.navy }};font-size:30pt">Year-End</h1>
+      <div class="display word-tint" style="font-size:40pt">
+        {% for ch in "FAMILY" %}<span>{{ ch }}</span>{% endfor %}
+      </div>
+      <div class="script" style="color:{{ p.navy }};font-size:34pt;margin-top:-.03in">Reflection</div>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:9pt">
+        Celebrate Our Journey. Cherish Today. Look Forward to Tomorrow.</div>
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Clipboard with a quote">
+      <rect x="30" y="8" width="106" height="120" rx="8" fill="#FBFAF4"
+            stroke="#C79A5E" stroke-width="7"/>
+      <rect x="66" y="0" width="34" height="16" rx="5" fill="#9AA7B4"/>
+      <text x="83" y="48" text-anchor="middle" fill="{{ p.navy }}"
+            font-family="{{ script_stack }}" font-size="15">Together</text>
+      <text x="83" y="70" text-anchor="middle" fill="{{ p.navy }}"
+            font-family="{{ script_stack }}" font-size="15">is our</text>
+      <text x="83" y="92" text-anchor="middle" fill="{{ p.navy }}"
+            font-family="{{ script_stack }}" font-size="15">favorite</text>
+      <path d="M75 100c0-6 4-10 8-10s8 4 8 10c0 7-8 14-8 14s-8-7-8-14z" fill="{{ p.pink }}"/>
+      <path d="M146 130v-32h34v32z" fill="{{ p.orange }}"/>
+      <path d="M163 98c-13-4-20-14-20-27 13 2 20 12 20 27z" fill="{{ p.green }}"/>
+      <path d="M163 98c13-4 20-14 20-27-13 2-20 12-20 27z" fill="{{ p.green }}"/>
+    </svg>
+  </header>
+
+  <div class="grid cols-4 ye-row-a">
+    {% for icon, colour, label in [("star", "orange", "Our Biggest Wins This Year"),
+                                   ("heart", "green", "What We Are Most Thankful For"),
+                                   ("users", "blue", "Our Favorite Memories"),
+                                   ("heart", "pink", "What Made Us The Happiest")] %}
+    <div class="card tinted ye-card" style="--c:{{ p[colour] }}">
+      <div class="ye-head">
+        <svg class="ico" style="fill:{{ p[colour] }}"><use href="#i-{{ icon }}"/></svg>
+        <span style="color:{{ p[colour] }}">{{ label }}</span>
+      </div>
+      {{ lines(3, solid=true) }}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="grid cols-3 ye-row-b">
+    {% for icon, colour, label in [("book", "purple", "Things We Learned As A Family"),
+                                   ("mountain", "teal", "Challenges We Overcame Together"),
+                                   ("users", "pink", "How We Grew Closer As A Family")] %}
+    <div class="card ye-card" style="--c:{{ p[colour] }}">
+      <div class="ye-head">
+        <svg class="ico" style="fill:{{ p[colour] }}"><use href="#i-{{ icon }}"/></svg>
+        <span style="color:{{ p[colour] }}">{{ label }}</span>
+      </div>
+      {{ numbered(5, colour) }}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="grid ye-row-c">
+    <div class="card ye-card" style="--c:{{ p.green }}">
+      <div class="ye-head center-head">
+        <svg class="ico" style="fill:{{ p.green }}"><use href="#i-heart"/></svg>
+        <span style="color:{{ p.green }}">What We Loved Most About Each Other</span>
+        <svg class="ico" style="fill:{{ p.green }}"><use href="#i-heart"/></svg>
+      </div>
+      <div class="loved-cols">
+        {% for label, colour in [("Mom", "pink"), ("Dad", "blue"), ("Child 1", "green"),
+                                 ("Child 2", "purple"), ("Other", "orange")] %}
+        <div class="loved-col">
+          <svg class="ico" style="fill:{{ p[colour] }}"><use href="#i-heart"/></svg>
+          <span class="loved-name">{{ label }}</span>
+          {{ lines(4, solid=true) }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card ye-card" style="--c:{{ p.blue }}">
+      <div class="ye-head">
+        <svg class="ico" style="fill:{{ p.blue }}"><use href="#i-target"/></svg>
+        <span style="color:{{ p.blue }}">Goals &amp; Dreams For Next Year</span>
+      </div>
+      <div class="goal-lines">
+        {% for _ in range(5) %}
+        <div class="row">
+          <span class="bullet-dot" style="background:{{ p.blue }}"></span>
+          <span class="solid-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid ye-row-d">
+    <div class="card ye-card" style="--c:{{ p.orange }}">
+      <div class="ye-head">
+        <svg class="ico" style="fill:{{ p.orange }}"><use href="#i-info"/></svg>
+        <span style="color:{{ p.orange }}">Words That Describe Our Family</span>
+      </div>
+      <div class="words-box"></div>
+    </div>
+    <div class="card ye-card" style="--c:{{ p.purple }}">
+      <div class="ye-head">
+        <svg class="ico" style="fill:{{ p.purple }}"><use href="#i-pencil"/></svg>
+        <span style="color:{{ p.purple }}">A Note To Our Future Selves</span>
+      </div>
+      {{ lines(4, solid=true) }}
+    </div>
+    <div class="card ye-card" style="--c:{{ p.green }}">
+      <div class="ye-head">
+        <svg class="ico" style="fill:{{ p.green }}"><use href="#i-calendar"/></svg>
+        <span style="color:{{ p.green }}">In {{ cfg.year + 1 }}, We Cannot Wait To...</span>
+      </div>
+      <div class="goal-lines">
+        {% for _ in range(5) %}
+        <div class="row">
+          <svg class="ico bullet" style="fill:{{ p.green }}"><use href="#i-star"/></svg>
+          <span class="solid-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {{ footer("Grateful for our past, excited for our future.") }}
+</section>

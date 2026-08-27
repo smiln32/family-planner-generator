@@ -1,0 +1,31 @@
+{# title: Contents #}
+{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "art.html" import house_family with context %}
+
+<section class="page index-page">
+  <header class="masthead no-art">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:32pt">Our Planner</div>
+      <h1 class="display word-tint" style="font-size:38pt">
+        {% for ch in "CONTENTS" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      {{ divider() }}
+    </div>
+  </header>
+
+  <p class="index-lede">Tap any line to jump straight to that page.</p>
+
+  <div class="index-cols">
+    {% for entry in toc %}
+    <a class="index-row" href="#{{ entry.slug }}"
+       style="--c:{{ p[entry.accent] }}">
+      <span class="index-num">{{ "%02d"|format(entry.number) }}</span>
+      <span class="index-title">{{ entry.title }}</span>
+      <span class="index-dots"></span>
+    </a>
+    {% endfor %}
+  </div>
+
+  {{ footer("Everything in one place.") }}
+</section>

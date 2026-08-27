@@ -1,0 +1,85 @@
+{# title: Annual Family Calendar #}
+{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "art.html" import house_family with context %}
+{% set motif_icon = {
+     "snowman": "snowflake", "hearts": "heart", "sprout": "sprout",
+     "tulips": "flower", "flowers": "flower", "sun": "sun", "beach": "palm",
+     "school": "book", "pumpkin": "pumpkin", "leaves": "leaf",
+     "snowflake": "snowflake"} %}
+
+<section class="page annual-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:26pt">Annual</div>
+      <h1 class="display word-tint" style="font-size:40pt">
+        {% for ch in "FAMILY" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Calendar</div>
+      <div class="display" style="color:{{ p.navy }};font-size:22pt;margin-top:.04in">{{ cfg.year }}</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Sunny day">
+      <circle cx="150" cy="34" r="20" fill="{{ p.orange }}"/>
+      {% for a in range(12) %}
+      <rect x="148" y="4" width="4" height="9" rx="2" fill="{{ p.orange }}"
+            transform="rotate({{ a * 30 }} 150 34)"/>
+      {% endfor %}
+      <ellipse cx="60" cy="60" rx="30" ry="16" fill="#BEDCF5"/>
+      <ellipse cx="44" cy="54" rx="18" ry="14" fill="#BEDCF5"/>
+      <rect x="140" y="104" width="12" height="34" rx="3" fill="#8A5A2B"/>
+      <circle cx="146" cy="96" r="30" fill="{{ p.green }}"/>
+      <circle cx="122" cy="106" r="19" fill="{{ p.green }}"/>
+      <circle cx="172" cy="108" r="17" fill="{{ p.green }}"/>
+      <path d="M20 136c40-12 130-12 168 0v6c-38-12-128-12-168 0z" fill="{{ p.green }}"/>
+    </svg>
+  </header>
+
+  <div class="mini-grid">
+    {% for month in cfg.months %}
+    {% set month_number = loop.index %}
+    <div class="mini" style="--c:{{ p[month.accent] }}">
+      <div class="mini-head">
+        {{ ico(motif_icon.get(month.motif, "heart")) }} {{ month.name|upper }}
+      </div>
+      <table>
+        <thead><tr>
+          {% for initial in day_initials(cfg.sunday_first) %}
+          <th{% if loop.index0 in (0, 6) %} class="we"{% endif %}>{{ initial }}</th>
+          {% endfor %}
+        </tr></thead>
+        <tbody>
+          {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
+          <tr>
+            {% for day in week %}
+            <td{% if day.weekend %} class="we"{% endif %}>{{ day.number or "" }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card annual-dates" style="--c:{{ p.teal }}">
+    <div class="dates-label">
+      {{ chip("calendar", "teal", "", ".4in") }}
+      <span class="script">Important<br>Dates &amp; Events</span>
+    </div>
+    <div class="dates-cols">
+      {% for col in range(2) %}
+      <div class="dates-col">
+        {% for colour in ["teal", "pink", "orange", "green", "purple"] %}
+        <div class="row">
+          <svg class="ico bullet" style="fill:{{ p[colour] }}"><use href="#i-heart"/></svg>
+          <span class="dot-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {{ footer("A whole year of memories, together.") }}
+</section>

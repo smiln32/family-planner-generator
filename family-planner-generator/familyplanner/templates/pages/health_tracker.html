@@ -1,0 +1,129 @@
+{# title: Family Health and Wellness Tracker #}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "art.html" import house_family with context %}
+{% set habits = [
+     ("apple", "green", "Eat Healthy", "5+ servings of fruits &amp; veggies"),
+     ("glass", "teal", "Drink Water", "6-8 glasses of water"),
+     ("run", "orange", "Be Active", "60 minutes of activity"),
+     ("moon", "pink", "Sleep Well", "7-9 hours of sleep"),
+     ("lotus", "purple", "Manage Stress", "Mindfulness or quiet time"),
+     ("medical", "blue", "Health Check", "Vitamins, meds, hygiene")] %}
+
+<section class="page health-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <h1 class="display" style="color:{{ p.navy }};font-size:27pt">Family</h1>
+      <div class="display" style="font-size:29pt">
+        <span style="color:{{ p.teal }}">Health</span>
+        <span style="color:{{ p.pink }}">&amp;</span>
+        <span style="color:{{ p.green }}">Wellness</span>
+      </div>
+      <div class="banner" style="--banner-bg:{{ p.navy }};font-size:14pt">Tracker</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Healthy food and heart">
+      <path d="M100 44c0-14 11-25 25-25 8 0 15 4 19 9 4-5 11-9 19-9 14 0 25 11 25 25 0 22-31 41-44 52-13-11-44-30-44-52z"
+            fill="{{ p.pink }}"/>
+      <path d="M112 44h12l6-12 8 26 7-14h13" fill="none" stroke="#fff" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="42" cy="112" r="24" fill="{{ p.red }}"/>
+      <path d="M42 88c-4-11 1-18 11-19-1 11-6 16-11 19z" fill="{{ p.green }}"/>
+      <path d="M92 136c-18-8-28-24-28-42 18 4 28 20 28 42z" fill="{{ p.green }}"/>
+      <rect x="102" y="98" width="26" height="40" rx="8" fill="#CFE9F7"/>
+      <rect x="108" y="90" width="14" height="12" rx="4" fill="#A9D8DC"/>
+    </svg>
+  </header>
+
+  <div class="health-meta">
+    {{ field("Week of:") }}
+    <div class="health-quote script">A healthy family is a happy family!</div>
+    {{ field("Month:") }}
+  </div>
+
+  <table class="tbl health-tbl">
+    <thead>
+      <tr>
+        <th style="background:{{ p.navy }}">Family Member</th>
+        {% for icon, colour, label, blurb in habits %}
+        <th style="background:{{ p[colour] }}">
+          <svg class="ico head-ico"><use href="#i-{{ icon }}"/></svg>
+          <span>{{ label }}</span>
+          <span class="blurb">{{ blurb|safe }}</span>
+        </th>
+        {% endfor %}
+        <th style="background:{{ p.teal }}">Notes</th>
+      </tr>
+      <tr class="day-head">
+        <th></th>
+        {% for icon, colour, label, blurb in habits %}
+        <th>
+          <div class="week-head">
+            {% for initial in day_initials(false) %}
+            <span style="color:{{ p[colour] }}">{{ initial }}</span>
+            {% endfor %}
+          </div>
+        </th>
+        {% endfor %}
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in cfg.members %}
+      <tr>
+        <td>
+          <div class="member-cell">
+            {{ chip("user", ["teal", "pink", "orange", "green", "purple"][loop.index0 % 5], "", ".22in") }}
+            {% if member %}<span class="member-name">{{ member }}</span>
+            {% else %}<span class="solid-line"></span>{% endif %}
+          </div>
+        </td>
+        {% for icon, colour, label, blurb in habits %}
+        <td>
+          <div class="week-dots" style="--c:{{ p[colour] }}">
+            {% for _ in range(7) %}<span></span>{% endfor %}
+          </div>
+        </td>
+        {% endfor %}
+        <td><span class="solid-line"></span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="grid cols-3 health-bottom">
+    <div class="card has-tab" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("heart") }} Family Wellness Goals</div>
+      {{ checklist(items=["Eat more nutritious meals together",
+                          "Exercise and have fun together",
+                          "Reduce stress and spend quality time",
+                          "Get enough sleep every night",
+                          "Stay healthy with regular check-ups"],
+                   colour="green", dotted=false) }}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("star") }} Weekly Highlights</div>
+      <div class="hl-block">
+        <div class="hl-q" style="color:{{ p.teal }}">What went well this week?</div>
+        {{ lines(3) }}
+      </div>
+      <div class="hl-block">
+        <div class="hl-q" style="color:{{ p.pink }}">What can we improve?</div>
+        {{ lines(3) }}
+      </div>
+    </div>
+    <div class="card has-tab" style="--c:{{ p.purple }}">
+      <div class="card-tab">{{ ico("calendar") }} Appointments &amp; Reminders</div>
+      <div class="appt-head"><span>Date</span><span>Appointment</span><span>Time</span></div>
+      <div class="appt-rows">
+        {% for _ in range(7) %}
+        <div class="appt-row">
+          <span class="solid-line"></span><span class="solid-line"></span><span class="solid-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {{ footer("Small steps every day lead to a healthier, happier family.") }}
+</section>

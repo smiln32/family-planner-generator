@@ -1,0 +1,114 @@
+{# title: Family Budget Overview #}
+{% from "macros.html" import divider, footer, ico, chip, lines with context %}
+{% from "art.html" import house_family with context %}
+{% set cats = [("home", "teal", "Housing", 30), ("cart", "pink", "Groceries", 25),
+               ("car", "orange", "Transportation", 15), ("heart", "green", "Health", 10),
+               ("cap", "purple", "Education", 10), ("coins", "orange", "Savings", 6),
+               ("star", "blue", "Other", 4)] %}
+
+<section class="page budget-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:30pt">Family</div>
+      <h1 class="display word-tint" style="font-size:38pt">
+        {% for ch in "BUDGET" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">Overview</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Sunny day">
+      <circle cx="150" cy="40" r="20" fill="{{ p.orange }}"/>
+      {% for a in range(12) %}
+      <rect x="148" y="10" width="4" height="9" rx="2" fill="{{ p.orange }}"
+            transform="rotate({{ a * 30 }} 150 40)"/>
+      {% endfor %}
+      <ellipse cx="80" cy="96" rx="34" ry="16" fill="#BEDCF5"/>
+      <ellipse cx="60" cy="90" rx="20" ry="14" fill="#BEDCF5"/>
+    </svg>
+  </header>
+
+  <div class="grid cols-2 budget-top">
+    <div class="card" style="--c:{{ p.teal }}">
+      <div class="card-head" style="justify-content:center">Income</div>
+      <div class="ie-head"><span>Source</span><span>Amount</span></div>
+      <div class="ie-rows">
+        {% for _ in range(6) %}
+        <div class="ie-row">
+          <span class="dot-line"></span>
+          <span class="money">$</span><span class="dot-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="total-bar" style="background:{{ p.teal }}1F">
+        <span>Total Income</span><span class="total-box">$</span>
+      </div>
+    </div>
+
+    <div class="card" style="--c:{{ p.green }}">
+      <div class="card-head" style="justify-content:center">Expenses Summary</div>
+      <div class="ie-head"><span>Category</span><span>Budget</span></div>
+      <div class="ie-rows">
+        {% for icon, colour, label, pct in cats %}
+        <div class="ie-row cat">
+          {{ chip(icon, colour, "", ".2in") }}
+          <span class="cat-name">{{ label }}</span><span class="dot-line"></span>
+          <span class="money">$</span><span class="dot-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="total-bar" style="background:{{ p.green }}1F">
+        <span>Total Expenses</span><span class="total-box">$</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid cols-2 budget-bottom">
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("chart") }} Monthly Summary</div>
+      <div class="ie-rows">
+        {% for label in ["Total Income", "Total Expenses", "Total Savings"] %}
+        <div class="ie-row">
+          <span>{{ label }}</span><span class="dot-line"></span>
+          <span class="money">$</span><span class="dot-line"></span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="total-bar" style="background:{{ p.pink }}22">
+        <span>Balance</span><span class="total-box">$</span>
+      </div>
+    </div>
+
+    <div class="card has-tab" style="--c:{{ p.purple }}">
+      <div class="card-tab">{{ ico("coins") }} Expenses Breakdown</div>
+      <div class="pie-wrap">
+        <svg class="pie" viewBox="0 0 42 42" role="img" aria-label="Suggested budget split">
+          {% set ns = namespace(offset=25) %}
+          {% for icon, colour, label, pct in cats %}
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="{{ p[colour] }}"
+                  stroke-width="14"
+                  stroke-dasharray="{{ pct }} {{ 100 - pct }}"
+                  stroke-dashoffset="{{ ns.offset }}"/>
+          {% set ns.offset = ns.offset - pct %}
+          {% endfor %}
+        </svg>
+        <div class="pie-key">
+          {% for icon, colour, label, pct in cats %}
+          <div class="key-row">
+            <span class="dot" style="background:{{ p[colour] }}"></span>
+            <span class="key-name">{{ label }}</span>
+            <span class="solid-line"></span><span class="pct">%</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card has-tab budget-notes" style="--c:{{ p.teal }}">
+    <div class="card-tab">{{ ico("pencil") }} Notes</div>
+    {{ lines(3) }}
+  </div>
+
+  {{ footer("Every dollar working for our family.") }}
+</section>

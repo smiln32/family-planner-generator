@@ -1,0 +1,52 @@
+{# title: This Planner Belongs To #}
+{% from "macros.html" import divider, footer, chip with context %}
+{% from "art.html" import house_small, person with context %}
+
+<section class="page belongs-page">
+  <div class="belongs-top">
+    <svg class="mark-lg" viewBox="0 0 200 150" role="img" aria-label="Home">
+      <path d="M18 128c40-14 128-14 168 0v7c-40-14-128-14-168 0z" fill="{{ p.green }}"/>
+      <circle cx="46" cy="66" r="22" fill="{{ p.green }}"/>
+      <rect x="43" y="66" width="6" height="56" fill="{{ p.green }}"/>
+      <rect x="140" y="26" width="13" height="26" rx="2" fill="{{ p.navy }}"/>
+      <path d="M100 14 22 62h156z" fill="none" stroke="{{ p.navy }}" stroke-width="11"
+            stroke-linejoin="round"/>
+      <rect x="42" y="60" width="7" height="66" fill="{{ p.navy }}"/>
+      <rect x="151" y="60" width="7" height="66" fill="{{ p.navy }}"/>
+      <rect x="84" y="82" width="26" height="44" rx="4" fill="{{ p.teal }}"/>
+      <g fill="{{ p.teal }}">
+        <rect x="118" y="80" width="11" height="11" rx="1.5"/>
+        <rect x="132" y="80" width="11" height="11" rx="1.5"/>
+        <rect x="118" y="94" width="11" height="11" rx="1.5"/>
+        <rect x="132" y="94" width="11" height="11" rx="1.5"/>
+      </g>
+      <path d="M150 22c0-7 5-12 11-12 4 0 6 2 7 4 1-2 3-4 7-4 6 0 11 5 11 12 0 9-13 17-18 22-5-5-18-13-18-22z"
+            fill="{{ p.pink }}"/>
+    </svg>
+    <h1 class="display" style="color:{{ p.navy }};font-size:46pt">This Planner</h1>
+    <div class="script" style="color:{{ p.teal }};font-size:52pt">Belongs To</div>
+    {{ divider() }}
+  </div>
+
+  <div class="belongs-card">
+    {% for icon, label, colour in [
+         ("user", "Name", "teal"), ("home", "Address", "pink"),
+         ("phone", "Phone", "orange"), ("mail", "Email", "green")] %}
+    <div class="belongs-row">
+      {{ chip(icon, colour, "", ".38in") }}
+      <span class="belongs-label">{{ label }}:</span>
+      <span class="dot-line"></span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <svg class="belongs-foot" viewBox="0 0 200 70" role="img" aria-label="Family">
+    <path d="M96 14c0-6 4-10 9-10 3 0 5 1 6 3 1-2 3-3 6-3 5 0 9 4 9 10 0 8-11 15-15 19-4-4-15-11-15-19z"
+          fill="{{ p.pink }}"/>
+    {{ person(70, 62, 34, p.teal) }}
+    {{ person(100, 62, 26, p.orange) }}
+    {{ person(128, 62, 34, p.pink) }}
+    <path d="M20 60c14-4 26-4 34 2-12 4-24 3-34-2zM180 60c-14-4-26-4-34 2 12 4 24 3 34-2z"
+          fill="{{ p.green }}"/>
+  </svg>
+</section>

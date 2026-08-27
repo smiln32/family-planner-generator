@@ -1,0 +1,35 @@
+{# title: Family Goals #}
+{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "art.html" import house_family with context %}
+{% set goals = [
+     ("target", "teal"), ("family", "pink"), ("heart", "orange"),
+     ("dumbbell", "green"), ("mountain", "purple")] %}
+
+<section class="page goals-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <h1 class="display year-tint">
+        {% for ch in cfg.year|string %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="script" style="color:{{ p.navy }};font-size:44pt">Family Goals</div>
+      {{ divider() }}
+    </div>
+    <span></span>
+  </header>
+
+  <div class="goal-rows">
+    {% for icon, colour in goals %}
+    <div class="goal-row" style="--c:{{ p[colour] }}">
+      <span class="num">{{ loop.index }}</span>
+      {{ chip(icon, colour, "wash", ".52in") }}
+      <div class="goal-box">
+        <span class="dot-line"></span>
+        <span class="dot-line"></span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {{ footer("Dream it. Plan it. Do it together.") }}
+</section>

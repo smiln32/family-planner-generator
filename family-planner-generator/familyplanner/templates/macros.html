@@ -1,0 +1,114 @@
+{# Reusable page furniture. Every page composes itself from these. #}
+{% from "art.html" import house_family, house_small, month_art with context %}
+
+{# An inline icon from the sprite, tinted by the current --c or an explicit fill. #}
+{% macro ico(name, cls="ico") %}<svg class="{{ cls }}"><use href="#i-{{ name }}"/></svg>{% endmacro %}
+
+{# A coloured circle with an icon in it. `style` is solid | wash | ring. #}
+{% macro chip(name, colour, style="", size="") %}
+<span class="chip {{ style }}" style="--c:{{ p[colour] }}{% if size %};--chip:{{ size }}{% endif %}">
+  {{ ico(name) }}
+</span>
+{% endmacro %}
+
+{# The dot-bar-heart-bar-dot rule that sits under most page titles. #}
+{% macro divider() %}
+<div class="divider">
+  <span class="bar"></span><span class="dot"></span>
+  <svg class="ico" style="width:.14in;height:.14in;fill:{{ p.pink }}"><use href="#i-heart"/></svg>
+  <span class="dot"></span><span class="bar"></span>
+</div>
+{% endmacro %}
+
+{# A leafy sprig, mirrored with `flip`, used to bracket footer lines. #}
+{% macro sprig(flip=false) %}
+<svg class="sprig" viewBox="0 0 60 22"{% if flip %} style="transform:scaleX(-1)"{% endif %}>
+  <path d="M4 15c14-2 30-6 52-8" fill="none" stroke="{{ p.green }}"
+        stroke-width="1.8" stroke-linecap="round"/>
+  {% for i in range(4) %}
+  {% set x = 12 + i * 12 %}
+  {% set y = 13.5 - i * 1.8 %}
+  <ellipse cx="{{ x }}" cy="{{ y - 4 }}" rx="5.2" ry="2.6" fill="{{ p.green }}"
+           transform="rotate(-32 {{ x }} {{ y - 4 }})"/>
+  <ellipse cx="{{ x + 3 }}" cy="{{ y + 3.4 }}" rx="5.2" ry="2.6" fill="{{ p.green }}"
+           transform="rotate(28 {{ x + 3 }} {{ y + 3.4 }})"/>
+  {% endfor %}
+</svg>
+{% endmacro %}
+
+{# Page footer: sprig, line, sprig. `caps` switches script for bold uppercase. #}
+{% macro footer(text, caps=false) %}
+<div class="page-footer">
+  {{ sprig() }}
+  <svg class="ico" style="width:.13in;height:.13in;fill:{{ p.pink }}"><use href="#i-heart"/></svg>
+  <span class="txt{% if caps %} caps{% endif %}">{{ text }}</span>
+  <svg class="ico" style="width:.13in;height:.13in;fill:{{ p.pink }}"><use href="#i-heart"/></svg>
+  {{ sprig(flip=true) }}
+</div>
+{% endmacro %}
+
+{# The standard page masthead: mark on the left, stacked title, optional art. #}
+{% macro masthead(line1, line2="", script_line="", banner="", strap="",
+                  banner_colour="navy", line1_colour="navy", line2_colour="teal",
+                  art=none, mark=true) %}
+<header class="masthead{% if not art %} no-art{% endif %}">
+  {% if mark %}{{ house_family() }}{% else %}<span></span>{% endif %}
+  <div class="headings">
+    {% if script_line %}
+      <h1 class="display" style="color:{{ p[line1_colour] }}">{{ line1 }}</h1>
+      <div class="script line-script" style="color:{{ p[line2_colour] }};font-size:30pt">{{ script_line }}</div>
+    {% else %}
+      <h1 class="display" style="color:{{ p[line1_colour] }}">{{ line1 }}</h1>
+      {% if line2 %}
+      <div class="display line2" style="color:{{ p[line2_colour] }}">{{ line2 }}</div>
+      {% endif %}
+    {% endif %}
+    {% if banner %}
+      <div class="banner" style="--banner-bg:{{ p[banner_colour] }}">{{ banner }}</div>
+    {% endif %}
+    {% if strap %}<div class="strapline script">{{ strap }}</div>{% endif %}
+    {{ divider() }}
+  </div>
+  {% if art %}{{ art }}{% endif %}
+</header>
+{% endmacro %}
+
+{# `n` evenly spaced dotted write-on rules that fill the available height. #}
+{% macro lines(n=4, solid=false) %}
+<div class="lines">
+  {% for _ in range(n) %}<span class="{{ 'solid-line' if solid else 'dot-line' }}"></span>{% endfor %}
+</div>
+{% endmacro %}
+
+{# A labelled field with a rule to write on: "WEEK OF: ______". #}
+{% macro field(label, solid=true, grow=1) %}
+<div class="field" style="flex:{{ grow }}">
+  <span class="label">{{ label }}</span>
+  <span class="{{ 'solid-line' if solid else 'dot-line' }}"></span>
+</div>
+{% endmacro %}
+
+{# A numbered list of write-on rules, 1..n, in the card's accent colour. #}
+{% macro numbered(n, colour, hollow=false, solid=true) %}
+<div class="numbered">
+  {% for i in range(1, n + 1) %}
+  <div class="row">
+    <span class="num{% if hollow %} hollow{% endif %}" style="--c:{{ p[colour] }}">{{ i }}</span>
+    <span class="{{ 'solid-line' if solid else 'dot-line' }}"></span>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
+
+{# A list of checkboxes, optionally pre-labelled with fixed text. #}
+{% macro checklist(items=none, n=5, colour="navy", dotted=true) %}
+<div class="checklist">
+  {% for item in (items if items else range(n)) %}
+  <div class="row">
+    <span class="check c" style="--c:{{ p[colour] }}"></span>
+    {% if items %}<span>{{ item }}</span>{% endif %}
+    <span class="{{ 'dot-line' if dotted else 'solid-line' }}"></span>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}

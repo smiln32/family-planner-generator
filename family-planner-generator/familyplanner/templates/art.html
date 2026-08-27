@@ -1,0 +1,175 @@
+{# Inline SVG illustrations. These are drawn rather than imported so the whole
+   planner stays one self-contained file with no external image dependencies. #}
+
+{# The signature lockup: a navy house outline sheltering a four-person family,
+   on a green hill. Appears on the masthead of almost every page. #}
+{% macro house_family() %}
+<svg class="mark" viewBox="0 0 200 150" role="img" aria-label="Family home">
+  <path d="M12 128c42-15 134-15 176 0v8c-42-15-134-15-176 0z" fill="{{ p.green }}"/>
+  <path d="M22 108c0-9 6-16 13-16s13 7 13 16z" fill="{{ p.green }}"/>
+  <path d="M152 108c0-9 6-16 13-16s13 7 13 16z" fill="{{ p.green }}"/>
+  <rect x="140" y="26" width="13" height="26" rx="2" fill="{{ p.navy }}"/>
+  <path d="M100 14 18 62h13l69-40 69 40h13z" fill="{{ p.navy }}"/>
+  <path d="M100 14 18 62h164z" fill="none" stroke="{{ p.navy }}" stroke-width="11"
+        stroke-linejoin="round"/>
+  <rect x="38" y="60" width="7" height="66" fill="{{ p.navy }}"/>
+  <rect x="155" y="60" width="7" height="66" fill="{{ p.navy }}"/>
+  <g fill="{{ p.teal }}">
+    <rect x="86" y="44" width="12" height="12" rx="1.5"/>
+    <rect x="102" y="44" width="12" height="12" rx="1.5"/>
+    <rect x="86" y="60" width="12" height="12" rx="1.5"/>
+    <rect x="102" y="60" width="12" height="12" rx="1.5"/>
+  </g>
+  <path d="M146 22c0-6 5-10 10-10 3 0 5 1 6 3 1-2 3-3 6-3 5 0 10 4 10 10 0 8-11 15-16 19-5-4-16-11-16-19z"
+        fill="{{ p.pink }}"/>
+  {{ person(58, 126, 46, p.teal) }}
+  {{ person(84, 126, 30, p.orange) }}
+  {{ person(106, 126, 30, p.green) }}
+  {{ person(132, 126, 46, p.pink) }}
+</svg>
+{% endmacro %}
+
+{# One flat pictogram person: round head, rounded torso and two legs, `h`
+   tall, standing with their feet on `base`, horizontally centred on `cx`. #}
+{% macro person(cx, base, h, color) %}
+{% set hr = h * 0.155 %}
+{% set bw = h * 0.52 %}
+{% set torso_top = base - h + hr * 1.85 %}
+{% set leg_top = base - h * 0.34 %}
+<g fill="{{ color }}">
+  <circle cx="{{ cx }}" cy="{{ base - h + hr }}" r="{{ hr }}"/>
+  <rect x="{{ cx - bw / 2 }}" y="{{ torso_top }}"
+        width="{{ bw }}" height="{{ leg_top - torso_top }}" rx="{{ bw * 0.36 }}"/>
+  <rect x="{{ cx - h * 0.19 }}" y="{{ leg_top }}"
+        width="{{ h * 0.15 }}" height="{{ base - leg_top }}" rx="{{ h * 0.05 }}"/>
+  <rect x="{{ cx + h * 0.04 }}" y="{{ leg_top }}"
+        width="{{ h * 0.15 }}" height="{{ base - leg_top }}" rx="{{ h * 0.05 }}"/>
+</g>
+{% endmacro %}
+
+{# A compact version of the mark for pages whose masthead art is elsewhere. #}
+{% macro house_small() %}
+<svg class="mark" viewBox="0 0 200 150" role="img" aria-label="Family home">
+  <path d="M12 128c42-15 134-15 176 0v8c-42-15-134-15-176 0z" fill="{{ p.green }}"/>
+  <rect x="140" y="26" width="13" height="26" rx="2" fill="{{ p.navy }}"/>
+  <path d="M100 14 18 62h164z" fill="none" stroke="{{ p.navy }}" stroke-width="11"
+        stroke-linejoin="round"/>
+  <rect x="38" y="60" width="7" height="66" fill="{{ p.navy }}"/>
+  <rect x="155" y="60" width="7" height="66" fill="{{ p.navy }}"/>
+  <path d="M62 96h30v30H62z" fill="{{ p.teal }}"/>
+  <g fill="{{ p.navy }}">
+    <rect x="86" y="44" width="28" height="28" rx="2"/>
+  </g>
+  <path d="M146 22c0-6 5-10 10-10 3 0 5 1 6 3 1-2 3-3 6-3 5 0 10 4 10 10 0 8-11 15-16 19-5-4-16-11-16-19z"
+        fill="{{ p.pink }}"/>
+</svg>
+{% endmacro %}
+
+{# The desk-calendar + seasonal object that sits on the right of a monthly
+   masthead. `motif` picks the object; everything shares the calendar block. #}
+{% macro month_art(month) %}
+{% set c = p[month.accent] %}
+<svg class="art" viewBox="0 0 200 150" role="img" aria-label="{{ month.name }}">
+  <g>
+    <rect x="20" y="26" width="96" height="86" rx="7" fill="#FCFBF6"
+          stroke="{{ p.navy }}" stroke-width="4"/>
+    <rect x="20" y="26" width="96" height="16" rx="7" fill="{{ p.navy }}"/>
+    {% for i in range(5) %}
+    <rect x="{{ 30 + i * 18 }}" y="14" width="7" height="22" rx="3.5"
+          fill="none" stroke="{{ p.navy }}" stroke-width="3.5"/>
+    {% endfor %}
+    <text x="68" y="70" text-anchor="middle" fill="{{ c }}"
+          font-family="{{ script_stack }}" font-size="22">Hello</text>
+    <text x="68" y="94" text-anchor="middle" fill="{{ p.navy }}"
+          font-family="{{ body_stack }}" font-weight="800" font-size="17"
+          letter-spacing="0.5">{{ month.name[:3]|upper }}!</text>
+    <path d="M60 100c0-3 2.5-5 5-5 1.5 0 2.5.5 3 1.5.5-1 1.5-1.5 3-1.5 2.5 0 5 2 5 5 0 4-5.5 7.5-8 9.5-2.5-2-8-5.5-8-9.5z"
+          fill="{{ p.pink }}"/>
+  </g>
+  {{ motif(month.motif, month) }}
+</svg>
+{% endmacro %}
+
+{# Seasonal object, drawn to the right of the desk calendar. #}
+{% macro motif(kind, month) %}
+{% set c = p[month.accent] %}
+{% if kind == "snowman" %}
+  <circle cx="156" cy="98" r="24" fill="#FFFFFF" stroke="#C8D8E6" stroke-width="3"/>
+  <circle cx="156" cy="62" r="16" fill="#FFFFFF" stroke="#C8D8E6" stroke-width="3"/>
+  <path d="M140 50h32l-3-8h-26z" fill="{{ p.red }}"/>
+  <path d="M146 42h20v-6a10 10 0 0 0-20 0z" fill="{{ p.red }}"/>
+  <path d="M156 60l14 4-14 4z" fill="{{ p.orange }}"/>
+  <circle cx="150" cy="58" r="2.4" fill="{{ p.navy }}"/>
+  <circle cx="162" cy="58" r="2.4" fill="{{ p.navy }}"/>
+  <path d="M138 76h36v7a6 6 0 0 1-6 6h-24a6 6 0 0 1-6-6z" fill="{{ p.teal }}"/>
+  <circle cx="156" cy="94" r="3" fill="{{ p.navy }}"/>
+  <circle cx="156" cy="106" r="3" fill="{{ p.navy }}"/>
+  <path d="M132 92 118 80M180 92l14-12" stroke="#8A5A2B" stroke-width="3.5"
+        stroke-linecap="round"/>
+{% elif kind == "hearts" %}
+  <path d="M132 66c0-11 9-20 20-20 6 0 11 2.5 14 6.5 3-4 8-6.5 14-6.5 11 0 20 9 20 20 0 17-24 32-34 40-10-8-34-23-34-40z"
+        fill="{{ p.pink }}"/>
+  <path d="M128 106c0-6 5-11 11-11 3.4 0 6.3 1.5 8 4 1.7-2.5 4.6-4 8-4 6 0 11 5 11 11 0 9-13 17-19 22-6-5-19-13-19-22z"
+        fill="{{ p.red }}" opacity=".85"/>
+{% elif kind == "tulips" or kind == "flowers" %}
+  {% for i, x, col in [(0, 132, p.pink), (1, 156, p.orange), (2, 180, p.purple)] %}
+    <path d="M{{ x }} 118V78" stroke="{{ p.green }}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M{{ x }} 104c-9 0-15-5-16-13 8-1 14 3 16 9zM{{ x }} 96c9 0 15-5 16-13-8-1-14 3-16 9z"
+          fill="{{ p.green }}"/>
+    {% if kind == "tulips" %}
+      <path d="M{{ x - 12 }} 72c0-8 5-14 12-14s12 6 12 14c0 7-5 12-12 12s-12-5-12-12z" fill="{{ col }}"/>
+      <path d="M{{ x - 12 }} 72 {{ x }} 62l12 10" fill="none" stroke="#FFF" stroke-width="2.5"/>
+    {% else %}
+      <circle cx="{{ x }}" cy="70" r="8" fill="{{ col }}"/>
+      <circle cx="{{ x - 11 }}" cy="70" r="8" fill="{{ col }}"/>
+      <circle cx="{{ x + 11 }}" cy="70" r="8" fill="{{ col }}"/>
+      <circle cx="{{ x }}" cy="59" r="8" fill="{{ col }}"/>
+      <circle cx="{{ x }}" cy="81" r="8" fill="{{ col }}"/>
+      <circle cx="{{ x }}" cy="70" r="5" fill="{{ p.orange }}"/>
+    {% endif %}
+  {% endfor %}
+  <path d="M120 122c20-8 60-8 76 0v6c-16-8-56-8-76 0z" fill="{{ p.green }}"/>
+{% elif kind == "sun" or kind == "beach" %}
+  <circle cx="160" cy="58" r="22" fill="{{ p.orange }}"/>
+  {% for a in range(12) %}
+  <rect x="158" y="24" width="4" height="10" rx="2" fill="{{ p.orange }}"
+        transform="rotate({{ a * 30 }} 160 58)"/>
+  {% endfor %}
+  {% if kind == "beach" %}
+    <path d="M124 122c22-9 52-9 74 0v8c-22-9-52-9-74 0z" fill="{{ p.orange }}" opacity=".55"/>
+    <path d="M150 118V88" stroke="#8A5A2B" stroke-width="5" stroke-linecap="round"/>
+    <path d="M150 88c-14-6-24-2-28 6 10-2 18 0 24 4zM150 88c14-6 24-2 28 6-10-2-18 0-24 4zM150 88c-4-14 0-22 8-26-2 10 0 17 4 22z"
+          fill="{{ p.green }}"/>
+  {% endif %}
+{% elif kind == "school" %}
+  <path d="M138 66h44a10 10 0 0 1 10 10v34a8 8 0 0 1-8 8h-48a8 8 0 0 1-8-8V76a10 10 0 0 1 10-10z"
+        fill="{{ c }}"/>
+  <path d="M150 66V56a10 10 0 0 1 20 0v10h-8v-10a2 2 0 0 0-4 0v10z" fill="{{ c }}"/>
+  <rect x="146" y="82" width="28" height="10" rx="3" fill="#FFFFFF" opacity=".85"/>
+  <rect x="146" y="98" width="28" height="16" rx="3" fill="#FFFFFF" opacity=".6"/>
+  <path d="m160 40 8 4-8 4-8-4z" fill="{{ p.orange }}"/>
+{% elif kind == "pumpkin" %}
+  <path d="M158 60h4v10h-4z" fill="{{ p.green }}"/>
+  <path d="M160 68c-4 0-7 1-10 3a15 15 0 0 0-9-3c-9 0-16 11-16 25s7 25 16 25c3 0 6-1 9-3 3 2 6 3 10 3s7-1 10-3c3 2 6 3 9 3 9 0 16-11 16-25s-7-25-16-25c-3 0-6 1-9 3-3-2-6-3-10-3z"
+        fill="{{ p.orange }}"/>
+  <path d="M160 70v46" stroke="#D98200" stroke-width="2.5"/>
+{% elif kind == "leaves" %}
+  {% for x, y, col, rot in [(134, 70, p.orange, -25), (166, 58, p.red, 15), (152, 100, p.brown, 40), (186, 92, p.orange, -10)] %}
+  <g transform="rotate({{ rot }} {{ x }} {{ y }})">
+    <path d="M{{ x }} {{ y - 18 }}c10 6 15 14 15 22s-7 14-15 14-15-6-15-14 5-16 15-22z" fill="{{ col }}"/>
+    <path d="M{{ x }} {{ y - 16 }}v34" stroke="#FFF" stroke-width="1.8" opacity=".6"/>
+  </g>
+  {% endfor %}
+{% elif kind == "sprout" %}
+  <path d="M160 120V72" stroke="{{ p.green }}" stroke-width="5" stroke-linecap="round"/>
+  <path d="M160 96c-14 0-23-8-25-20 13-2 22 5 25 14zM160 84c14 0 23-8 25-20-13-2-22 5-25 14z"
+        fill="{{ p.green }}"/>
+  <path d="M132 122h56l-5 18a4 4 0 0 1-4 3h-38a4 4 0 0 1-4-3z" fill="{{ p.orange }}"/>
+{% else %}
+  <g fill="{{ c }}">
+    <path d="M156 40h8v76h-8z"/>
+    <path d="m124 58 4-7 68 39-4 7z"/>
+    <path d="m192 51 4 7-68 39-4-7z"/>
+  </g>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,31 @@
+{# title: Family Vision and Mission #}
+{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "art.html" import house_family with context %}
+
+<section class="page vision-page">
+  <header class="masthead no-art">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:42pt">Family</div>
+      <h1 class="display" style="color:{{ p.teal }};font-size:27pt">Vision &amp; Mission</h1>
+      <div class="display" style="color:{{ p.navy }};font-size:23pt">Statement</div>
+      {{ divider() }}
+    </div>
+  </header>
+
+  {% for icon, label, blurb, colour in [
+       ("telescope", "Our Vision", "What we dream for our family's future.", "teal"),
+       ("target", "Our Mission",
+        "What we value and how we will live and support each other every day.", "green")] %}
+  <div class="vm-block" style="--c:{{ p[colour] }}">
+    <div class="vm-head">
+      {{ chip(icon, colour, "ring", ".42in") }}
+      <span class="vm-tag">{{ label|upper }}</span>
+      <span class="vm-blurb">{{ blurb }}</span>
+    </div>
+    <div class="vm-box"></div>
+  </div>
+  {% endfor %}
+
+  {{ footer("Our family, our vision, our future.") }}
+</section>

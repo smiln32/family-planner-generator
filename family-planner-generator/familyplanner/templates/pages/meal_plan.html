@@ -1,0 +1,78 @@
+{# title: Weekly Meal Planning Sheet #}
+{% from "macros.html" import divider, footer, ico, chip, field, lines with context %}
+{% from "art.html" import house_family with context %}
+{% set tints = ["#FDECEF", "#FDF1E6", "#FDF8E2", "#EAF6EC", "#E7F2FB", "#EFEAF7", "#F7EAF2"] %}
+
+<section class="page meal-page">
+  <header class="masthead">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:30pt">Weekly</div>
+      <h1 class="display word-tint" style="font-size:42pt">
+        {% for ch in "MEAL" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Planning Sheet</div>
+      {{ divider() }}
+    </div>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Bowl of vegetables">
+      <ellipse cx="100" cy="72" rx="62" ry="46" fill="#DCEEF8"/>
+      <circle cx="76" cy="72" r="20" fill="{{ p.red }}"/>
+      <path d="M76 52c-3-8 1-13 8-14-1 8-4 12-8 14z" fill="{{ p.green }}"/>
+      <path d="M112 92c-6-20 0-38 10-46 6 18 2 36-10 46z" fill="{{ p.orange }}"/>
+      <path d="M122 46c-2-10 2-16 10-18-2 10-5 15-10 18z" fill="{{ p.green }}"/>
+      <path d="M136 78c-14-6-22-18-22-32 14 3 22 15 22 32z" fill="{{ p.green }}"/>
+      <path d="M40 94h120c0 24-27 42-60 42S40 118 40 94z" fill="#BFE3E6"/>
+      <rect x="34" y="88" width="132" height="12" rx="6" fill="#A9D8DC"/>
+    </svg>
+  </header>
+
+  <div class="meal-week">{{ field("Week of:") }}</div>
+
+  <table class="tbl meal-tbl">
+    <thead>
+      <tr>
+        <th class="corner"></th>
+        {% for label, colour in [("Breakfast", "orange"), ("Lunch", "green"),
+                                 ("Dinner", "teal"), ("Snacks", "purple"), ("Notes", "pink")] %}
+        <th style="background:{{ p[colour] }}">{{ label }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] %}
+      <tr>
+        <td class="daycell" style="background:{{ tints[loop.index0] }}">
+          <span class="dayname">{{ day|upper }}</span>
+          <svg class="ico dayglyph" style="fill:{{ p.orange if loop.index0 < 5 else p.blue }}">
+            <use href="#i-{{ 'sun' if loop.index0 < 5 else 'moon' }}"/></svg>
+        </td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="grid cols-2 meal-bottom">
+    <div class="card has-tab" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("cart") }} Grocery List</div>
+      <div class="grocery-cols">
+        {% for col in range(2) %}
+        <div class="grocery-col">
+          {% for _ in range(6) %}
+          <div class="row">
+            <svg class="ico bullet" style="fill:{{ p.green }}"><use href="#i-check"/></svg>
+            <span class="dot-line"></span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("heart") }} Notes &amp; Reminders</div>
+      {{ lines(6) }}
+    </div>
+  </div>
+
+  {{ footer("Plan it. Prep it. Enjoy it. Love it.") }}
+</section>

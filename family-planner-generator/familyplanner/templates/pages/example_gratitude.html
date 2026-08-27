@@ -1,0 +1,51 @@
+{# title: Weekly Gratitude Journal (example) #}
+{# EXAMPLE PAGE - a worked template to copy when adding your own.
+   Not in the default running order; build it with:
+       python planner.py build --only example_gratitude --png
+   Delete this file freely, it is only here as a reference. #}
+{% from "macros.html" import divider, footer, ico, chip, field, lines, numbered with context %}
+{% from "art.html" import house_family with context %}
+
+{# Pick the page's accent colours from the palette by NAME, never by hex, so
+   the page follows whatever `palette:` says in the config. #}
+{% set days = [("Monday", "teal"), ("Tuesday", "pink"), ("Wednesday", "orange"),
+               ("Thursday", "green"), ("Friday", "purple"), ("Saturday", "blue"),
+               ("Sunday", "pink")] %}
+
+<section class="page gratitude-page">
+  <header class="masthead no-art">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:34pt">Our Weekly</div>
+      <h1 class="display word-tint" style="font-size:38pt">
+        {% for ch in "GRATITUDE" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Journal</div>
+      {{ divider() }}
+    </div>
+  </header>
+
+  <div class="grat-meta">{{ field("Week of:") }}{{ field("Our family word this week:") }}</div>
+
+  <div class="grat-days">
+    {% for name, colour in days %}
+    <div class="card has-tab" style="--c:{{ p[colour] }}">
+      <div class="card-tab">{{ ico("heart") }} {{ name }}</div>
+      {{ lines(2) }}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="grid cols-2 grat-bottom">
+    <div class="card has-tab tinted" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("star") }} Best Moment Of The Week</div>
+      {{ lines(4) }}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.purple }}">
+      <div class="card-tab">{{ ico("users") }} Someone We Want To Thank</div>
+      {{ numbered(4, "purple") }}
+    </div>
+  </div>
+
+  {{ footer("Gratitude turns what we have into enough.") }}
+</section>

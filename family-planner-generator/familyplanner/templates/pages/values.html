@@ -1,0 +1,64 @@
+{# title: Family Values Worksheet #}
+{% from "macros.html" import divider, footer, ico, chip, numbered, lines with context %}
+{% from "art.html" import house_family, person with context %}
+
+<section class="page values-page">
+  <header class="masthead no-art">
+    {{ house_family() }}
+    <div class="headings">
+      <div class="script" style="color:{{ p.navy }};font-size:38pt">Family Values</div>
+      <h1 class="display word-tint" style="font-size:32pt">
+        {% for ch in "WORKSHEET" %}<span>{{ ch }}</span>{% endfor %}
+      </h1>
+      {{ divider() }}
+    </div>
+  </header>
+
+  <div class="values-note">
+    {{ chip("heart", "teal", "", ".34in") }}
+    <p>Values are what matter most to our family.<br>
+       List the values that guide our decisions, actions, and the way we treat each other.</p>
+  </div>
+
+  <div class="card has-tab values-main" style="--c:{{ p.teal }}">
+    <div class="card-tab">{{ ico("star") }} Our Top Family Values</div>
+    <div class="values-body">
+      <div class="values-list">{{ numbered(5, "teal", solid=false) }}</div>
+      <svg class="heart-tree" viewBox="0 0 120 130" role="img" aria-label="Heart tree">
+        <path d="M56 128V72l-14-16 14 8V44l12 14V30l10 22V128z" fill="{{ p.navy }}"/>
+        <path d="M20 124c18-7 62-7 80 0z" fill="{{ p.green }}"/>
+        {% for x, y, r, c in [
+             (30, 44, 8, p.pink), (48, 26, 9, p.teal), (68, 20, 8, p.orange),
+             (88, 34, 9, p.purple), (98, 56, 8, p.green), (26, 66, 7, p.teal),
+             (44, 46, 7, p.orange), (66, 40, 7, p.pink), (84, 58, 7, p.teal),
+             (36, 84, 6, p.green), (94, 78, 6, p.pink), (56, 62, 6, p.orange)] %}
+        <path d="M{{ x }} {{ y + r }}c-{{ r }}-{{ r * 0.7 }}-{{ r }}-{{ r * 1.5 }} 0-{{ r * 1.5 }}
+                 {{ r * 0.45 }} 0 {{ r * 0.55 }} {{ r * 0.35 }} {{ r * 0.55 }} {{ r * 0.35 }}
+                 s{{ r * 0.1 }}-{{ r * 0.35 }} {{ r * 0.55 }}-{{ r * 0.35 }}
+                 c{{ r }} 0 {{ r }} {{ r * 0.8 }} 0 {{ r * 1.5 }}z" fill="{{ c }}"/>
+        {% endfor %}
+      </svg>
+    </div>
+  </div>
+
+  <div class="grid cols-2 values-pair">
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("users") }} How We Live Our Values</div>
+      <p class="values-q">How do we show these values in our daily life?</p>
+      {{ lines(4) }}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.green }}">
+      <div class="card-tab">{{ ico("target") }} Ways To Strengthen Our Values</div>
+      <p class="values-q">What can we do together to make our values even stronger?</p>
+      {{ lines(4) }}
+    </div>
+  </div>
+
+  <svg class="values-foot" viewBox="0 0 200 60" role="img" aria-label="Family">
+    <path d="M92 10c0-5 4-9 8-9 3 0 4 1 5 2 1-1 2-2 5-2 4 0 8 4 8 9 0 7-10 13-13 16-3-3-13-9-13-16z"
+          fill="{{ p.pink }}"/>
+    {{ person(80, 54, 30, p.teal) }}
+    {{ person(102, 54, 22, p.orange) }}
+    {{ person(122, 54, 30, p.pink) }}
+  </svg>
+</section>

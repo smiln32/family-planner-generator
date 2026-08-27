@@ -1,0 +1,933 @@
+/* ==========================================================================
+   Family Success Planner - print design system
+   One 8.5x11in sheet per .page. Everything is sized in inches or rem so the
+   whole book scales cleanly if the page size changes.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Every component that sets --c gets a matching 13% wash for free, so a
+   card, chip or tint always agrees with its own accent colour. */
+* { --c-wash: color-mix(in srgb, var(--c, #16325F) 13%, #fff); }
+
+html { font-size: 16px; }
+
+body {
+  margin: 0;
+  background: #E9EDF2;
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.page {
+  position: relative;
+  width: var(--page-w);
+  height: var(--page-h);
+  padding: var(--page-pad-top) var(--page-pad-side) var(--page-pad-bottom);
+  margin: 0 auto;
+  background: var(--paper);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  break-after: page;
+  page-break-after: always;
+}
+.page:last-child { break-after: auto; page-break-after: auto; }
+
+/* On screen the pages stack like a contact sheet; in print they are the sheet. */
+@media screen {
+  body { padding: 24px 0; }
+  .page { margin-bottom: 24px; box-shadow: 0 6px 24px rgba(22, 50, 95, 0.18); }
+}
+
+@page {
+  size: var(--page-w) var(--page-h);
+  margin: 0;
+}
+
+/* --- type ----------------------------------------------------------------- */
+
+.display, .script { line-height: 1; margin: 0; }
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  text-transform: none;
+}
+.tiny { font-size: 7.2pt; }
+.small { font-size: 8.2pt; }
+.caps { text-transform: uppercase; letter-spacing: 0.045em; font-weight: 800; }
+.center { text-align: center; }
+.muted { color: #6B7A8D; }
+
+/* --- masthead ------------------------------------------------------------- */
+
+.masthead {
+  display: grid;
+  grid-template-columns: 1.35in 1fr 1.35in;
+  align-items: center;
+  gap: 0.1in;
+  margin-bottom: 0.13in;
+  flex: none;
+}
+.masthead.no-art { grid-template-columns: 1.35in 1fr; }
+.masthead .mark, .masthead .art { display: block; width: 100%; height: auto; }
+.masthead .headings { text-align: center; }
+
+.masthead h1.display { font-size: 30pt; color: var(--navy); }
+.masthead h1.script { font-size: 34pt; color: var(--pink); margin-top: -0.02in; }
+.masthead .line2 { font-size: 25pt; margin-top: 0.02in; }
+
+/* The navy ribbon that carries a page's strapline. */
+.banner {
+  display: inline-block;
+  position: relative;
+  margin-top: 0.07in;
+  padding: 0.045in 0.28in;
+  background: var(--banner-bg, var(--navy));
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 9pt;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+/* Notched ribbon tails, drawn with borders so they print crisply. */
+.banner::before, .banner::after {
+  content: "";
+  position: absolute; top: 0; bottom: 0; width: 0.11in;
+  background: var(--banner-bg, var(--navy));
+}
+.banner::before { left: -0.11in; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 45% 50%); }
+.banner::after  { right: -0.11in; clip-path: polygon(0 0, 100% 0, 55% 50%, 100% 100%, 0 100%); }
+
+.strapline {
+  margin-top: 0.06in;
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: var(--navy);
+}
+.strapline.script { font-size: 13pt; font-weight: 400; }
+
+/* Small dot-heart-dot divider used under most page titles. */
+.divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.06in; margin-top: 0.06in;
+}
+.divider .bar { height: 1.6px; width: 0.85in; background: var(--navy); border-radius: 2px; }
+.divider .dot { width: 3.4px; height: 3.4px; border-radius: 50%; background: var(--navy); }
+
+/* --- cards ---------------------------------------------------------------- */
+
+.card {
+  position: relative;
+  border: 1.4px solid var(--c);
+  border-radius: 0.11in;
+  padding: 0.13in 0.13in 0.11in;
+  background: #fff;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.card.tinted { background: var(--c-wash); }
+
+/* The coloured pill that sits on a card's top edge. */
+.card-tab {
+  position: absolute;
+  top: -0.105in; left: 0.14in;
+  display: flex; align-items: center; gap: 0.055in;
+  padding: 0.035in 0.13in;
+  background: var(--c);
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 8pt;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.card-tab .ico { width: 0.13in; height: 0.13in; fill: #fff; flex: none; }
+.card.has-tab { padding-top: 0.2in; }
+
+/* A tab that spans the full card width, as on the tracker pages. */
+.card-head {
+  margin: -0.13in -0.13in 0.1in;
+  padding: 0.05in 0.13in;
+  background: var(--c);
+  color: #fff;
+  border-radius: 0.095in 0.095in 0 0;
+  font-weight: 800; font-size: 8.6pt;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 0.06in;
+}
+.card-head .ico { width: 0.14in; height: 0.14in; fill: #fff; flex: none; }
+
+.grid { display: grid; gap: 0.16in; }
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.stack { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0.16in; min-height: 0; }
+
+/* --- write-on surfaces ---------------------------------------------------- */
+
+/* A dotted rule to write on. Height is set by the parent's line rhythm. */
+.dot-line {
+  flex: 1 1 auto;
+  border-bottom: 1.5px dotted #97A4B4;
+  min-width: 0.4in;
+}
+.solid-line { flex: 1 1 auto; border-bottom: 1.1px solid #8D9AAB; min-width: 0.4in; }
+
+/* A stack of evenly spaced write-on rules that fills its container. */
+.lines { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.lines > .dot-line, .lines > .solid-line { flex: 0 0 auto; }
+
+.field { display: flex; align-items: baseline; gap: 0.07in; }
+.field .label { font-weight: 800; font-size: 8pt; color: var(--navy); white-space: nowrap; }
+
+.numbered { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; }
+.numbered .row { display: flex; align-items: center; gap: 0.09in; }
+.num {
+  flex: none;
+  width: 0.18in; height: 0.18in;
+  border-radius: 50%;
+  background: var(--c);
+  color: #fff;
+  font-weight: 800; font-size: 7.6pt;
+  display: flex; align-items: center; justify-content: center;
+}
+.num.hollow { background: #fff; color: var(--c); border: 1.4px solid var(--c); }
+
+.check {
+  flex: none;
+  width: 0.135in; height: 0.135in;
+  border: 1.4px solid #8D9AAB;
+  border-radius: 2.5px;
+  background: #fff;
+}
+.check.c { border-color: var(--c); }
+
+.checklist { display: flex; flex-direction: column; justify-content: space-between; flex: 1 1 auto; gap: 0.03in; }
+.checklist .row { display: flex; align-items: center; gap: 0.08in; font-size: 8.4pt; }
+
+/* The seven M-T-W-T-F-S-S dots used on the habit and chore trackers. */
+.week-dots { display: flex; gap: 0.038in; justify-content: center; }
+.week-dots span {
+  width: 0.088in; height: 0.088in;
+  border: 1.3px solid var(--c);
+  border-radius: 50%;
+}
+.week-dots.boxes span { border-radius: 2.5px; width: 0.115in; height: 0.115in; }
+.week-head { display: flex; gap: 0.038in; justify-content: center; font-size: 6.4pt; font-weight: 800; }
+.week-head span { width: 0.088in; text-align: center; color: var(--c); }
+
+/* --- calendar grids ------------------------------------------------------- */
+
+.cal { display: flex; flex-direction: column; flex: none; }
+.cal-head { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.035in; margin-bottom: 0.045in; }
+.cal-head div {
+  border-radius: 0.055in;
+  padding: 0.045in 0;
+  text-align: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 8pt;
+  letter-spacing: 0.03em;
+}
+.cal-body { border: 1.2px solid #C3CCD8; border-radius: 0.07in; overflow: hidden; }
+.cal-row { display: grid; grid-template-columns: repeat(7, 1fr); }
+.cal-row + .cal-row { border-top: 1.1px solid #D3DAE4; }
+.cal-cell { height: var(--cal-cell-h, 0.62in); padding: 0.04in 0.05in; position: relative; }
+.cal-cell + .cal-cell { border-left: 1.1px solid #D3DAE4; }
+.cal-cell .n { font-size: 8.4pt; font-weight: 700; color: var(--navy); }
+.cal-cell .n.pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 0.17in; height: 0.17in; padding: 0 0.03in;
+  background: #E7F1FA; border-radius: 0.04in;
+}
+
+/* Twelve mini-months on the year-at-a-glance page. */
+.mini { border: 1.3px solid var(--c); border-radius: 0.09in; padding: 0.055in; }
+.mini .mini-head {
+  display: flex; align-items: center; justify-content: center; gap: 0.05in;
+  background: var(--c); color: #fff;
+  border-radius: 999px; padding: 0.028in 0.06in;
+  font-weight: 800; font-size: 7.4pt; letter-spacing: 0.05em;
+  margin-bottom: 0.045in;
+}
+.mini .mini-head .ico { width: 0.11in; height: 0.11in; fill: #fff; }
+.mini table { width: 100%; border-collapse: collapse; }
+.mini th, .mini td {
+  text-align: center;
+  font-size: 6.6pt;
+  padding: 0.008in 0;
+  font-weight: 600;
+  color: var(--ink);
+}
+.mini th { font-weight: 800; color: var(--navy); }
+.mini .we { color: var(--red); }
+
+/* --- tables --------------------------------------------------------------- */
+
+.tbl { width: 100%; border-collapse: separate; border-spacing: 0; }
+.tbl th {
+  color: #fff; font-weight: 800; font-size: 8pt;
+  letter-spacing: 0.035em; text-transform: uppercase;
+  padding: 0.055in 0.06in; text-align: center;
+}
+.tbl thead th:first-child { border-radius: 0.07in 0 0 0; }
+.tbl thead th:last-child { border-radius: 0 0.07in 0 0; }
+.tbl td {
+  border-bottom: 1.1px solid #D3DAE4;
+  border-right: 1.1px solid #D3DAE4;
+  padding: 0.04in 0.06in;
+  font-size: 8.2pt;
+  height: var(--row-h, 0.3in);
+}
+.tbl td:first-child { border-left: 1.1px solid #D3DAE4; }
+.tbl tbody tr:first-child td { border-top: 1.1px solid #D3DAE4; }
+.tbl .rowlabel { font-weight: 800; font-size: 8pt; color: var(--navy); text-align: center; }
+
+/* --- icon chips ----------------------------------------------------------- */
+
+.chip {
+  flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: var(--chip, 0.3in); height: var(--chip, 0.3in);
+  border-radius: 50%;
+  background: var(--c);
+}
+.chip .ico { width: 62%; height: 62%; fill: #fff; }
+.chip.wash { background: var(--c-wash); }
+.chip.wash .ico { fill: var(--c); }
+.chip.ring { background: #fff; border: 2px solid var(--c); }
+.chip.ring .ico { fill: var(--c); }
+
+.ico { display: block; }
+.ico.c { fill: var(--c); }
+
+/* --- footer --------------------------------------------------------------- */
+
+.page-footer {
+  flex: none;
+  margin-top: auto;
+  padding-top: 0.08in;
+  display: flex; align-items: center; justify-content: center; gap: 0.09in;
+  color: var(--navy);
+}
+.page-footer .txt { font-family: var(--font-script); font-size: 12pt; }
+.page-footer .txt.caps {
+  font-family: var(--font-body); font-size: 8.4pt;
+  font-weight: 800; letter-spacing: 0.06em;
+}
+.page-footer .sprig { width: 0.42in; height: 0.16in; }
+
+/* --- monthly planner page ------------------------------------------------- */
+
+.month-page .masthead { margin-bottom: 0.1in; }
+.month-page .masthead h1.display { font-size: 34pt; }
+.month-page .masthead .line-script { font-size: 33pt; margin-top: -0.04in; }
+.month-page .masthead .divider { display: none; }
+
+.focus-strip {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1.4px solid #9FC4E4;
+  border-radius: 0.09in;
+  padding: 0.07in 0.1in;
+  margin-bottom: 0.12in;
+}
+.focus-cell { display: flex; align-items: center; gap: 0.07in; padding: 0 0.07in; }
+.focus-cell + .focus-cell { border-left: 1.4px dotted #A9B6C6; }
+.focus-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0.055in; }
+.focus-body .solid-line { flex: none; }
+
+.month-page .cal { margin-bottom: 0.13in; --cal-cell-h: 0.63in; }
+
+.month-row-a { flex: none; height: 1.72in; margin-bottom: 0.15in; }
+.month-row-b { flex: none; height: 1.42in; }
+
+.evt-head {
+  display: grid; grid-template-columns: 0.72in 1fr; gap: 0.06in;
+  font-size: 7.2pt; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--navy);
+  margin-bottom: 0.05in;
+}
+.evt-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.evt-row { display: grid; grid-template-columns: 0.72in 1fr; gap: 0.06in; }
+
+.meal-rows, .heart-rows {
+  flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around;
+}
+.heart-rows .row { display: flex; align-items: center; gap: 0.08in; }
+.ico.bullet { width: 0.115in; height: 0.115in; flex: none; }
+
+/* Let the two card rows absorb whatever height the calendar leaves over, so a
+   5-week month and a 6-week month both fill the sheet instead of leaving a gap. */
+.month-row-a { flex: 1.18 1 1.72in; }
+.month-row-b { flex: 1 1 1.42in; }
+.month-page .masthead { grid-template-columns: 1.35in 1fr 1.55in; }
+
+/* A month is 5 or 6 weeks tall. Rather than pad short months with a dead row,
+   the calendar block keeps a fixed height and the rows share it, so February
+   and August print at exactly the same size with slightly taller cells. */
+.month-page .cal-body {
+  height: 3.78in;
+  display: flex;
+  flex-direction: column;
+}
+.month-page .cal-row { flex: 1 1 0; }
+.month-page .cal-cell { height: auto; }
+
+/* --- yearly goals page ---------------------------------------------------- */
+
+.goals-page .masthead { grid-template-columns: 1.7in 1fr 0.6in; margin-bottom: 0.3in; }
+.goals-page .masthead h1.display { font-size: 58pt; letter-spacing: 0.01em; }
+/* The year is set as one span per digit so each takes a different brand colour. */
+.year-tint span:nth-child(1) { color: var(--teal); }
+.year-tint span:nth-child(2) { color: var(--pink); }
+.year-tint span:nth-child(3) { color: var(--orange); }
+.year-tint span:nth-child(4) { color: var(--green); }
+
+.goal-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
+.goal-row { display: flex; align-items: center; gap: 0.16in; }
+.goal-row .num { width: 0.36in; height: 0.36in; font-size: 13pt; }
+.goal-box {
+  flex: 1 1 auto;
+  height: 1.15in;
+  border: 1.6px solid var(--c);
+  border-radius: 0.13in;
+  padding: 0.16in 0.2in;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 0.3in;
+}
+
+/* --- vision and mission page ---------------------------------------------- */
+
+.vision-page .masthead { margin-bottom: 0.24in; }
+.vm-block { flex: 1 1 auto; display: flex; flex-direction: column; margin-bottom: 0.3in; }
+.vm-head { display: flex; align-items: center; gap: 0.1in; margin-bottom: -0.21in; z-index: 1; }
+.vm-tag {
+  background: var(--c); color: #fff;
+  padding: 0.05in 0.5in 0.05in 0.16in;
+  clip-path: polygon(0 0, calc(100% - 0.16in) 0, 100% 50%, calc(100% - 0.16in) 100%, 0 100%);
+  font-weight: 800; font-size: 10pt; letter-spacing: 0.05em;
+}
+.vm-blurb { font-size: 9pt; color: var(--ink); }
+.vm-box {
+  flex: 1 1 auto;
+  border: 1.6px solid var(--c);
+  border-radius: 0.14in;
+  padding-top: 0.24in;
+}
+
+/* The blurb sits on the box's top edge, so it needs to knock out the rule. */
+.vm-blurb { background: #fff; padding: 0 0.07in; position: relative; }
+
+/* --- "this planner belongs to" page --------------------------------------- */
+
+.belongs-page { justify-content: space-between; }
+.belongs-top { text-align: center; padding-top: 0.25in; }
+.belongs-top .mark-lg { width: 2.1in; height: auto; margin: 0 auto 0.1in; display: block; }
+.belongs-card {
+  border: 2px dashed #A8D5D2;
+  border-radius: 0.22in;
+  padding: 0.34in 0.42in;
+  display: flex; flex-direction: column; gap: 0.34in;
+}
+.belongs-row { display: flex; align-items: center; gap: 0.16in; }
+.belongs-label {
+  font-weight: 800; font-size: 12pt; color: var(--navy);
+  min-width: 1.05in;
+}
+.belongs-foot { width: 2.2in; height: auto; margin: 0 auto; display: block; }
+
+/* --- how to use page ------------------------------------------------------ */
+
+.howto-top { text-align: center; }
+.howto-top .crest { width: 1.85in; height: auto; margin: 0 auto 0.05in; display: block; }
+.howto-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; padding: 0.12in 0; }
+.howto-row { display: flex; align-items: center; gap: 0.15in; }
+.howto-box {
+  flex: 1 1 auto;
+  background: var(--c-wash);
+  border: 1.3px solid color-mix(in srgb, var(--c) 45%, #fff);
+  border-radius: 0.13in;
+  padding: 0.13in 0.18in;
+}
+.howto-title {
+  font-weight: 800; font-size: 11pt; color: var(--c);
+  letter-spacing: 0.02em; margin-bottom: 0.04in;
+}
+.howto-body { margin: 0; font-size: 9.4pt; line-height: 1.35; }
+.howto-tagline {
+  text-align: center; color: var(--navy); font-size: 15pt;
+  border-top: 2px solid color-mix(in srgb, var(--pink) 60%, #fff);
+  padding-top: 0.1in; margin: 0 1.1in;
+}
+
+/* --- family values worksheet ---------------------------------------------- */
+
+.values-page .masthead { margin-bottom: 0.16in; }
+/* Alternating brand colours per letter, as on the reference cover lettering. */
+.word-tint span:nth-child(6n+1) { color: var(--teal); }
+.word-tint span:nth-child(6n+2) { color: var(--pink); }
+.word-tint span:nth-child(6n+3) { color: var(--orange); }
+.word-tint span:nth-child(6n+4) { color: var(--green); }
+.word-tint span:nth-child(6n+5) { color: var(--purple); }
+.word-tint span:nth-child(6n+6) { color: var(--blue); }
+
+.values-note {
+  display: flex; align-items: center; gap: 0.13in;
+  background: var(--c-wash, #E7F5F4);
+  --c: var(--teal);
+  border-radius: 0.11in;
+  padding: 0.11in 0.16in;
+  margin-bottom: 0.26in;
+}
+.values-note p { margin: 0; font-size: 9.6pt; line-height: 1.35; }
+
+.values-main { flex: none; height: 3.1in; margin-bottom: 0.26in; }
+.values-body { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1.5in; gap: 0.1in; }
+.values-list { display: flex; flex-direction: column; }
+.values-list .numbered { padding: 0.05in 0; }
+.values-list .num { width: 0.22in; height: 0.22in; font-size: 8.6pt; }
+.heart-tree { width: 100%; height: 100%; align-self: center; }
+
+.values-pair { flex: 1 1 auto; margin-bottom: 0.1in; }
+.values-q {
+  margin: 0.02in 0 0.1in; text-align: center;
+  font-size: 9pt; line-height: 1.3; color: var(--ink);
+}
+.values-foot { width: 1.7in; height: auto; margin: 0 auto; display: block; }
+
+/* --- year at a glance ----------------------------------------------------- */
+
+.annual-page .masthead { grid-template-columns: 1.5in 1fr 1.5in; margin-bottom: 0.16in; }
+.annual-page .masthead .divider { margin-top: 0.04in; }
+.mini-grid {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 0.12in;
+  margin-bottom: 0.18in;
+}
+.annual-dates { flex: none; height: 1.6in; flex-direction: row; align-items: center; gap: 0.18in; }
+.dates-label { display: flex; align-items: center; gap: 0.1in; width: 1.55in; flex: none; }
+.dates-label .script { font-size: 13pt; color: var(--navy); line-height: 1.15; }
+.dates-cols { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.24in; }
+.dates-col { display: flex; flex-direction: column; justify-content: space-between; }
+.dates-col .row { display: flex; align-items: center; gap: 0.08in; }
+
+/* Mini months size to their content (5 or 6 rows) and spread down the page,
+   rather than each stretching to an equal, mostly-empty box. */
+.mini-grid { grid-auto-rows: min-content; align-content: space-between; }
+.mini td, .mini th { padding: 0.026in 0; font-size: 6.9pt; }
+.mini .mini-head .ico { width: 0.13in; height: 0.13in; }
+.annual-dates { height: 1.72in; }
+.dates-cols { align-self: stretch; }
+.dates-col { height: 100%; padding: 0.06in 0; }
+
+/* --- cover ---------------------------------------------------------------- */
+
+.cover-page { background: #FDFCF7; }
+.cover-body { display: grid; grid-template-columns: 1.25in 1fr 1.25in; gap: 0.12in; flex: none; }
+.cover-side { display: flex; flex-direction: column; justify-content: space-evenly; gap: 0.16in; }
+.cover-badge { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.05in; }
+.badge-rule { width: 0.62in; border-bottom: 2px dotted #9FB0C2; }
+
+.cover-mid { text-align: center; padding-top: 0.1in; }
+.cover-year { font-size: 62pt; line-height: 0.95; }
+.cover-title { font-size: 66pt; line-height: 0.9; }
+.cover-banner {
+  margin-top: 0.1in; padding: 0.09in 0.7in;
+  font-size: 22pt; letter-spacing: 0.09em;
+  border: 2px dashed rgba(255, 255, 255, 0.75);
+  border-radius: 3px;
+}
+.cover-sub {
+  display: flex; align-items: center; justify-content: center; gap: 0.08in;
+  margin-top: 0.12in; font-size: 11pt; font-weight: 800; color: var(--navy);
+}
+.cover-sub .ico { width: 0.15in; height: 0.15in; }
+.cover-family { margin-top: 0.08in; font-size: 20pt; color: var(--teal); }
+
+.cover-scene { width: 100%; height: auto; margin: 0.1in 0 auto; display: block; }
+
+.cover-feet { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.08in; flex: none; }
+.foot-chip {
+  display: flex; align-items: center; gap: 0.07in;
+  padding: 0.09in 0.1in;
+  border-radius: 0.08in;
+  color: #fff; font-weight: 800; font-size: 7.6pt;
+  letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.15;
+}
+.foot-chip .ico { width: 0.18in; height: 0.18in; fill: #fff; flex: none; }
+
+/* The scene grows to fill whatever the title block leaves, so the cover never
+   prints with a band of dead paper above the footer chips. */
+.cover-scene { flex: 1 1 auto; min-height: 0; margin: 0.14in 0 0.14in; }
+
+/* --- budget overview ------------------------------------------------------ */
+
+.budget-page .masthead { margin-bottom: 0.18in; }
+.budget-top { flex: none; height: 3.25in; margin-bottom: 0.22in; }
+.budget-bottom { flex: 1 1 auto; margin-bottom: 0.22in; }
+.budget-notes { flex: none; height: 0.85in; }
+
+.ie-head {
+  display: flex; justify-content: space-between;
+  padding: 0.04in 0.06in;
+  background: var(--c-wash);
+  border-radius: 0.05in;
+  font-size: 7.6pt; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--navy);
+  margin-bottom: 0.05in;
+}
+.ie-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.ie-row { display: flex; align-items: baseline; gap: 0.06in; font-size: 8.6pt; }
+.ie-row .dot-line { flex: 1 1 auto; }
+.ie-row.cat .dot-line:first-of-type { flex: 1 1 auto; }
+.ie-row .money { font-weight: 800; color: var(--navy); }
+.ie-row .dot-line + .money { margin-left: 0.06in; }
+.ie-row.cat { align-items: center; }
+.cat-name { white-space: nowrap; }
+.ie-row.cat .chip { align-self: center; }
+
+.total-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.1in; margin-top: 0.08in;
+  padding: 0.05in 0.09in; border-radius: 0.06in;
+  font-weight: 800; font-size: 8.6pt; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--navy);
+}
+.total-box {
+  min-width: 1.5in; background: #fff; border-radius: 0.05in;
+  padding: 0.04in 0.08in; font-weight: 800;
+}
+
+.pie-wrap { flex: 1 1 auto; display: grid; grid-template-columns: 1.3in 1fr; gap: 0.12in; align-items: center; }
+.pie { width: 100%; height: auto; transform: rotate(-90deg); }
+.pie-key { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 0.04in 0; }
+.key-row { display: flex; align-items: center; gap: 0.06in; font-size: 8pt; }
+.key-row .dot { width: 0.1in; height: 0.1in; border-radius: 50%; flex: none; }
+.key-name { min-width: 0.86in; }
+.key-row .pct { font-weight: 800; color: var(--navy); }
+
+/* --- household chores ----------------------------------------------------- */
+
+.chores-page .masthead { margin-bottom: 0.16in; }
+.chores-tbl { flex: 1 1 auto; --row-h: 0.44in; margin-bottom: 0.2in; }
+.chores-tbl .day-head th { padding: 0.02in 0; font-size: 8pt; background: #F1F4F8; }
+.chores-tbl thead tr:first-child th { border-radius: 0; }
+.chores-tbl thead tr:first-child th:first-child { border-radius: 0.07in 0 0 0; }
+.chores-tbl thead tr:first-child th:last-child { border-radius: 0 0.07in 0 0; }
+.chore-cell { display: flex; align-items: center; gap: 0.08in; height: var(--row-h); }
+.box-cell { text-align: center; width: 0.34in; }
+.box-cell .check { display: inline-block; width: 0.16in; height: 0.16in; }
+
+.chores-note {
+  flex: none; height: 1.05in;
+  flex-direction: row; align-items: center; gap: 0.16in;
+}
+.chores-note-lead { font-size: 9.4pt; color: var(--navy); line-height: 1.3; width: 1.05in; flex: none; }
+.chores-note-body { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0.09in; }
+
+/* A rule inside a table cell needs to be a block to have any width at all. */
+.tbl td > .dot-line, .tbl td > .solid-line { display: block; width: 100%; }
+.chore-cell { padding-right: 0.04in; }
+
+/* --- weekly meal plan ----------------------------------------------------- */
+
+.meal-page .masthead { margin-bottom: 0.1in; }
+.meal-week { flex: none; width: 2.6in; margin-bottom: 0.13in; }
+.meal-tbl { flex: 1 1 auto; --row-h: 0.62in; margin-bottom: 0.2in; }
+.meal-tbl .corner { background: transparent; }
+.meal-tbl thead th:first-child { border-radius: 0; }
+.daycell { width: 0.78in; text-align: center; vertical-align: middle; }
+.dayname { display: block; font-weight: 800; font-size: 10pt; color: var(--navy); }
+.dayglyph { width: 0.17in; height: 0.17in; margin: 0.03in auto 0; }
+
+.meal-bottom { flex: none; height: 1.85in; margin-bottom: 0.08in; }
+.grocery-cols { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.16in; }
+.grocery-col { display: flex; flex-direction: column; justify-content: space-between; }
+.grocery-col .row { display: flex; align-items: center; gap: 0.07in; }
+
+/* --- grocery shopping list ------------------------------------------------ */
+
+.grocery-page .masthead { margin-bottom: 0.08in; }
+.grocery-date { flex: none; width: 2.2in; margin-bottom: 0.14in; }
+.grocery-grid { flex: 1 1 auto; grid-auto-rows: 1fr; gap: 0.15in; margin-bottom: 0.17in; }
+.grocery-grid .checklist .row { gap: 0.06in; }
+.grocery-bottom {
+  flex: none; height: 1.35in;
+  grid-template-columns: 1.25fr 1fr; gap: 0.16in; margin-bottom: 0.06in;
+}
+
+/* --- health and wellness tracker ------------------------------------------ */
+
+.health-page .masthead { margin-bottom: 0.1in; }
+.health-meta { flex: none; display: flex; align-items: center; gap: 0.2in; margin-bottom: 0.13in; }
+.health-quote {
+  flex: none; background: #FBF6DC; border-radius: 0.07in;
+  padding: 0.05in 0.18in; font-size: 12pt; color: var(--navy);
+}
+.health-meta .field { flex: 1; }
+
+.health-tbl { flex: none; --row-h: 0.4in; margin-bottom: 0.2in; }
+.health-tbl th { padding: 0.05in 0.03in; font-size: 7.4pt; vertical-align: top; }
+.health-tbl .head-ico { width: 0.15in; height: 0.15in; fill: #fff; margin: 0 auto 0.02in; }
+.health-tbl th .blurb {
+  display: block; font-weight: 600; font-size: 5.9pt;
+  text-transform: none; letter-spacing: 0; opacity: 0.92; margin-top: 0.02in;
+}
+.health-tbl .day-head th { background: #fff; padding: 0.03in 0.02in; }
+.health-tbl td { padding: 0.03in 0.04in; vertical-align: middle; }
+.member-cell { display: flex; align-items: center; gap: 0.06in; min-width: 1.05in; }
+.member-name { font-size: 8pt; font-weight: 700; color: var(--navy); }
+
+.health-bottom { flex: 1 1 auto; gap: 0.15in; }
+.health-bottom .checklist .row { font-size: 7.8pt; line-height: 1.2; align-items: flex-start; }
+.health-bottom .checklist .row .check { margin-top: 0.015in; }
+.hl-block { flex: 1 1 auto; display: flex; flex-direction: column; }
+.hl-q { font-weight: 800; font-size: 8pt; margin-bottom: 0.04in; }
+.appt-head, .appt-row { display: grid; grid-template-columns: 0.62in 1fr 0.42in; gap: 0.05in; }
+.appt-head {
+  font-size: 6.4pt; font-weight: 800; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--navy); margin-bottom: 0.04in;
+}
+.appt-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+
+/* --- school and activities ------------------------------------------------ */
+
+.health-bottom .checklist { justify-content: flex-start; gap: 0.2in; }
+.school-page .masthead { margin-bottom: 0.12in; }
+.school-page .masthead .divider { display: none; }
+.school-meta {
+  flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0.3in;
+  border: 1.4px solid #9FC4E4; border-radius: 0.09in;
+  padding: 0.09in 0.16in; margin-bottom: 0.14in;
+}
+.meta-cell { display: flex; align-items: center; gap: 0.11in; }
+.meta-fields { flex: 1 1 auto; display: flex; flex-direction: column; gap: 0.06in; }
+
+.school-tbl { flex: none; --row-h: 0.62in; margin-bottom: 0.18in; }
+.slotcell { width: 0.92in; text-align: center; vertical-align: middle; font-size: 7.4pt; font-weight: 800; color: var(--navy); }
+.slot-ico { width: 0.2in; height: 0.2in; margin: 0 auto 0.03in; }
+
+.school-bottom { flex: 1 1 auto; gap: 0.15in; margin-bottom: 0.15in; }
+.star-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.star-rows .row { display: flex; align-items: center; gap: 0.08in; }
+.school-notes { flex: none; height: 0.86in; }
+
+/* --- family time planner -------------------------------------------------- */
+
+.famtime-page .masthead { margin-bottom: 0.12in; }
+.famtime-page .masthead .divider { display: none; }
+.famtime-meta {
+  flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.22in;
+  border: 1.4px solid #A9CFA0; border-radius: 0.09in;
+  padding: 0.09in 0.16in; margin-bottom: 0.14in;
+}
+.famtime-label {
+  flex: none; display: flex; align-items: center; gap: 0.07in;
+  --c: var(--navy); color: var(--navy);
+  font-weight: 800; font-size: 10pt; letter-spacing: 0.03em;
+  text-transform: uppercase; margin-bottom: 0.07in;
+}
+.famtime-label .ico { width: 0.18in; height: 0.18in; }
+.famtime-tbl { flex: none; --row-h: 0.46in; margin-bottom: 0.2in; }
+.daytag { width: 1.35in; }
+.daytag .pill {
+  display: inline-block; min-width: 0.32in; text-align: center;
+  color: #fff; font-weight: 800; font-size: 6.6pt; letter-spacing: 0.03em;
+  border-radius: 999px; padding: 0.022in 0.05in; margin-right: 0.06in;
+}
+.famtime-bottom { flex: 1 1 auto; gap: 0.15in; }
+.famtime-bottom .checklist .row { font-size: 8pt; }
+.tradition-lead { margin: 0 0 0.06in; font-size: 8.4pt; }
+
+/* --- emergency contacts --------------------------------------------------- */
+
+.emergency-page .masthead { margin-bottom: 0.1in; }
+.emergency-page .card { padding: 0.16in 0.11in 0.09in; }
+
+.emg-top {
+  flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0.3in;
+  border: 1.4px solid #9FC4E4; border-radius: 0.09in;
+  padding: 0.08in 0.14in; margin-bottom: 0.13in;
+}
+.emg-top-col { display: flex; flex-direction: column; gap: 0.07in; }
+.emg-top-col .row { display: flex; align-items: center; gap: 0.07in; }
+
+.emg-mid { flex: none; display: grid; grid-template-columns: 1.15fr 1fr; gap: 0.14in; margin-bottom: 0.13in; }
+.emg-right { display: grid; grid-template-rows: 1.55fr 1fr; gap: 0.14in; }
+.emg-contacts { min-height: 2.6in; }
+
+.emg-head, .emg-row { display: grid; grid-template-columns: 1.25in 1fr 1fr; gap: 0.06in; align-items: center; }
+.emg-head.two, .emg-row.two { grid-template-columns: 1.1in 1fr; }
+.emg-head.three, .emg-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.emg-head {
+  font-size: 6.4pt; font-weight: 800; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--c); margin-bottom: 0.03in;
+  text-align: center;
+}
+.emg-head span:first-child { text-align: left; }
+.emg-row { flex: 1 1 auto; min-height: 0.17in; margin-bottom: 0.035in; }
+.emg-name { display: flex; align-items: center; gap: 0.05in; font-size: 7pt; font-weight: 800; color: var(--navy); }
+.emg-name em { display: block; font-style: normal; font-weight: 600; font-size: 5.6pt; color: #6B7A8D; }
+.fam-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.oot { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+
+.emg-bottom { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 0.14in; margin-bottom: 0.13in; }
+.info-fields { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.own-rent { display: flex; align-items: center; gap: 0.06in; }
+.own-rent .label { font-weight: 800; font-size: 7.4pt; color: var(--navy); }
+
+.emg-plan { flex: none; display: grid; grid-template-columns: 1.25fr 1fr; gap: 0.14in; height: 1.28in; }
+.plan-fields { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.emg-plan .checklist .row { font-size: 7.4pt; }
+
+/* --- vacation and travel -------------------------------------------------- */
+
+.vacation-page .masthead { grid-template-columns: 1.55in 1fr 1.55in; margin-bottom: 0.12in; }
+.vac-meta {
+  flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.2in;
+  border: 1.4px solid #9FC4E4; border-radius: 0.09in;
+  padding: 0.08in 0.14in; margin-bottom: 0.13in;
+}
+.vac-tbl { flex: none; --row-h: 0.34in; margin-bottom: 0.18in; }
+.daynum { width: 0.5in; text-align: center; }
+.vac-row { flex: 1 1 auto; gap: 0.14in; margin-bottom: 0.14in; }
+.vac-row:last-of-type { margin-bottom: 0.08in; }
+.vac-fields { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.vac-fields .field .label { font-size: 7.4pt; }
+.vac-row .total-bar { font-size: 7.6pt; }
+.vac-row .total-box { min-width: 0.9in; }
+
+/* --- home maintenance ----------------------------------------------------- */
+
+.maint-page .masthead { grid-template-columns: 1.6in 1fr 1.5in; margin-bottom: 0.1in; }
+.maint-meta {
+  flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.2in;
+  border: 1.4px solid #9FC4E4; border-radius: 0.09in;
+  padding: 0.08in 0.14in; margin-bottom: 0.11in;
+}
+.maint-label {
+  flex: none; text-align: center; color: var(--navy);
+  font-weight: 800; font-size: 11pt; letter-spacing: 0.05em;
+  text-transform: uppercase; margin-bottom: 0.08in;
+}
+.maint-tbl { flex: none; --row-h: 0.38in; margin-bottom: 0.16in; }
+.area-name { font-size: 7.6pt; font-weight: 800; color: var(--navy); }
+.task-cell { font-size: 7.8pt; }
+.maint-tbl .center { text-align: center; }
+.maint-row { flex: 1 1 auto; gap: 0.14in; margin-bottom: 0.13in; }
+.maint-row:last-of-type { margin-bottom: 0.07in; }
+.maint-row .checklist .row { font-size: 7.6pt; line-height: 1.2; }
+
+/* --- year-end reflection -------------------------------------------------- */
+
+.yearend-page .masthead { grid-template-columns: 1.9in 1fr 1.4in; margin-bottom: 0.12in; }
+.ye-card { padding: 0.1in 0.11in 0.09in; border-radius: 0.1in; }
+.ye-head {
+  display: flex; align-items: flex-start; gap: 0.05in;
+  font-weight: 800; font-size: 7.4pt; line-height: 1.2;
+  letter-spacing: 0.02em; text-transform: uppercase;
+  margin-bottom: 0.07in;
+}
+.ye-head .ico { width: 0.15in; height: 0.15in; flex: none; }
+.ye-head.center-head { justify-content: center; align-items: center; }
+
+.ye-row-a { flex: none; height: 1.32in; gap: 0.13in; margin-bottom: 0.13in; }
+.ye-row-b { flex: none; height: 1.6in; gap: 0.13in; margin-bottom: 0.13in; }
+.ye-row-b .num { width: 0.15in; height: 0.15in; font-size: 6.4pt; }
+.ye-row-c { flex: 1 1 auto; grid-template-columns: 1.45fr 1fr; gap: 0.13in; margin-bottom: 0.13in; }
+.ye-row-d { flex: none; height: 1.3in; grid-template-columns: 1fr 1fr 1fr; gap: 0.13in; margin-bottom: 0.06in; }
+
+.loved-cols { flex: 1 1 auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.09in; }
+.loved-col { display: flex; flex-direction: column; align-items: stretch; text-align: center; }
+.loved-col > .ico { width: 0.17in; height: 0.17in; margin: 0 auto; }
+.loved-name { font-size: 7.4pt; font-weight: 700; margin-bottom: 0.05in; }
+.loved-col + .loved-col { border-left: 1.1px solid #D9E0E8; padding-left: 0.09in; }
+
+.goal-lines { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
+.goal-lines .row { display: flex; align-items: center; gap: 0.07in; }
+.bullet-dot { width: 0.075in; height: 0.075in; border-radius: 50%; flex: none; }
+.words-box {
+  flex: 1 1 auto; border: 1.6px dashed color-mix(in srgb, var(--c) 55%, #fff);
+  border-radius: 0.09in;
+}
+
+/* --- example: weekly gratitude journal ------------------------------------ */
+
+.gratitude-page .masthead { margin-bottom: 0.2in; }
+.grat-meta { flex: none; display: flex; gap: 0.4in; margin-bottom: 0.22in; }
+.grat-days {
+  flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr; gap: 0.16in; margin-bottom: 0.22in;
+}
+.grat-days .card:last-child { grid-column: 1 / -1; }
+.grat-bottom { flex: none; height: 1.7in; }
+
+/* --- digital edition: tab rail and contents -------------------------------- */
+
+/* The rail lives inside the page box and the page reserves room for it, so a
+   linked build has the same trim size and margins as the print build. */
+.page:has(.tab-rail) { padding-right: calc(var(--page-pad-side) + 0.46in); }
+
+.tab-rail {
+  position: absolute;
+  top: var(--page-pad-top);
+  right: var(--page-pad-side);
+  bottom: var(--page-pad-bottom);
+  width: 0.36in;
+  display: flex; flex-direction: column; gap: 0.035in;
+}
+.tab {
+  flex: 1 1 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0 0.06in 0.06in 0;
+  background: color-mix(in srgb, var(--c) 22%, #fff);
+  color: var(--c);
+  font-family: var(--font-body);
+  font-weight: 800; font-size: 6.4pt; letter-spacing: 0.06em;
+  text-decoration: none;
+  writing-mode: vertical-rl;
+  transition: none;
+}
+.tab.on { background: var(--c); color: #fff; }
+.tab-home { flex: 0 0 0.36in; writing-mode: horizontal-tb; }
+.tab-home svg { width: 0.17in; height: 0.17in; fill: currentColor; }
+
+.index-page .index-lede {
+  flex: none; margin: 0 0 0.16in; text-align: center;
+  font-size: 9.5pt; color: #6B7A8D;
+}
+.index-cols {
+  flex: 1 1 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  grid-auto-flow: column; grid-template-rows: repeat(16, 1fr);
+  gap: 0 0.3in;
+}
+.index-row {
+  display: flex; align-items: center; gap: 0.08in;
+  text-decoration: none; color: var(--ink);
+  border-bottom: 1px dotted #C3CCD8;
+}
+.index-num {
+  flex: none; width: 0.24in; height: 0.24in; border-radius: 50%;
+  background: var(--c); color: #fff;
+  font-size: 6.6pt; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.index-title { font-size: 8.6pt; font-weight: 700; color: var(--navy); }
+.index-dots { flex: 1 1 auto; }
