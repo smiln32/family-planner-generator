@@ -188,7 +188,7 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
 
 /* --- theme swatches -------------------------------------------------------- */
 
-.swatch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.swatch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .swatch {
   display: block; cursor: pointer; text-align: left;
   border: 1.5px solid var(--line); border-radius: var(--r-md);
@@ -245,9 +245,11 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
 }
 .page-row:hover { background: var(--wash); }
 .page-row[data-current="1"] { background: #EAF6F6; }
+.page-row:focus-visible { outline: none; box-shadow: var(--focus); }
+.page-check { display: grid; place-items: center; cursor: pointer; flex: none; }
 .page-row input { position: absolute; opacity: 0; width: 0; height: 0; }
 .page-row .box {
-  flex: none; width: 16px; height: 16px; border-radius: 4px;
+  width: 16px; height: 16px; border-radius: 4px;
   border: 1.6px solid #B8C4D4; background: #fff;
   display: grid; place-items: center; transition: all .13s ease;
 }
@@ -261,11 +263,6 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
 .page-row input:focus-visible + .box { box-shadow: var(--focus); }
 .page-row .title { font-size: 12.5px; flex: 1 1 auto; min-width: 0;
                    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.page-row .look {
-  flex: none; opacity: 0; font-size: 10.5px; font-weight: 800;
-  color: var(--teal); background: none; border: 0; cursor: pointer; padding: 2px 4px;
-}
-.page-row:hover .look, .page-row .look:focus-visible { opacity: 1; }
 
 /* --- stage ----------------------------------------------------------------- */
 

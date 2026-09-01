@@ -160,13 +160,19 @@ function renderPages() {
     const title = isMonths ? "Monthly planners (12)" : titles.get(slug);
     if (!title) continue;
 
-    const row = el("label", "page-row");
+    const row = el("div", "page-row");
     const on = state.pages.includes(slug);
     row.dataset.slug = slug;
-    if (!isMonths && state.preview === slug) row.dataset.current = "1";
+    row.dataset.current = pageRowIsCurrent(slug) ? "1" : "0";
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    row.setAttribute("aria-pressed", pageRowIsCurrent(slug) ? "true" : "false");
+    row.title = `Preview ${title}`;
 
     const input = el("input");
     Object.assign(input, { type: "checkbox", checked: on });
+    input.setAttribute("aria-label", `Include ${title}`);
+    input.addEventListener("click", (event) => event.stopPropagation());
     input.addEventListener("change", () => {
       if (input.checked) {
         const order = rows.filter((s) => s === slug || state.pages.includes(s));
@@ -180,28 +186,45 @@ function renderPages() {
     });
 
     const box = el("span", "box");
+    const check = el("label", "page-check");
+    check.addEventListener("click", (event) => event.stopPropagation());
+    check.append(input, box);
+
     const label = el("span", "title");
     label.textContent = title;
 
-    const look = el("button", "look");
-    look.type = "button";
-    look.textContent = "view";
-    look.addEventListener("click", (event) => {
-      event.preventDefault();
-      state.preview = isMonths ? (meta.months[0] || "").toLowerCase() : slug;
-      syncPreviewChoices();
-      markCurrentPage();
-      refresh();
+    row.addEventListener("click", () => showPage(slug, isMonths));
+    row.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        showPage(slug, isMonths);
+      }
     });
 
-    row.append(input, box, label, look);
+    row.append(check, label);
     host.append(row);
   }
 }
 
+function pageRowIsCurrent(slug) {
+  if (slug === "months") {
+    return meta.months.some((name) => name.toLowerCase() === state.preview);
+  }
+  return slug === state.preview;
+}
+
+function showPage(slug, isMonths) {
+  state.preview = isMonths ? (meta.months[0] || "").toLowerCase() : slug;
+  syncPreviewChoices();
+  markCurrentPage();
+  refresh();
+}
+
 function markCurrentPage() {
   for (const row of document.querySelectorAll(".page-row")) {
-    row.dataset.current = row.dataset.slug === state.preview ? "1" : "0";
+    const on = pageRowIsCurrent(row.dataset.slug);
+    row.dataset.current = on ? "1" : "0";
+    row.setAttribute("aria-pressed", on ? "true" : "false");
   }
 }
 

@@ -54,7 +54,7 @@ output_name: ""
 fonts: classic
 
 # A colour preset applied before `palette:` below. One of:
-#   classic  pastel  bold  ocean  berry  forest  slate
+#   classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  slate
 # Run `python planner.py themes` to see them. Anything under `palette:`
 # overrides the theme, so you can start from `forest` and change one colour.
 theme: classic

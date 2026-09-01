@@ -11,6 +11,12 @@ python planner.py build     # or straight to out/2027-Family-Planner.pdf
 
 That's it. No config file needed to get the default 30-page planner.
 
+## Workspace layout
+
+This repo is an [Interpretable Context Methodology](https://arxiv.org/abs/2603.16021) workspace. Numbered `stages/` folders are the agent pipeline (intake → customize → build → review). Markdown contracts tell an agent what to load. `planner.py` is the local app that does the mechanical rendering.
+
+Start at `CLAUDE.md` and `CONTEXT.md`. Factory rules live in `_config/`. Per-run files go in `stages/*/output/`.
+
 ## What it makes
 
 Thirty 8.5x11" pages at exactly letter size, with real vector text (searchable,
@@ -42,7 +48,7 @@ rendered page - same code path as `build`, so what you see is what prints.
 - year, family name, paper size, week start, dated or blank grids
 - colour themes and typeface sets as pickable cards, applied instantly
 - tracker rows added and named inline
-- every page toggled in or out, with a `view` button to jump the preview to it
+- every page toggled in or out; click a page name to jump the preview to it
 - **Build PDF** runs the real build; **Save config** writes `family.yaml`
 - `Ctrl/Cmd+B` builds, `Ctrl/Cmd+S` saves
 
@@ -106,7 +112,9 @@ python planner.py init      # writes family.yaml, fully commented
 
 ### Ready-made themes
 
-Seven colour presets ship with the generator:
+Colour presets ship with the generator. Most are complementary pairs
+(blue/orange, purple/gold, green/magenta) so the book does not always look
+like a recast of the classic rainbow:
 
 ```
 python planner.py themes                       # list them with swatches
@@ -114,7 +122,7 @@ python planner.py build --theme pastel         # whole book
 python planner.py build --theme berry --only year_goals --png   # one page
 ```
 
-`classic` `pastel` `bold` `ocean` `berry` `forest` `slate`
+`classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `slate`
 
 Set `theme: pastel` in your config to make it the default. A theme is only a
 starting point - your own `palette:` block is applied on top, so you can take
@@ -204,9 +212,9 @@ place, so `--theme`, `--fonts` and `palette:` reach every page at once.
   renders one `<section class="page">`.
 - `familyplanner/static/planner.css` is the whole design system: page box,
   type scale, cards, write-on rules, calendar grids and tables.
-- Illustrations are hand-drawn inline SVG (`templates/art.html`) and a 72-icon
-  sprite (`templates/icons.html`). Nothing is loaded from the network at build
-  time, so the HTML is fully self-contained.
+- Illustrations are hand-drawn inline SVG (`familyplanner/templates/art.html`)
+  and a 72-icon sprite (`familyplanner/templates/icons.html`). Nothing is loaded
+  from the network at build time, so the HTML is fully self-contained.
 - `familyplanner/render.py` renders the book to one HTML file, then drives a
   headless Chrome/Edge/Chromium to print it to PDF and to screenshot pages.
 
@@ -222,7 +230,8 @@ place, so `--theme`, `--fonts` and `palette:` reach every page at once.
    Without that line the title is derived from the filename. Templates are
    discovered from the folder, so there is no list to register it in.
 2. Add the slug to `pages:` in your config, or to `DEFAULT_PAGES` in
-   `config.py` to put it in the default book.
+   `familyplanner/config.py` to put it in the default book. Also add it to
+   `_config/page-catalog.md` so the agent pipeline stays in sync.
 
 Preview it on its own while you work:
 
