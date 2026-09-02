@@ -1,5 +1,5 @@
 {# title: Cover #}
-{% from "macros.html" import ico, chip with context %}
+{% from "macros.html" import ico, chip, year_mark with context %}
 {% from "art.html" import person with context %}
 {% set side_left = [("target", "teal", "Set Goals"), ("calendar", "orange", "Plan Together"),
                     ("heart", "pink", "Strengthen Relationships")] %}
@@ -22,12 +22,10 @@
     </div>
 
     <div class="cover-mid">
-      <div class="cover-year word-tint display">
-        {% for ch in cfg.year|string %}<span>{{ ch }}</span>{% endfor %}
-      </div>
+      {{ year_mark("cover-year") }}
       <h1 class="display cover-title" style="color:{{ p.navy }}">Family</h1>
       <div class="display cover-title" style="color:{{ p.green }}">Success</div>
-      <div class="banner cover-banner">Planner</div>
+      <div class="display cover-title" style="color:{{ p.navy }}">Planner</div>
       <div class="cover-sub">
         <svg class="ico" style="fill:{{ p.pink }}"><use href="#i-heart"/></svg>
         <span>{{ cfg.subtitle }}</span>
@@ -47,6 +45,43 @@
       </div>
       {% endfor %}
     </div>
+  </div>
+
+  {# Daily-planner sheet used by looks 11–16. Hidden on Original and 02–10. #}
+  {% set hours = ["6 AM","7 AM","8 AM","9 AM","10 AM","11 AM","12 PM",
+                  "1 PM","2 PM","3 PM","4 PM","5 PM","6 PM","7 PM","8 PM","9 PM"] %}
+  <div class="look-sheet" aria-hidden="true">
+    <p class="ls-motto"></p>
+    <div class="ls-date"><b>DATE</b><i></i></div>
+    <div class="ls-prio">
+      <div class="ls-label"></div>
+      <ol class="ls-three"><li></li><li></li><li></li></ol>
+    </div>
+    <section class="ls-mod ls-sched">
+      <h3></h3>
+      <div class="ls-slots">
+        {% for t in hours %}
+        <div class="ls-slot"><span class="ls-t">{{ t }}</span><span class="ls-rule"></span></div>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="ls-mod ls-tasks">
+      <h3></h3>
+      <ul class="ls-checks">{% for _ in range(10) %}<li></li>{% endfor %}</ul>
+    </section>
+    <section class="ls-mod ls-extra">
+      <h3></h3>
+      <ul class="ls-lines">{% for _ in range(4) %}<li></li>{% endfor %}</ul>
+    </section>
+    <section class="ls-mod ls-notes">
+      <h3></h3>
+      <div class="ls-dots"></div>
+    </section>
+    <section class="ls-mod ls-next">
+      <h3></h3>
+      <ul class="ls-lines">{% for _ in range(3) %}<li></li>{% endfor %}</ul>
+    </section>
+    <p class="ls-quote"></p>
   </div>
 
   <svg class="cover-scene" viewBox="0 0 620 452" preserveAspectRatio="xMidYMid meet"

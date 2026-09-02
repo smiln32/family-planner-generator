@@ -29,52 +29,54 @@
     </svg>
     <div class="brand-text">
       <strong>Family Success Planner</strong>
-      <span id="brand-sub">30 pages &middot; letter</span>
+      <span id="brand-sub">30 pages · US Letter</span>
     </div>
   </div>
 
   <div class="topbar-actions">
-    <button id="save" class="btn btn-ghost" type="button">Save config</button>
+    <button id="fresh" class="btn btn-ghost" type="button">Start over</button>
+    <button id="save" class="btn btn-ghost" type="button">Save for next time</button>
     <button id="build" class="btn btn-primary" type="button">
-      <span class="btn-label">Build PDF</span>
+      <span class="btn-label">Make PDF</span>
     </button>
   </div>
 </header>
 
 <main class="shell">
-  <aside class="panel" aria-label="Planner settings">
+  <aside class="panel" aria-label="Your planner">
     <section class="group">
-      <h2>Planner</h2>
+      <h2>Your family</h2>
       <div class="field-row">
-        <label for="year">Year</label>
+        <label for="family">Family name (optional)</label>
+        <input id="family" type="text" placeholder="Ramirez" autocomplete="off">
+      </div>
+      <div class="field-row">
+        <label for="year">Planner year</label>
         <input id="year" type="number" min="1900" max="2999" step="1" value="2027">
-      </div>
-      <div class="field-row">
-        <label for="family">Family name</label>
-        <input id="family" type="text" placeholder="optional" autocomplete="off">
-      </div>
-      <div class="field-row">
-        <label for="size">Paper</label>
-        <select id="size">
-          <option value="letter">Letter &mdash; 8.5 &times; 11 in</option>
-          <option value="a4">A4 &mdash; 210 &times; 297 mm</option>
-        </select>
-      </div>
-      <div class="field-row">
-        <label for="week">Week starts</label>
-        <select id="week">
-          <option value="sunday">Sunday</option>
-          <option value="monday">Monday</option>
-        </select>
       </div>
       <label class="switch">
         <input id="dated" type="checkbox" checked>
         <span class="track" aria-hidden="true"></span>
         <span class="switch-text">
-          <strong>Print real dates</strong>
-          <em>Off gives blank grids to fill in by hand</em>
+          <strong>Print calendar dates</strong>
+          <em>Turn off to leave month grids blank for handwriting</em>
         </span>
       </label>
+      <div class="field-row" id="cover-year-row" hidden>
+        <label for="cover-year">Year on the cover</label>
+        <select id="cover-year">
+          <option value="blank">Blank lines to write in</option>
+          <option value="omit">Leave the year off</option>
+          <option value="print">Print the planner year</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>People</h2>
+      <p class="group-note">Names print on the health tracker. Leave a line blank to write in by hand.</p>
+      <div id="members" class="members"></div>
+      <button id="add-member" class="btn btn-quiet" type="button">Add a person</button>
     </section>
 
     <section class="group">
@@ -83,29 +85,46 @@
     </section>
 
     <section class="group">
-      <h2>Type</h2>
-      <div id="typefaces" class="type-grid" role="radiogroup" aria-label="Typeface set"></div>
+      <h2>Lettering</h2>
+      <div id="typefaces" class="type-grid" role="radiogroup" aria-label="Lettering"></div>
     </section>
 
     <section class="group">
-      <h2>Family <span class="hint">tracker rows</span></h2>
-      <div id="members" class="members"></div>
-      <button id="add-member" class="btn btn-quiet" type="button">Add a person</button>
+      <h2>Page look</h2>
+      <p class="group-note">Original is this planner. Other looks restyle every page.</p>
+      <div id="designs" class="design-grid" role="radiogroup" aria-label="Page look"></div>
     </section>
 
-    <section class="group">
-      <div class="group-head">
-        <h2>Pages</h2>
-        <button id="reset-pages" class="linky" type="button">reset</button>
+    <details class="group more">
+      <summary>Paper and lettering size</summary>
+      <div class="field-row">
+        <label for="cover-text">Extra cover line (optional)</label>
+        <input id="cover-text" type="text" placeholder="Our Year" autocomplete="off">
       </div>
-      <div id="pages" class="pages"></div>
-    </section>
+      <div class="field-row">
+        <label for="size">Paper size</label>
+        <select id="size">
+          <option value="letter">US Letter (8.5 × 11 in)</option>
+          <option value="a4">A4 (210 × 297 mm)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="week">First day of the week</label>
+        <select id="week">
+          <option value="sunday">Sunday</option>
+          <option value="monday">Monday</option>
+        </select>
+      </div>
+      <h3 class="subhead">Lettering size</h3>
+      <div id="sizes" class="size-list"></div>
+    </details>
   </aside>
 
   <section class="stage" aria-label="Preview">
     <div class="stage-bar">
       <label class="sr-only" for="preview-page">Page to preview</label>
       <select id="preview-page"></select>
+      <p class="stage-hint">This page is what prints.</p>
       <div class="zoom">
         <button id="zoom-out" class="icon-btn" type="button" aria-label="Zoom out">&minus;</button>
         <span id="zoom-level">Fit</span>
@@ -119,6 +138,17 @@
       <div id="spinner" class="spinner" hidden><span></span></div>
     </div>
   </section>
+
+  <aside class="pages-rail" aria-label="Pages">
+    <section class="group">
+      <div class="group-head">
+        <h2>Pages</h2>
+        <button id="reset-pages" class="linky" type="button">Show every page</button>
+      </div>
+      <p class="group-note">Check a page to include it. Click the name to preview it.</p>
+      <div id="pages" class="pages"></div>
+    </section>
+  </aside>
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>

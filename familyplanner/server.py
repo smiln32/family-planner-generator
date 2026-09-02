@@ -11,6 +11,7 @@ something to expose on a network.
 
 from __future__ import annotations
 
+import errno
 import json
 import threading
 import webbrowser
@@ -19,7 +20,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from . import config, render, themes, typefaces
+from . import config, designs, render, themes, typefaces
 from .config import Config, ConfigError
 from .render import RenderError
 
@@ -49,6 +50,10 @@ def _config_from(payload: dict, base: Config) -> Config:
         cfg.week_starts = str(payload["week_starts"])
     if "dated_months" in payload:
         cfg.dated_months = bool(payload["dated_months"])
+    if "cover_year" in payload:
+        cfg.cover_year = str(payload["cover_year"])
+    if "cover_text" in payload:
+        cfg.cover_text = str(payload["cover_text"])
     if "page_size" in payload:
         cfg.page_size = str(payload["page_size"])
     if "members" in payload:
@@ -57,12 +62,14 @@ def _config_from(payload: dict, base: Config) -> Config:
         cfg.pages = [str(p) for p in payload["pages"]]
 
     palette = dict(config.DEFAULT_PALETTE)
-    palette.update(themes.resolve(str(payload.get("theme") or "classic")))
+    palette.update(themes.resolve(str(payload.get("theme") or themes.DEFAULT_THEME)))
     palette.update(payload.get("palette") or {})
     cfg.palette = palette
-    cfg.theme = str(payload.get("theme") or "classic")
+    cfg.theme = str(payload.get("theme") or themes.DEFAULT_THEME)
 
-    cfg.faces = typefaces.resolve(payload.get("fonts") or "classic")
+    cfg.faces = typefaces.resolve(payload.get("fonts") or typefaces.DEFAULT_SET)
+    cfg.design = designs.resolve(payload.get("design") or designs.DEFAULT_DESIGN)
+    cfg.type_size = designs.clamp_type_size(payload.get("type_size") or {})
     return cfg
 
 
@@ -71,7 +78,7 @@ def _fonts_for_save(value) -> str | dict:
     if isinstance(value, dict):
         faces = typefaces.resolve(value)
         return {"display": faces.display, "script": faces.script, "body": faces.body}
-    return str(value or "classic")
+    return str(value or typefaces.DEFAULT_SET)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -136,6 +143,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._build(payload)
             elif path == "/api/save":
                 self._save(payload)
+            elif path == "/api/open":
+                self._open(payload)
             else:
                 self._send(404, b"not found", "text/plain; charset=utf-8")
         except (ConfigError, RenderError, KeyError, ValueError) as exc:
@@ -154,6 +163,8 @@ class Handler(BaseHTTPRequestHandler):
                 "family_name": cfg.family_name,
                 "week_starts": cfg.week_starts,
                 "dated_months": cfg.dated_months,
+                "cover_year": cfg.cover_year,
+                "cover_text": cfg.cover_text,
                 "page_size": cfg.page_size,
                 "members": cfg.members,
                 "pages": cfg.pages,
@@ -163,6 +174,8 @@ class Handler(BaseHTTPRequestHandler):
                     "script": cfg.faces.script,
                     "body": cfg.faces.body,
                 },
+                "design": cfg.design,
+                "type_size": cfg.type_size,
             },
             "themes": [
                 {"name": name,
@@ -177,6 +190,14 @@ class Handler(BaseHTTPRequestHandler):
                  "body": typefaces.resolve(name).body}
                 for name in typefaces.names()
             ],
+            "designs": [
+                {"id": name, **designs.PRESETS[name]}
+                for name in designs.names()
+            ],
+            "typeSizeRange": {
+                key: {"min": lo, "max": hi, "value": designs.DEFAULT_TYPE_SIZE[key]}
+                for key, (lo, hi) in designs.TYPE_SIZE_RANGE.items()
+            },
             "catalogue": [{"slug": slug, "title": title}
                           for slug, title in catalogue.items()],
             "months": [m["name"] for m in cfg.months],
@@ -221,10 +242,14 @@ class Handler(BaseHTTPRequestHandler):
             "family_name": str(payload.get("family_name", "")),
             "week_starts": str(payload.get("week_starts", "sunday")),
             "dated_months": bool(payload.get("dated_months", True)),
+            "cover_year": str(payload.get("cover_year") or "auto"),
+            "cover_text": str(payload.get("cover_text") or ""),
             "page_size": str(payload.get("page_size", "letter")),
             "members": [str(m) for m in payload.get("members", [])],
-            "theme": str(payload.get("theme") or "classic"),
+            "theme": str(payload.get("theme") or themes.DEFAULT_THEME),
             "fonts": _fonts_for_save(payload.get("fonts")),
+            "design": designs.resolve(payload.get("design") or designs.DEFAULT_DESIGN),
+            "type_size": designs.clamp_type_size(payload.get("type_size") or {}),
             "pages": [str(p) for p in payload.get("pages", [])],
         }
         target.write_text(
@@ -234,23 +259,49 @@ class Handler(BaseHTTPRequestHandler):
         )
         self._json({"saved": str(target.resolve())})
 
+    def _open(self, payload: dict) -> None:
+        """Open a PDF this session wrote, in the computer's usual reader."""
+        raw = Path(str(payload.get("path") or ""))
+        if not raw.parts:
+            raise ValueError("Make a PDF first, then open it from here.")
+        target = raw.resolve()
+        out = self.out_dir.resolve()
+        if target.parent != out:
+            raise ValueError("Could not open that file. Make a PDF again, then open it from here.")
+        if not target.is_file() or target.suffix.lower() != ".pdf":
+            raise ValueError("The PDF is missing. Make a PDF again.")
+        webbrowser.open(target.as_uri())
+        self._json({"opened": str(target)})
+
 
 def serve(cfg: Config, out_dir: Path, port: int = 8733, open_browser: bool = True) -> int:
     """Run the preview UI until interrupted. Returns a process exit code."""
     Handler.base_config = cfg
     Handler.out_dir = out_dir
 
+    url = f"http://127.0.0.1:{port}/"
     try:
         httpd = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     except OSError as exc:
-        print(f"Could not start the UI on port {port}: {exc}")
-        print("Another copy may already be running. Try --port 8734.")
+        busy = (
+            getattr(exc, "winerror", None) == 10048
+            or getattr(exc, "errno", None) in (errno.EADDRINUSE, 48, 98)
+            or "already in use" in str(exc).lower()
+        )
+        if busy:
+            print("The planner is already open.")
+            print(f"  {url}")
+            if open_browser:
+                webbrowser.open(url)
+            return 0
+        print(f"Could not start the planner on port {port}: {exc}")
+        print("Close other copies, or start again with a different port.")
         return 1
 
     url = f"http://127.0.0.1:{httpd.server_port}/"
-    print("Family Success Planner - preview UI")
+    print("Family Success Planner is open in your browser.")
     print(f"  {url}")
-    print("  Press Ctrl+C to stop.")
+    print("  Keep this window open. Close it when you are finished.")
     if open_browser:
         threading.Timer(0.4, lambda: webbrowser.open(url)).start()
 

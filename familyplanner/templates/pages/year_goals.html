@@ -1,5 +1,5 @@
 {# title: Family Goals #}
-{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "macros.html" import divider, footer, ico, chip, year_mark with context %}
 {% from "art.html" import house_family with context %}
 {% set goals = [
      ("target", "teal"), ("family", "pink"), ("heart", "orange"),
@@ -9,10 +9,8 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <h1 class="display year-tint">
-        {% for ch in cfg.year|string %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
-      <div class="script" style="color:{{ p.navy }};font-size:44pt">Family Goals</div>
+      {{ year_mark("year-tint") }}
+      <div class="display" style="color:{{ p.navy }}">Family Goals</div>
       {{ divider() }}
     </div>
     <span></span>

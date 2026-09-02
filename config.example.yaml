@@ -26,6 +26,16 @@ week_starts: sunday
 # false -> blank grids you fill in yourself (good for gifting or reprinting)
 dated_months: true
 
+# Dated books print `cover_text` if set, otherwise `year`. When dated_months
+# is false, the cover (and Family Goals / annual calendar mastheads) default
+# to fill-in blanks unless you set:
+#   cover_text  print this line instead (e.g. Our, 2027-2028)
+#   auto/blank  four write-on slots
+#   omit        no year on those pages
+#   print       still print cover_text or the configured year
+cover_year: auto
+cover_text: ""
+
 # One row per person on the health tracker. Names are optional - an empty
 # string prints a blank line to write on. Add or remove entries to change how
 # many rows the tracker has.
@@ -43,7 +53,7 @@ page_size: letter
 output_name: ""
 
 # Typefaces. Either a set name:
-#   classic  rounded  modern  elegant  bubbly  neat
+#   classic  playful  modern  elegant  italics  neat
 # or any three Google Fonts families of your own:
 #   fonts:
 #     display: Chewy
@@ -51,36 +61,50 @@ output_name: ""
 #     body: Rubik
 # Run `python planner.py typefaces` to see the sets, then
 # `python planner.py fonts` to download whichever you picked.
-fonts: classic
+fonts: elegant
+
+# How the sheets are dressed. `original` is this book. `02` boxed records,
+# `03` botanical, `04` marker journal, `05` soft intention. `06`–`10` are
+# other languages. `11`–`16` are six more daily-planner looks. `blank` strips art.
+design: original
+
+# Point sizes. The visual editor has sliders and type-in fields for these.
+# type_size:
+#   title: 30
+#   cover: 66
+#   body: 9
+#   script: 13
 
 # A colour preset applied before `palette:` below. One of:
-#   classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  slate
+#   linen  classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  slate
+# `linen` is the default (sage, dusty rose, clay). `classic` is the original
+# bright jewel-tone printable.
 # Run `python planner.py themes` to see them. Anything under `palette:`
 # overrides the theme, so you can start from `forest` and change one colour.
-theme: classic
+theme: linen
 
 # ---------------------------------------------------------------------------
 # Colours. Every page pulls from this palette, so changing `teal` here restyles
 # the teal elements across all 30 pages at once.
 #
-# These are the twelve tokens and their `classic` values. Uncomment only the
+# These are the twelve tokens and their `linen` values. Uncomment only the
 # ones you want to change - anything you set here is applied ON TOP of `theme`
 # above, so uncommenting the whole block would pin every colour and make the
 # theme setting do nothing.
 # ---------------------------------------------------------------------------
 palette: {}
-  # navy:   "#16325F"
-  # teal:   "#14A0A5"
-  # pink:   "#EF3E63"
-  # orange: "#F7A81B"
-  # green:  "#6DB033"
-  # purple: "#7C4DA0"
-  # blue:   "#2F6FD1"
-  # red:    "#D93025"
-  # brown:  "#8A5A2B"
-  # ink:    "#1F2933"
-  # paper:  "#FFFFFF"
-  # rule:   "#B9C3CF"
+  # navy:   "#3E5344"
+  # teal:   "#5F7A62"
+  # pink:   "#C4A09A"
+  # orange: "#C9956A"
+  # green:  "#8AA084"
+  # purple: "#A0909C"
+  # blue:   "#7A8B88"
+  # red:    "#B56858"
+  # brown:  "#8A6B52"
+  # ink:    "#3A3F3A"
+  # paper:  "#F6F1E8"
+  # rule:   "#DDD6CC"
 
 # ---------------------------------------------------------------------------
 # Which pages to build, in order. "months" expands to the twelve monthly

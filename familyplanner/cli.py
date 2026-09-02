@@ -6,7 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, config, render, themes, typefaces
+from . import __version__, config, designs, render, themes, typefaces
 from .config import Config, ConfigError
 from .render import RenderError
 
@@ -56,6 +56,11 @@ def _resolve_config(args: argparse.Namespace) -> Config:
             import yaml
             own = (yaml.safe_load(cfg.source.read_text(encoding="utf-8")) or {})
             cfg.palette.update(own.get("palette") or {})
+    if getattr(args, "design", None):
+        try:
+            cfg.design = designs.resolve(args.design)
+        except KeyError as exc:
+            raise ConfigError(str(exc).strip("\"'")) from exc
     return cfg
 
 
@@ -196,12 +201,12 @@ def cmd_typefaces(args: argparse.Namespace) -> int:
         faces = typefaces.resolve(name)
         print(f"  {name:<9} {faces.display:<18} {faces.script:<16} {faces.body}")
     print()
-    print("Use one with:  python planner.py build --fonts rounded")
+    print("Use one with:  python planner.py build --fonts italics")
     print("Or name any Google Fonts families yourself in your config:")
     print("    fonts:")
-    print("      display: Baloo 2")
-    print("      script: Caveat")
-    print("      body: Quicksand")
+    print("      display: Open Sans")
+    print("      script: Courgette")
+    print("      body: Oxygen")
     print("Then run `python planner.py fonts` to download them.")
     return 0
 
@@ -237,6 +242,8 @@ def build_parser() -> argparse.ArgumentParser:
                        help="colour preset: " + ", ".join(themes.names()))
         p.add_argument("--fonts", metavar="NAME",
                        help="typeface set: " + ", ".join(typefaces.names()))
+        p.add_argument("--design", metavar="NAME",
+                       help="page look: " + ", ".join(designs.names()))
 
     b = sub.add_parser("build", help="render the planner to PDF")
     shared(b)

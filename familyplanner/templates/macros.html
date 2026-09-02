@@ -11,6 +11,21 @@
 </span>
 {% endmacro %}
 
+{# Year on the cover and mastheads: printed line, fill-in slots, or nothing. #}
+{% macro year_mark(cls="", tint=true) %}
+{% set mode = cfg.year_on_cover %}
+{% set label = cfg.cover_year_display %}
+{% if mode == "print" %}
+<div class="{{ cls }}{% if tint %} word-tint{% endif %}{% if not cfg.cover_year_is_word %} display{% endif %}{% if label|length > 5 %} year-long{% endif %}">
+  {% for ch in label %}<span>{{ ch }}</span>{% endfor %}
+</div>
+{% elif mode == "blank" %}
+<div class="{{ cls }} year-blank" aria-label="Year">
+  {% for _ in range(4) %}<span></span>{% endfor %}
+</div>
+{% endif %}
+{% endmacro %}
+
 {# The dot-bar-heart-bar-dot rule that sits under most page titles. #}
 {% macro divider() %}
 <div class="divider">
@@ -56,7 +71,7 @@
   <div class="headings">
     {% if script_line %}
       <h1 class="display" style="color:{{ p[line1_colour] }}">{{ line1 }}</h1>
-      <div class="script line-script" style="color:{{ p[line2_colour] }};font-size:30pt">{{ script_line }}</div>
+      <div class="display line-script" style="color:{{ p[line2_colour] }}">{{ script_line }}</div>
     {% else %}
       <h1 class="display" style="color:{{ p[line1_colour] }}">{{ line1 }}</h1>
       {% if line2 %}

@@ -8,13 +8,13 @@
 
 /* Every component that sets --c gets a matching 13% wash for free, so a
    card, chip or tint always agrees with its own accent colour. */
-* { --c-wash: color-mix(in srgb, var(--c, #16325F) 13%, #fff); }
+* { --c-wash: color-mix(in srgb, var(--c, #3E5344) 13%, #fff); }
 
 html { font-size: 16px; }
 
 body {
   margin: 0;
-  background: #E9EDF2;
+  background: #E4DFD6;
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-print-color-adjust: exact;
@@ -39,7 +39,7 @@ body {
 /* On screen the pages stack like a contact sheet; in print they are the sheet. */
 @media screen {
   body { padding: 24px 0; }
-  .page { margin-bottom: 24px; box-shadow: 0 6px 24px rgba(22, 50, 95, 0.18); }
+  .page { margin-bottom: 24px; box-shadow: 0 6px 24px rgba(62, 83, 68, 0.14); }
 }
 
 @page {
@@ -53,7 +53,7 @@ body {
 .display {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.005em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .script {
@@ -61,29 +61,32 @@ body {
   font-weight: 400;
   text-transform: none;
 }
-.tiny { font-size: 7.2pt; }
-.small { font-size: 8.2pt; }
+.tiny { font-size: calc(var(--type-body) * 0.8); }
+.small { font-size: var(--type-body); }
 .caps { text-transform: uppercase; letter-spacing: 0.045em; font-weight: 800; }
 .center { text-align: center; }
-.muted { color: #6B7A8D; }
+.muted { color: #7A756C; }
 
 /* --- masthead ------------------------------------------------------------- */
 
 .masthead {
   display: grid;
   grid-template-columns: 1.35in 1fr 1.35in;
-  align-items: center;
+  align-items: start;
   gap: 0.1in;
   margin-bottom: 0.13in;
   flex: none;
 }
 .masthead.no-art { grid-template-columns: 1.35in 1fr; }
 .masthead .mark, .masthead .art { display: block; width: 100%; height: auto; }
-.masthead .headings { text-align: center; }
+.masthead .headings { text-align: center; padding-top: 0.02in; }
 
-.masthead h1.display { font-size: 30pt; color: var(--navy); }
-.masthead h1.script { font-size: 34pt; color: var(--pink); margin-top: -0.02in; }
-.masthead .line2 { font-size: 25pt; margin-top: 0.02in; }
+.masthead h1.display { font-size: var(--type-title); color: var(--navy); }
+.masthead h1.script { font-size: var(--type-title); color: var(--pink); }
+.masthead .line2 { font-size: var(--type-title); margin-top: 0; }
+.masthead .headings > :is(h1, .display, .script):not(.year-tint):not(.annual-year) {
+  font-size: var(--type-title);
+}
 
 /* The navy ribbon that carries a page's strapline. */
 .banner {
@@ -114,7 +117,7 @@ body {
   font-weight: 700;
   color: var(--navy);
 }
-.strapline.script { font-size: 13pt; font-weight: 400; }
+.strapline.script { font-size: var(--type-script); font-weight: 400; }
 
 /* Small dot-heart-dot divider used under most page titles. */
 .divider {
@@ -148,7 +151,7 @@ body {
   color: #fff;
   border-radius: 999px;
   font-weight: 800;
-  font-size: 8pt;
+  font-size: var(--type-body);
   letter-spacing: 0.035em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -322,7 +325,7 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 0.09in;
   color: var(--navy);
 }
-.page-footer .txt { font-family: var(--font-script); font-size: 12pt; }
+.page-footer .txt { font-family: var(--font-script); font-size: var(--type-script); }
 .page-footer .txt.caps {
   font-family: var(--font-body); font-size: 8.4pt;
   font-weight: 800; letter-spacing: 0.06em;
@@ -332,8 +335,8 @@ body {
 /* --- monthly planner page ------------------------------------------------- */
 
 .month-page .masthead { margin-bottom: 0.1in; }
-.month-page .masthead h1.display { font-size: 34pt; }
-.month-page .masthead .line-script { font-size: 33pt; margin-top: -0.04in; }
+.month-page .masthead h1.display,
+.month-page .masthead .line-script { font-size: var(--type-title); }
 .month-page .masthead .divider { display: none; }
 
 .focus-strip {
@@ -390,12 +393,23 @@ body {
 /* --- yearly goals page ---------------------------------------------------- */
 
 .goals-page .masthead { grid-template-columns: 1.7in 1fr 0.6in; margin-bottom: 0.3in; }
-.goals-page .masthead h1.display { font-size: 58pt; letter-spacing: 0.01em; }
+.goals-page .masthead .year-tint { font-size: 58pt; letter-spacing: 0.01em; }
 /* The year is set as one span per digit so each takes a different brand colour. */
 .year-tint span:nth-child(1) { color: var(--teal); }
 .year-tint span:nth-child(2) { color: var(--pink); }
 .year-tint span:nth-child(3) { color: var(--orange); }
 .year-tint span:nth-child(4) { color: var(--green); }
+
+.year-blank {
+  display: flex; justify-content: center; align-items: flex-end; gap: 0.12em;
+}
+.year-blank span {
+  display: block; width: 0.68em; height: 0.82em;
+  border-bottom: 0.065em solid var(--navy);
+}
+.annual-year { font-size: 22pt; margin-top: 0.04in; color: var(--navy); }
+.annual-year.year-long { font-size: 14pt; }
+.goals-page .masthead .year-tint.year-long { font-size: 28pt; }
 
 .goal-rows { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
 .goal-row { display: flex; align-items: center; gap: 0.16in; }
@@ -539,20 +553,16 @@ body {
 /* --- cover ---------------------------------------------------------------- */
 
 .cover-page { background: #FDFCF7; }
-.cover-body { display: grid; grid-template-columns: 1.25in 1fr 1.25in; gap: 0.12in; flex: none; }
-.cover-side { display: flex; flex-direction: column; justify-content: space-evenly; gap: 0.16in; }
+.cover-body { display: grid; grid-template-columns: 1.25in 1fr 1.25in; gap: 0.12in; flex: none; align-items: start; }
+.cover-side { display: flex; flex-direction: column; justify-content: flex-start; gap: 0.16in; padding-top: 0.06in; }
 .cover-badge { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.05in; }
 .badge-rule { width: 0.62in; border-bottom: 2px dotted #9FB0C2; }
 
-.cover-mid { text-align: center; padding-top: 0.1in; }
-.cover-year { font-size: 62pt; line-height: 0.95; }
-.cover-title { font-size: 66pt; line-height: 0.9; }
-.cover-banner {
-  margin-top: 0.1in; padding: 0.09in 0.7in;
-  font-size: 22pt; letter-spacing: 0.09em;
-  border: 2px dashed rgba(255, 255, 255, 0.75);
-  border-radius: 3px;
-}
+.cover-mid { text-align: center; padding-top: 0; }
+.cover-year { font-size: var(--type-cover); line-height: 0.9; }
+.cover-year.year-long { font-size: 28pt; letter-spacing: 0.02em; }
+.cover-year:not(.display) { text-transform: none; }
+.cover-title { font-size: var(--type-cover); line-height: 0.9; }
 .cover-sub {
   display: flex; align-items: center; justify-content: center; gap: 0.08in;
   margin-top: 0.12in; font-size: 11pt; font-weight: 800; color: var(--navy);
@@ -931,3 +941,839 @@ body {
 }
 .index-title { font-size: 8.6pt; font-weight: 700; color: var(--navy); }
 .index-dots { flex: 1 1 auto; }
+
+/* --- look presets (body.design-*) ---------------------------------------
+   Each look is a visual language, not a one-line tweak. Templates are shared. */
+.design-02 {
+  --navy: #111111; --teal: #111111; --pink: #111111; --orange: #111111;
+  --green: #111111; --purple: #111111; --blue: #111111; --red: #111111;
+  --brown: #111111; --ink: #111111; --paper: #ffffff; --rule: #111111;
+}
+.design-02 .page { background: #fff; }
+.design-02 .display, .design-02 .script {
+  font-family: var(--font-body) !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-style: normal;
+  color: #111 !important;
+}
+.design-02 .mark, .design-02 .art, .design-02 .cover-scene,
+.design-02 .cover-side, .design-02 .cover-feet, .design-02 .divider,
+.design-02 .chip, .design-02 .page-footer .sprig { display: none !important; }
+.design-02 .masthead, .design-02 .masthead.no-art, .design-02 .cover-body {
+  grid-template-columns: 1fr;
+}
+.design-02 .card, .design-02 .tbl, .design-02 .focus-strip {
+  border: 1px solid #111; border-radius: 0; background: #fff;
+}
+.design-02 .card-tab, .design-02 .banner, .design-02 .vm-tag {
+  background: #111; color: #fff; border-radius: 0;
+  position: static; display: block; text-align: center;
+  margin: -0.13in -0.13in 0.1in; padding: 0.06in;
+}
+.design-02 .banner::before, .design-02 .banner::after { display: none; }
+.design-02 .card.has-tab { padding-top: 0.13in; }
+.design-02 .dot-line, .design-02 .solid-line { border-color: #111; }
+
+/* 3 — Botanical (sage washes, florals, rounded modules) */
+.design-03 {
+  --navy: #1E2A4A; --teal: #6B8F71; --pink: #A78BA2; --orange: #C4B59A;
+  --green: #8AA084; --purple: #8B6E8A; --blue: #7A8B88; --red: #B56858;
+  --paper: #FBF8F2; --ink: #1E2A4A; --rule: #D5D0C4;
+}
+.design-03 .page { background: #FBF8F2; }
+.design-03 .page::before,
+.design-03 .page::after {
+  content: "";
+  position: absolute;
+  width: 1.55in; height: 1.35in;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 32% 38%, #A78BA2 0 0.09in, transparent 0.1in),
+    radial-gradient(circle at 48% 52%, #6B8F71 0 0.16in, transparent 0.17in),
+    radial-gradient(circle at 62% 34%, #8AA084 0 0.12in, transparent 0.13in),
+    radial-gradient(circle at 44% 68%, #C4B59A 0 0.08in, transparent 0.09in);
+  opacity: 0.7;
+}
+.design-03 .page::before { top: 0.08in; left: 0.08in; }
+.design-03 .page::after { bottom: 0.28in; right: 0.1in; transform: scaleX(-1); }
+.design-03 .mark, .design-03 .art, .design-03 .cover-scene { opacity: 0.35; }
+.design-03 .card {
+  border: none; border-radius: 0.16in;
+  background: color-mix(in srgb, var(--green) 14%, #fff);
+}
+.design-03 .banner {
+  background: color-mix(in srgb, var(--green) 35%, #fff);
+  color: var(--navy);
+  border-radius: 999px;
+}
+.design-03 .banner::before, .design-03 .banner::after { display: none; }
+.design-03 .card-tab {
+  background: color-mix(in srgb, var(--green) 45%, #fff);
+  color: var(--navy);
+}
+.design-03 .divider .bar { background: var(--green); height: 1px; width: 1.2in; }
+
+/* 4 — Marker journal (grid paper, brush headers, doodles) */
+.design-04 {
+  --navy: #111; --teal: #111; --pink: #111; --orange: #111;
+  --green: #111; --purple: #111; --blue: #111; --red: #111;
+  --paper: #ECECEC; --ink: #111; --rule: #BDBDBD;
+}
+.design-04 .page {
+  background-color: #E8E8E8;
+  background-image:
+    linear-gradient(#cfcfcf 1px, transparent 1px),
+    linear-gradient(90deg, #cfcfcf 1px, transparent 1px);
+  background-size: 0.17in 0.17in;
+}
+.design-04 .mark, .design-04 .art, .design-04 .cover-scene,
+.design-04 .cover-side, .design-04 .cover-feet, .design-04 .divider,
+.design-04 .chip { display: none !important; }
+.design-04 .masthead, .design-04 .cover-body { grid-template-columns: 1fr; }
+.design-04 .display {
+  font-family: var(--font-body);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #111 !important;
+}
+.design-04 .card, .design-04 .focus-strip {
+  background: #fff; border: 2px solid #111; border-radius: 0.04in;
+}
+.design-04 .banner, .design-04 .card-tab, .design-04 .vm-tag {
+  background: #111; color: #fff;
+  transform: rotate(-1.2deg);
+  border-radius: 2px 14px 3px 10px;
+  box-shadow: 3px 3px 0 #111;
+}
+.design-04 .banner::before, .design-04 .banner::after { display: none; }
+.design-04 .masthead .headings::before,
+.design-04 .masthead .headings::after {
+  content: "✦";
+  position: absolute;
+  font-size: 18pt;
+  color: #111;
+}
+.design-04 .headings { position: relative; }
+.design-04 .masthead .headings::before { left: 0.1in; top: 0; }
+.design-04 .masthead .headings::after { right: 0.1in; top: 0.12in; content: "☺"; }
+
+/* 5 — Soft intention (pastel modules, script title, botanicals) */
+.design-05 {
+  --navy: #5C5348; --teal: #9AAE90; --pink: #E8C4B8; --orange: #F3D3C2;
+  --green: #C5D1B8; --purple: #C9B8C4; --blue: #B8C4C0; --red: #D4A090;
+  --paper: #FDF8F5; --ink: #5C5348; --rule: #E4DCD4;
+}
+.design-05 .page { background: #FDF8F5; }
+.design-05 .masthead h1.display,
+.design-05 .cover-title,
+.design-05 .headings > .display {
+  font-family: var(--font-script);
+  text-transform: lowercase;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.design-05 .card {
+  border: none; border-radius: 0.18in;
+  background: #FAF3E7;
+}
+.design-05 .banner, .design-05 .card-tab {
+  background: #E2E7D8; color: var(--navy);
+  border-radius: 0.12in;
+}
+.design-05 .banner::before, .design-05 .banner::after { display: none; }
+.design-05 .mark, .design-05 .art { opacity: 0.25; }
+.design-05 .cover-scene { opacity: 0.2; }
+.design-05 .page::after {
+  content: "";
+  position: absolute; right: 0.2in; bottom: 0.35in;
+  width: 0.9in; height: 1.3in;
+  background: radial-gradient(ellipse at 50% 20%, #9AAE90 0 0.05in, transparent 0.06in),
+              radial-gradient(ellipse at 40% 50%, #9AAE90 0 0.04in, transparent 0.05in);
+  opacity: 0.55; pointer-events: none;
+}
+
+/* 6 — School notebook */
+.design-06 {
+  --paper: #FFFDF5; --ink: #1a2744; --navy: #1a2744; --rule: #A7C4E0;
+  --teal: #C23B3B;
+}
+.design-06 .page {
+  background-color: #FFFDF5;
+  background-image:
+    linear-gradient(#c23b3b 0 0),
+    repeating-linear-gradient(#FFFDF5, #FFFDF5 0.27in, #A7C4E0 0.27in, #A7C4E0 calc(0.27in + 1px));
+  background-size: 1.4px 100%, 100% 100%;
+  background-position: 0.85in 0, 0 0;
+  background-repeat: no-repeat, repeat;
+}
+.design-06 .mark, .design-06 .art, .design-06 .cover-scene { display: none !important; }
+.design-06 .masthead, .design-06 .cover-body { grid-template-columns: 1fr; }
+.design-06 .card { background: transparent; border: none; border-radius: 0; }
+.design-06 .banner, .design-06 .card-tab {
+  background: transparent; color: #c23b3b;
+  border-radius: 0; padding-left: 0;
+}
+.design-06 .banner::before, .design-06 .banner::after { display: none; }
+
+/* 7 — Editorial */
+.design-07 .page { background: #fff; }
+.design-07 .mark, .design-07 .art, .design-07 .cover-scene,
+.design-07 .cover-side, .design-07 .cover-feet { display: none !important; }
+.design-07 .masthead, .design-07 .cover-body { grid-template-columns: 1fr; }
+.design-07 .masthead .headings { text-align: left; max-width: 5.5in; }
+.design-07 .cover-mid { text-align: left; }
+.design-07 .display { letter-spacing: -0.03em; }
+.design-07 .card { border: none; border-top: 1px solid var(--navy); border-radius: 0; }
+.design-07 .banner {
+  background: transparent; color: var(--navy);
+  padding: 0; letter-spacing: 0.18em; font-size: 8pt;
+}
+.design-07 .banner::before, .design-07 .banner::after { display: none; }
+.design-07 .divider { justify-content: flex-start; }
+.design-07 .divider .bar { width: 0.4in; height: 4px; }
+
+/* 8 — Stamp frame */
+.design-08 .page {
+  box-shadow:
+    inset 0 0 0 0.07in var(--paper),
+    inset 0 0 0 0.09in var(--navy),
+    inset 0 0 0 0.13in var(--paper),
+    inset 0 0 0 0.15in var(--navy);
+}
+.design-08 .card { border: 2px solid var(--navy); border-radius: 0.04in; }
+.design-08 .banner { letter-spacing: 0.14em; }
+.design-08 .mark, .design-08 .art { filter: grayscale(1); opacity: 0.8; }
+
+/* 9 — Swiss grid */
+.design-09 {
+  --navy: #111; --teal: #E10600; --pink: #111; --paper: #fff; --ink: #111;
+}
+.design-09 .page { background: #fff; }
+.design-09 .mark, .design-09 .art, .design-09 .cover-scene,
+.design-09 .cover-side, .design-09 .divider { display: none !important; }
+.design-09 .masthead { grid-template-columns: 1fr; }
+.design-09 .masthead .headings, .design-09 .cover-mid { text-align: left; }
+.design-09 .display {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.design-09 .page { border-left: 0.22in solid #E10600; }
+.design-09 .card { border-radius: 0; border: 1px solid #111; }
+.design-09 .banner, .design-09 .card-tab {
+  background: #E10600; color: #fff; border-radius: 0;
+}
+.design-09 .banner::before, .design-09 .banner::after { display: none; }
+
+/* 10 — Keepsake */
+.design-10 .page { background: #F7F1E6; }
+.design-10 .masthead .headings > .display:first-child,
+.design-10 .cover-title {
+  font-family: var(--font-script);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.design-10 .card {
+  border: 1px solid #C4B59A;
+  border-radius: 0.08in;
+  background: #FFFBF3;
+}
+.design-10 .banner {
+  background: transparent; color: var(--navy);
+  border: 1px solid var(--navy);
+  border-radius: 0;
+}
+.design-10 .banner::before, .design-10 .banner::after { display: none; }
+.design-10 .page::before, .design-10 .page::after {
+  content: "❀";
+  position: absolute;
+  font-size: 16pt;
+  color: var(--pink);
+  opacity: 0.8;
+}
+.design-10 .page::before { top: 0.18in; left: 0.22in; }
+.design-10 .page::after { top: 0.18in; right: 0.22in; }
+
+/* Daily-planner cover sheet (looks 11–16). Hidden unless a look turns it on. */
+.look-sheet { display: none; }
+.ls-motto, .ls-quote, .ls-label, .look-sheet h3 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.look-sheet h3 { font-size: 8pt; padding: 0.05in 0.08in; color: #fff; }
+.ls-motto, .ls-quote, .ls-label { font-size: 8pt; }
+.ls-date {
+  display: flex; align-items: center; justify-content: flex-end; gap: 0.08in;
+  font-size: 8pt; font-weight: 800; letter-spacing: 0.12em;
+}
+.ls-date i {
+  display: block; width: 1.5in; height: 0.28in;
+  background: #F0F0F0; border: 1px solid #D0D0D0;
+}
+.ls-prio { display: flex; flex-direction: column; gap: 0.08in; }
+.ls-three {
+  display: flex; gap: 0.14in; list-style: none; margin: 0; padding: 0;
+  counter-reset: n;
+}
+.ls-three li {
+  flex: 1; display: flex; align-items: center; gap: 0.08in;
+  border-bottom: 1px solid currentColor; min-height: 0.28in;
+}
+.ls-three li::before {
+  content: counter(n); counter-increment: n;
+  flex: none; width: 0.2in; height: 0.2in; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8pt; font-weight: 800; color: #fff; background: currentColor;
+}
+.ls-mod {
+  display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+  border: 1px solid currentColor;
+}
+.ls-mod h3 { flex: none; }
+.ls-slots, .ls-checks, .ls-lines { flex: 1; display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.ls-slot {
+  display: grid; grid-template-columns: 0.7in 1fr; flex: 1;
+  border-bottom: 1px solid #E4E4E4; min-height: 0.22in;
+}
+.ls-t {
+  display: flex; align-items: center; padding: 0 0.06in;
+  font-size: 6.5pt; font-weight: 700; background: #F3F3F3; color: #444;
+}
+.ls-checks li, .ls-lines li {
+  flex: 1; display: flex; align-items: center; gap: 0.08in;
+  margin: 0 0.1in; border-bottom: 1px solid #D8D8D8; min-height: 0.2in;
+}
+.ls-checks li::before {
+  content: ""; flex: none; width: 0.11in; height: 0.11in; border: 1px solid #555;
+}
+.ls-lines li::before { content: none; }
+.ls-dots {
+  flex: 1; min-height: 0.8in;
+  background-image: radial-gradient(#C8C8C8 0.7px, transparent 0.8px);
+  background-size: 0.12in 0.12in;
+}
+.design-11 .look-sheet,
+.design-12 .look-sheet,
+.design-13 .look-sheet,
+.design-14 .look-sheet,
+.design-15 .look-sheet,
+.design-16 .look-sheet {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0.1in;
+  margin-top: 0.08in;
+}
+.design-11 .cover-scene, .design-12 .cover-scene, .design-13 .cover-scene,
+.design-14 .cover-scene, .design-15 .cover-scene, .design-16 .cover-scene,
+.design-11 .cover-side, .design-12 .cover-side, .design-13 .cover-side,
+.design-14 .cover-side, .design-15 .cover-side, .design-16 .cover-side,
+.design-11 .cover-feet, .design-12 .cover-feet, .design-13 .cover-feet,
+.design-14 .cover-feet, .design-15 .cover-feet, .design-16 .cover-feet {
+  display: none !important;
+}
+.design-11 .cover-body, .design-12 .cover-body, .design-13 .cover-body,
+.design-14 .cover-body, .design-15 .cover-body, .design-16 .cover-body {
+  grid-template-columns: 1fr;
+}
+.design-11 .cover-title, .design-12 .cover-title, .design-13 .cover-title,
+.design-14 .cover-title, .design-15 .cover-title, .design-16 .cover-title,
+.design-11 .cover-year, .design-12 .cover-year, .design-13 .cover-year,
+.design-14 .cover-year, .design-15 .cover-year, .design-16 .cover-year {
+  font-size: 18pt !important;
+  line-height: 0.95;
+}
+
+/* 11 — Executive desk */
+.design-11 {
+  --navy: #1D293F; --teal: #5B7394; --pink: #5B7394; --orange: #8A93A3;
+  --green: #5B7394; --purple: #4A5A72; --blue: #5B7394; --red: #4A5568;
+  --brown: #333333; --ink: #1D293F; --paper: #ffffff; --rule: #D8DCE3;
+}
+.design-11 .page { background: #fff; box-shadow: inset 0 0 0 1.5px #1D293F; }
+.design-11 .display, .design-11 .script {
+  font-family: var(--font-body) !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-style: normal;
+  color: #1D293F !important;
+}
+.design-11 .cover-mid { text-align: left; }
+.design-11 .cover-sub { justify-content: flex-start; letter-spacing: 0.14em; font-size: 8pt; }
+.design-11 .cover-family { font-family: var(--font-body); font-style: normal; font-size: 10pt; letter-spacing: 0.08em; }
+.design-11 .mark, .design-11 .art, .design-11 .divider,
+.design-11 .chip, .design-11 .page-footer .sprig { display: none !important; }
+.design-11 .masthead, .design-11 .masthead.no-art { grid-template-columns: 1fr; }
+.design-11 .card, .design-11 .tbl, .design-11 .focus-strip {
+  border: 1px solid #D8DCE3; border-radius: 0; background: #fff;
+}
+.design-11 .card-tab, .design-11 .banner, .design-11 .vm-tag {
+  background: #1D293F; color: #fff; border-radius: 0;
+  position: static; display: block; text-align: left;
+  margin: -0.13in -0.13in 0.1in; padding: 0.055in 0.1in;
+  letter-spacing: 0.12em;
+}
+.design-11 .card:nth-child(even) .card-tab,
+.design-11 .card:nth-child(even) .banner { background: #5B7394; }
+.design-11 .banner::before, .design-11 .banner::after { display: none; }
+.design-11 .card.has-tab { padding-top: 0.13in; }
+.design-11 .dot-line, .design-11 .solid-line { border-color: #C8CED8; }
+.design-11 .page-footer .txt { font-family: var(--font-body); letter-spacing: 0.16em; }
+.design-11 .look-sheet {
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-areas:
+    "motto date"
+    "prio prio"
+    "sched tasks"
+    "sched extra"
+    "sched notes"
+    "sched next";
+  color: #1D293F;
+}
+.design-11 .ls-motto { grid-area: motto; align-self: end; }
+.design-11 .ls-motto::after { content: "FOCUS  •  EXECUTE  •  ACHIEVE"; color: #5B7394; font-weight: 600; }
+.design-11 .ls-date { grid-area: date; }
+.design-11 .ls-prio { grid-area: prio; padding: 0.06in 0; border-top: 1.5px solid #1D293F; }
+.design-11 .ls-prio .ls-label::after { content: "GOALS & PRIORITIES"; }
+.design-11 .ls-three li::before { background: #1D293F; color: #fff; }
+.design-11 .ls-sched { grid-area: sched; }
+.design-11 .ls-tasks { grid-area: tasks; }
+.design-11 .ls-extra { grid-area: extra; }
+.design-11 .ls-notes { grid-area: notes; }
+.design-11 .ls-next { grid-area: next; }
+.design-11 .ls-quote { display: none; }
+.design-11 .ls-sched h3 { background: #1D293F; }
+.design-11 .ls-sched h3::after { content: "TIMED SCHEDULE"; }
+.design-11 .ls-tasks h3, .design-11 .ls-extra h3, .design-11 .ls-next h3 { background: #5B7394; }
+.design-11 .ls-notes h3 { background: #333; }
+.design-11 .ls-tasks h3::after { content: "TASKS"; }
+.design-11 .ls-extra h3::after { content: "CALLS / EMAILS"; }
+.design-11 .ls-notes h3::after { content: "NOTES"; }
+.design-11 .ls-next h3::after { content: "TOMORROW'S FOCUS"; }
+.design-11 .ls-extra .ls-lines li::before {
+  content: ""; width: 0.07in; height: 0.07in; border-radius: 50%; background: #888; flex: none;
+}
+
+/* 12 — Bloom */
+.design-12 {
+  --navy: #5C4033; --teal: #C9A3AE; --pink: #D9899A; --orange: #E8C4B8;
+  --green: #B7C4A8; --purple: #C9A3AE; --blue: #C4B8B0; --red: #C46A78;
+  --brown: #5C4033; --ink: #5C4033; --paper: #FDF6F0; --rule: #E8D4D0;
+}
+.design-12 .page {
+  background: #FDF6F0;
+  box-shadow: inset 0 0 0 2px #E8B4BE, inset 0 0 0 4px #FDF6F0, inset 0 0 0 5px #E8B4BE;
+}
+.design-12 .page::before,
+.design-12 .page::after {
+  content: "";
+  position: absolute;
+  width: 1.7in; height: 1.5in;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 34% 40%, #D9899A 0 0.11in, transparent 0.12in),
+    radial-gradient(circle at 52% 56%, #E8C4B8 0 0.18in, transparent 0.19in),
+    radial-gradient(circle at 64% 32%, #C9A3AE 0 0.09in, transparent 0.1in),
+    radial-gradient(ellipse at 44% 70%, #B7C4A8 0 0.07in, transparent 0.08in);
+  opacity: 0.75; z-index: 1;
+}
+.design-12 .page::before { top: 0.06in; left: 0.06in; }
+.design-12 .page::after { bottom: 0.22in; right: 0.08in; transform: scaleX(-1); }
+.design-12 .masthead h1.display,
+.design-12 .cover-title,
+.design-12 .headings > .display:last-child {
+  font-family: var(--font-script);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: #D9899A !important;
+}
+.design-12 .cover-year, .design-12 .cover-title:first-of-type { color: #5C4033 !important; font-family: var(--font-display); }
+.design-12 .mark, .design-12 .art { display: none !important; }
+.design-12 .masthead, .design-12 .masthead.no-art { grid-template-columns: 1fr; }
+.design-12 .card {
+  border: 1px solid #C4A090; border-radius: 0.14in;
+  background: #FFFBF7;
+}
+.design-12 .banner, .design-12 .card-tab {
+  background: #F3D4DC; color: #5C4033;
+  border-radius: 0.04in;
+}
+.design-12 .banner::before, .design-12 .banner::after { display: none; }
+.design-12 .divider .bar { background: #D9899A; height: 1px; width: 1.1in; }
+.design-12 .look-sheet {
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "date date"
+    "sched prio"
+    "extra tasks"
+    "notes next";
+  color: #5C4033;
+}
+.design-12 .ls-motto { display: none; }
+.design-12 .ls-date { grid-area: date; justify-content: center; }
+.design-12 .ls-date i { background: transparent; border: none; border-bottom: 1px solid #5C4033; }
+.design-12 .ls-prio { grid-area: prio; }
+.design-12 .ls-prio .ls-label::after { content: "TOP 3 PRIORITIES"; }
+.design-12 .ls-three { flex-direction: column; }
+.design-12 .ls-three li::before { background: #D9899A; }
+.design-12 .ls-sched { grid-area: sched; border-radius: 0.12in; }
+.design-12 .ls-sched .ls-slots { display: none; }
+.design-12 .ls-sched { min-height: 1.4in; }
+.design-12 .ls-extra { grid-area: extra; }
+.design-12 .ls-tasks { grid-area: tasks; }
+.design-12 .ls-notes { grid-area: notes; border-radius: 0.12in; }
+.design-12 .ls-next { grid-area: next; }
+.design-12 .ls-quote { display: none; }
+.design-12 .look-sheet h3 { background: #F3D4DC; color: #5C4033; text-align: center; }
+.design-12 .ls-sched h3::after { content: "TODAY'S FOCUS"; }
+.design-12 .ls-extra h3::after { content: "APPOINTMENTS"; }
+.design-12 .ls-notes h3::after { content: "NOTES"; }
+.design-12 .ls-tasks h3::after { content: "TO-DO LIST"; }
+.design-12 .ls-next h3::after { content: "SELF-CARE & GRATITUDE"; }
+.design-12 .ls-dots { background-image: none; flex: 1; }
+
+/* 13 — Boho earth */
+.design-13 {
+  --navy: #5C3D2E; --teal: #8A9E7E; --pink: #E8C4B0; --orange: #C4785A;
+  --green: #8A9E7E; --purple: #C4A090; --blue: #A8B8A0; --red: #C4785A;
+  --brown: #8A5A40; --ink: #5C3D2E; --paper: #F7F0E6; --rule: #E0D4C4;
+}
+.design-13 .page { background: #F7F0E6; }
+.design-13 .masthead h1.display,
+.design-13 .cover-title,
+.design-13 .headings > .display {
+  font-family: var(--font-script);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.design-13 .mark, .design-13 .art { display: none !important; }
+.design-13 .masthead, .design-13 .masthead.no-art { grid-template-columns: 1fr; }
+.design-13 .card, .design-13 .focus-strip {
+  border: 1.5px solid #C4B49A; border-radius: 0.16in;
+  background: #FFFBF5;
+}
+.design-13 .banner, .design-13 .card-tab {
+  background: color-mix(in srgb, var(--orange) 55%, #fff);
+  color: #5C3D2E;
+  border-radius: 40% 12px 40% 12px / 12px 40% 12px 40%;
+  transform: rotate(-0.6deg);
+}
+.design-13 .card:nth-child(odd) .banner,
+.design-13 .card:nth-child(odd) .card-tab {
+  background: color-mix(in srgb, var(--green) 45%, #fff);
+}
+.design-13 .banner::before, .design-13 .banner::after { display: none; }
+.design-13 .look-sheet {
+  grid-template-columns: 1fr 0.9fr;
+  grid-template-areas:
+    "motto motto"
+    "date date"
+    "prio sched"
+    "tasks sched"
+    "notes next"
+    "quote quote";
+  color: #5C3D2E;
+}
+.design-13 .ls-motto { grid-area: motto; text-align: center; font-family: var(--font-script); text-transform: none; letter-spacing: 0; font-size: 11pt; }
+.design-13 .ls-motto::after { content: "Grounded. Grateful. Growing."; }
+.design-13 .ls-date { grid-area: date; justify-content: center; }
+.design-13 .ls-prio { grid-area: prio; }
+.design-13 .ls-prio .ls-label { display: none; }
+.design-13 .ls-three { flex-direction: column; }
+.design-13 .ls-three li::before { background: #C4785A; }
+.design-13 .ls-sched { grid-area: sched; }
+.design-13 .ls-tasks { grid-area: tasks; }
+.design-13 .ls-notes { grid-area: notes; }
+.design-13 .ls-next { grid-area: next; }
+.design-13 .ls-extra { display: none; }
+.design-13 .ls-quote { grid-area: quote; display: block; text-align: center; background: #EDE4D4; padding: 0.08in; }
+.design-13 .ls-quote::after { content: "YOU DON'T HAVE TO BE PERFECT TO MAKE PROGRESS."; }
+.design-13 .ls-mod { border-radius: 0.14in; border-color: #C4B49A; background: #FFFBF5; }
+.design-13 .look-sheet h3 {
+  background: transparent; color: #5C3D2E; text-align: center;
+  background-image: linear-gradient(#C4785A, #C4785A);
+  background-repeat: no-repeat;
+  background-size: 70% 0.22in;
+  background-position: center 0.04in;
+}
+.design-13 .ls-sched h3, .design-13 .ls-notes h3 {
+  background-image: linear-gradient(#8A9E7E, #8A9E7E);
+}
+.design-13 .ls-tasks h3 { background-image: linear-gradient(#E8C4B0, #E8C4B0); }
+.design-13 .ls-next h3 { background-image: linear-gradient(#E8C4B0, #E8C4B0); }
+.design-13 .ls-prio .ls-label { display: block; text-align: center; }
+.design-13 .ls-prio .ls-label::after { content: "TOP PRIORITIES"; }
+.design-13 .ls-sched h3::after { content: "SCHEDULE"; }
+.design-13 .ls-tasks h3::after { content: "TO-DO LIST"; }
+.design-13 .ls-notes h3::after { content: "NOTES & REFLECTIONS"; }
+.design-13 .ls-next h3::after { content: "TODAY I WILL"; }
+.design-13 .ls-checks { max-height: none; }
+.design-13 .ls-checks li:nth-child(n+9) { display: none; }
+
+/* 14 — Scrapbook */
+.design-14 {
+  --navy: #1E4A4A; --teal: #2A8A8A; --pink: #E85A4A; --orange: #E8B84A;
+  --green: #3A9A8A; --purple: #E85A4A; --blue: #7AB8C8; --red: #E85A4A;
+  --brown: #8A5A28; --ink: #2A2420; --paper: #FBF6EB; --rule: #E4D8C4;
+}
+.design-14 .page { background: #FBF6EB; }
+.design-14 .page::before,
+.design-14 .page::after {
+  content: "";
+  position: absolute;
+  width: 1.4in; height: 1.1in;
+  pointer-events: none;
+  opacity: 0.45;
+}
+.design-14 .page::before {
+  top: -0.05in; left: -0.05in;
+  background: radial-gradient(ellipse at 20% 30%, #E85A4A 0 0.55in, transparent 0.56in);
+}
+.design-14 .page::after {
+  bottom: -0.08in; right: -0.08in;
+  background: radial-gradient(ellipse at 80% 70%, #2A8A8A 0 0.5in, transparent 0.51in);
+}
+.design-14 .masthead h1.display,
+.design-14 .cover-title {
+  font-family: var(--font-script);
+  text-transform: none;
+  letter-spacing: 0;
+  color: #E85A4A !important;
+}
+.design-14 .headings > .display:last-child { color: #2A8A8A !important; }
+.design-14 .mark, .design-14 .art { display: none !important; }
+.design-14 .masthead, .design-14 .masthead.no-art { grid-template-columns: 1fr; }
+.design-14 .card, .design-14 .focus-strip {
+  background: #fff;
+  border: none;
+  border-radius: 2px 14px 4px 12px;
+  box-shadow: 2px 3px 0 rgba(30, 74, 74, 0.12);
+}
+.design-14 .banner, .design-14 .card-tab {
+  background: #2A8A8A; color: #fff;
+  border-radius: 40% 8px 50% 6px / 10px 50% 8px 40%;
+  transform: rotate(-1deg);
+}
+.design-14 .card:nth-child(3n) .banner,
+.design-14 .card:nth-child(3n) .card-tab { background: #E85A4A; }
+.design-14 .card:nth-child(3n+1) .banner,
+.design-14 .card:nth-child(3n+1) .card-tab { background: #E8B84A; color: #2A2420; }
+.design-14 .banner::before, .design-14 .banner::after { display: none; }
+.design-14 .look-sheet {
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "date date"
+    "sched prio"
+    "sched tasks"
+    "notes extra"
+    "notes next";
+  color: #2A2420;
+}
+.design-14 .ls-motto { display: none; }
+.design-14 .ls-date { grid-area: date; justify-content: flex-end; }
+.design-14 .ls-prio { grid-area: prio; background: #F8E4D4; padding: 0.08in; }
+.design-14 .ls-prio .ls-label::after { content: "TOP PRIORITIES"; }
+.design-14 .ls-three { flex-direction: column; }
+.design-14 .ls-three li::before { background: #E85A4A; }
+.design-14 .ls-sched { grid-area: sched; transform: rotate(-0.4deg); }
+.design-14 .ls-tasks { grid-area: tasks; background: #FFF6D4; }
+.design-14 .ls-extra { grid-area: extra; background: #F8E4D4; }
+.design-14 .ls-notes { grid-area: notes; background: #DCEEF2; }
+.design-14 .ls-next { grid-area: next; }
+.design-14 .ls-quote { display: none; }
+.design-14 .ls-mod { border: none; border-radius: 2px 12px 3px 10px; background: #fff; box-shadow: 2px 3px 0 rgba(30,74,74,.12); }
+.design-14 .look-sheet h3 {
+  background: #2A8A8A; color: #fff;
+  border-radius: 40% 8px 50% 6px / 10px 50% 8px 40%;
+  display: inline-block; margin: 0.06in;
+}
+.design-14 .ls-extra h3 { background: #E85A4A; }
+.design-14 .ls-next h3 { background: #E8B84A; color: #2A2420; }
+.design-14 .ls-sched h3::after { content: "SCHEDULE"; }
+.design-14 .ls-tasks h3::after { content: "MUST DO"; }
+.design-14 .ls-notes h3::after { content: "BRAIN DUMP"; }
+.design-14 .ls-extra h3::after { content: "NOTES"; }
+.design-14 .ls-next h3::after { content: "LITTLE WINS"; }
+.design-14 .ls-checks li:nth-child(n+8) { display: none; }
+
+/* 15 — Street journal */
+.design-15 {
+  --navy: #111; --teal: #111; --pink: #111; --orange: #111;
+  --green: #111; --purple: #111; --blue: #111; --red: #111;
+  --paper: #F2F2F2; --ink: #111; --rule: #BDBDBD;
+}
+.design-15 .page {
+  background-color: #F4F4F4;
+  background-image:
+    linear-gradient(#d8d8d8 1px, transparent 1px),
+    linear-gradient(90deg, #d8d8d8 1px, transparent 1px);
+  background-size: 0.16in 0.16in;
+}
+.design-15 .mark, .design-15 .art, .design-15 .divider, .design-15 .chip { display: none !important; }
+.design-15 .masthead, .design-15 .masthead.no-art { grid-template-columns: 1fr; }
+.design-15 .display {
+  font-family: var(--font-body);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #111 !important;
+}
+.design-15 .card, .design-15 .focus-strip {
+  background: #fff; border: 2.5px solid #111; border-radius: 0.03in;
+}
+.design-15 .banner, .design-15 .card-tab, .design-15 .vm-tag {
+  background: #111; color: #fff;
+  border-radius: 3px 18px 4px 14px;
+  transform: rotate(0.8deg);
+}
+.design-15 .banner::before, .design-15 .banner::after { display: none; }
+.design-15 .masthead .headings { position: relative; }
+.design-15 .masthead .headings::before,
+.design-15 .masthead .headings::after {
+  position: absolute; font-size: 16pt; color: #111; font-weight: 900;
+}
+.design-15 .masthead .headings::before { content: "⚡"; left: 0; top: -0.02in; }
+.design-15 .masthead .headings::after { content: "★"; right: 0.05in; top: 0.08in; }
+.design-15 .look-sheet {
+  grid-template-columns: 1fr 0.85fr;
+  grid-template-areas:
+    "date date"
+    "prio sched"
+    "tasks sched"
+    "extra notes";
+  color: #111;
+}
+.design-15 .ls-motto { display: none; }
+.design-15 .ls-date { grid-area: date; justify-content: center; }
+.design-15 .ls-date i { background: #fff; border: 2px solid #111; }
+.design-15 .ls-prio { grid-area: prio; }
+.design-15 .ls-prio .ls-label::after { content: "TOP PRIORITIES"; }
+.design-15 .ls-three { flex-direction: column; }
+.design-15 .ls-three li::before { background: #111; }
+.design-15 .ls-sched { grid-area: sched; }
+.design-15 .ls-tasks { grid-area: tasks; }
+.design-15 .ls-extra { grid-area: extra; }
+.design-15 .ls-notes { grid-area: notes; }
+.design-15 .ls-next { display: none; }
+.design-15 .ls-quote { display: none; }
+.design-15 .ls-mod { border: 2.5px solid #111; background: #fff; }
+.design-15 .look-sheet h3 {
+  background: #111; color: #fff;
+  border-radius: 3px 16px 4px 12px;
+  display: inline-block; margin: 0.05in; transform: rotate(-1deg);
+}
+.design-15 .ls-prio .ls-label {
+  background: #111; color: #fff; display: inline-block;
+  padding: 0.04in 0.1in; border-radius: 3px 14px 3px 10px; transform: rotate(-1deg);
+}
+.design-15 .ls-sched h3::after { content: "SCHEDULE"; }
+.design-15 .ls-tasks h3::after { content: "TO-DO LIST"; }
+.design-15 .ls-extra h3::after { content: "DON'T FORGET"; }
+.design-15 .ls-notes h3::after { content: "NOTES"; }
+.design-15 .ls-t { background: #fff; }
+
+/* 16 — Reset */
+.design-16 {
+  --navy: #2A4A38; --teal: #7A9A7A; --pink: #C4846A; --orange: #C4846A;
+  --green: #8AA888; --purple: #A88878; --blue: #7A9A8A; --red: #C07058;
+  --brown: #8A6048; --ink: #2A4A38; --paper: #F7F4EC; --rule: #D8D4C8;
+}
+.design-16 .page { background: #F7F4EC; }
+.design-16 .page::before,
+.design-16 .page::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.design-16 .page::before {
+  top: -0.1in; left: -0.12in;
+  width: 1.6in; height: 1.1in;
+  background: radial-gradient(ellipse at 30% 40%, #8AA888 0 0.55in, transparent 0.56in);
+}
+.design-16 .page::after {
+  bottom: 0.18in; right: 0.12in;
+  width: 1.1in; height: 1.2in;
+  background:
+    radial-gradient(ellipse at 50% 70%, #C4846A 0 0.28in, transparent 0.29in),
+    radial-gradient(ellipse at 48% 35%, #7A9A7A 0 0.22in, transparent 0.23in);
+}
+.design-16 .display { letter-spacing: 0.02em; }
+.design-16 .mark, .design-16 .art { display: none !important; }
+.design-16 .masthead, .design-16 .masthead.no-art { grid-template-columns: 1fr; }
+.design-16 .card {
+  border: none; border-radius: 0.14in;
+  background: color-mix(in srgb, var(--green) 16%, #fff);
+}
+.design-16 .card:nth-child(even) {
+  background: color-mix(in srgb, var(--pink) 18%, #fff);
+}
+.design-16 .banner {
+  background: #2A4A38; color: #fff;
+  border-radius: 0.06in;
+}
+.design-16 .card-tab {
+  background: #C4846A; color: #fff;
+  border-radius: 0.08in;
+}
+.design-16 .banner::before, .design-16 .banner::after { display: none; }
+.design-16 .look-sheet {
+  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-areas:
+    "motto date"
+    "sched extra"
+    "sched prio"
+    "sched tasks"
+    "notes notes"
+    "quote quote";
+  color: #2A4A38;
+}
+.design-16 .ls-motto { grid-area: motto; color: #C4846A; align-self: end; }
+.design-16 .ls-motto::after { content: "SMALL STEPS. BIG CHANGE."; }
+.design-16 .ls-date { grid-area: date; }
+.design-16 .ls-date i { background: #E4EDE4; border: none; border-radius: 999px; }
+.design-16 .ls-prio { grid-area: prio; background: #F3E6DC; padding: 0.08in; border-radius: 0.12in; }
+.design-16 .ls-prio .ls-label::after { content: "TOP PRIORITIES"; }
+.design-16 .ls-three { flex-direction: column; }
+.design-16 .ls-three li::before { background: #C4846A; }
+.design-16 .ls-sched { grid-area: sched; }
+.design-16 .ls-extra { grid-area: extra; background: #E4EDE4; padding: 0; border-radius: 0.12in; border: none; }
+.design-16 .ls-tasks { grid-area: tasks; }
+.design-16 .ls-notes { grid-area: notes; border: none; }
+.design-16 .ls-next { display: none; }
+.design-16 .ls-quote { grid-area: quote; display: block; text-align: center; }
+.design-16 .ls-quote::after { content: "FOCUS ON PROGRESS, NOT PERFECTION."; }
+.design-16 .ls-mod { border-radius: 0.12in; border-color: #C5D0C4; }
+.design-16 .ls-sched h3 { background: #2A4A38; }
+.design-16 .ls-extra h3, .design-16 .ls-notes h3 { background: #7A9A7A; }
+.design-16 .ls-tasks h3 { background: #C4846A; }
+.design-16 .ls-sched h3::after { content: "SCHEDULE"; }
+.design-16 .ls-extra h3::after { content: "INTENTIONS"; }
+.design-16 .ls-tasks h3::after { content: "TO-DO LIST"; }
+.design-16 .ls-notes h3::after { content: "NOTES & REFLECTIONS"; }
+.design-16 .ls-extra .ls-lines { padding: 0.08in; }
+.design-16 .ls-notes .ls-dots { display: none; }
+.design-16 .ls-notes .ls-dots { background: none; }
+.design-16 .ls-notes { min-height: 0.9in; background-image: repeating-linear-gradient(transparent, transparent 0.22in, #D8D4C8 0.22in, #D8D4C8 calc(0.22in + 1px)); }
+
+.design-blank .mark,
+.design-blank .art,
+.design-blank .cover-scene,
+.design-blank .cover-side,
+.design-blank .cover-feet,
+.design-blank .banner,
+.design-blank .divider { display: none !important; }
+.design-blank .masthead,
+.design-blank .masthead.no-art,
+.design-blank .cover-body {
+  grid-template-columns: 1fr;
+}
+.design-blank .card { border-radius: 0; border-color: var(--rule); }
+.design-blank .card-tab { background: var(--navy); }

@@ -8,11 +8,11 @@ Three roles, used consistently by every page:
 
 Pick a named preset, or name any three Google Fonts families yourself:
 
-    fonts: rounded
+    fonts: classic
     fonts:
-      display: Baloo 2
-      script: Caveat
-      body: Quicksand
+      display: Open Sans
+      script: Open Sans
+      body: Open Sans
 """
 
 from __future__ import annotations
@@ -37,26 +37,29 @@ ROLE_FALLBACKS: dict[str, str] = {
 }
 
 PRESETS: dict[str, dict[str, str]] = {
-    # The reference planner's look: chunky rounded caps, bouncy brush script.
-    "classic": {"display": "Fredoka", "script": "Pacifico", "body": "Nunito"},
+    # Clean sans throughout.
+    "classic": {"display": "Open Sans", "script": "Open Sans", "body": "Open Sans"},
 
-    # Softer and more childlike; Caveat reads like a felt-tip pen.
-    "rounded": {"display": "Baloo 2", "script": "Caveat", "body": "Quicksand"},
+    # Chunky caps and a brush script — the former classic set.
+    "playful": {"display": "Fredoka", "script": "Pacifico", "body": "Nunito"},
 
-    # Crisp geometric headings with a fine joined script.
-    "modern": {"display": "Poppins", "script": "Sacramento", "body": "Inter"},
+    # Geometric sans throughout.
+    "modern": {"display": "Oxygen", "script": "Oxygen", "body": "Oxygen"},
 
     # Serif headings and copperplate script - the keepsake end of the range.
     "elegant": {"display": "Playfair Display", "script": "Great Vibes", "body": "Lato"},
 
-    # Loud and bubbly, closest to a kids' activity book.
-    "bubbly": {"display": "Baloo 2", "script": "Pacifico", "body": "Rubik"},
+    # A single italic script for headings, greetings and body.
+    "italics": {"display": "Courgette", "script": "Courgette", "body": "Courgette"},
 
     # Tidy and neutral, with a relaxed handwriting accent.
     "neat": {"display": "Montserrat", "script": "Kalam", "body": "Open Sans"},
 }
 
-DEFAULT_SET = "classic"
+# Old config files that still name retired sets.
+_ALIASES = {"rounded": "italics", "bubbly": "playful"}
+
+DEFAULT_SET = "elegant"
 
 
 @dataclass(frozen=True)
@@ -104,6 +107,7 @@ def resolve(spec: str | dict | None) -> Typefaces:
 
     if isinstance(spec, str):
         key = spec.strip().lower()
+        key = _ALIASES.get(key, key)
         if key not in PRESETS:
             raise KeyError(f"unknown typeface set '{spec}'. Available: {', '.join(names())}")
         return Typefaces(preset=key, **PRESETS[key])

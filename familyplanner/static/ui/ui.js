@@ -5,30 +5,49 @@
 const $ = (sel) => document.querySelector(sel);
 const el = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
 
-const MEMBER_DOTS = ["#14A0A5", "#EF3E63", "#F7A81B", "#6DB033", "#7C4DA0", "#2F6FD1"];
+const MEMBER_DOTS = ["#5F7A62", "#C4A09A", "#C9956A", "#8AA084", "#A0909C", "#7A8B88"];
 
 const state = {
   year: 2027, family_name: "", week_starts: "sunday", dated_months: true,
-  page_size: "letter", members: [], pages: [], theme: "classic", fonts: "classic",
+  cover_year: "auto", cover_text: "",
+  page_size: "letter", members: [], pages: [], theme: "linen", fonts: "elegant",
+  design: "original", type_size: { title: 30, cover: 66, body: 9, script: 13 },
   preview: null, zoom: null,
 };
-let meta = { themes: [], typefaces: [], catalogue: [], months: [], defaultPages: [] };
+let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [] };
 let previewSeq = 0;
 
 /* --- helpers -------------------------------------------------------------- */
 
-function toast(message, kind = "", code = "") {
+function toast(message, kind = "", extra = "") {
   const node = $("#toast");
-  node.textContent = message;
-  if (code) {
+  node.textContent = "";
+  const text = el("span");
+  text.textContent = message;
+  node.append(text);
+  if (extra && extra.action && extra.path) {
+    const btn = el("button");
+    btn.type = "button";
+    btn.textContent = extra.action;
+    btn.addEventListener("click", () => openBuilt(extra.path));
+    node.append(btn);
+  } else if (typeof extra === "string" && extra) {
     const c = el("code");
-    c.textContent = code;
-    node.append(" ", c);
+    c.textContent = extra;
+    node.append(c);
   }
   node.dataset.kind = kind;
   node.dataset.show = "1";
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => { node.dataset.show = "0"; }, kind === "error" ? 7000 : 4200);
+  toast.timer = setTimeout(() => { node.dataset.show = "0"; }, kind === "error" ? 7000 : 8000);
+}
+
+function friendlyError(error, recovery) {
+  const raw = String(error && error.message ? error.message : error || "");
+  if (!raw || /^[A-Za-z]+Error:/.test(raw) || /malformed response/i.test(raw) || /failed to fetch/i.test(raw)) {
+    return recovery;
+  }
+  return raw;
 }
 
 async function api(path, body) {
@@ -124,6 +143,72 @@ function renderTypefaces() {
   }
 }
 
+const SIZE_ROLES = [
+  ["title", "Titles"],
+  ["cover", "Cover"],
+  ["body", "Body"],
+  ["script", "Script"],
+];
+
+function clampSize(key, value) {
+  const range = meta.typeSizeRange[key] || { min: 6, max: 96 };
+  if (!Number.isFinite(value)) return state.type_size[key];
+  return Math.min(range.max, Math.max(range.min, Math.round(value * 10) / 10));
+}
+
+function renderSizes() {
+  const host = $("#sizes");
+  host.textContent = "";
+  for (const [key, label] of SIZE_ROLES) {
+    const range = meta.typeSizeRange[key] || { min: 6, max: 96, value: state.type_size[key] };
+    const row = el("div", "size-row");
+    const name = el("span");
+    name.textContent = label;
+    const slider = el("input");
+    Object.assign(slider, {
+      type: "range", min: range.min, max: range.max, step: "0.5",
+      value: state.type_size[key],
+    });
+    slider.setAttribute("aria-label", `${label} size`);
+    const num = el("input");
+    Object.assign(num, {
+      type: "number", min: range.min, max: range.max, step: "0.5",
+      value: state.type_size[key],
+    });
+    num.setAttribute("aria-label", `${label} size in points`);
+    const apply = (raw) => {
+      const next = clampSize(key, parseFloat(raw));
+      state.type_size[key] = next;
+      slider.value = next;
+      num.value = next;
+      refresh();
+    };
+    slider.addEventListener("input", () => apply(slider.value));
+    num.addEventListener("change", () => apply(num.value));
+    row.append(name, slider, num);
+    host.append(row);
+  }
+}
+
+function renderDesigns() {
+  const host = $("#designs");
+  host.textContent = "";
+  for (const look of meta.designs) {
+    const card = el("label", "design-card");
+    card.dataset.on = state.design === look.id ? "1" : "0";
+    const input = el("input");
+    Object.assign(input, { type: "radio", name: "design", value: look.id,
+                           checked: state.design === look.id });
+    input.addEventListener("change", () => { state.design = look.id; renderDesigns(); refresh(); });
+    const name = el("strong");
+    name.textContent = look.label;
+    const note = el("em");
+    note.textContent = look.note;
+    card.append(input, name, note);
+    host.append(card);
+  }
+}
+
 function renderMembers() {
   const host = $("#members");
   host.textContent = "";
@@ -132,14 +217,14 @@ function renderMembers() {
     const dot = el("span", "dot");
     dot.style.background = MEMBER_DOTS[index % MEMBER_DOTS.length];
     const input = el("input");
-    Object.assign(input, { type: "text", value, placeholder: `Person ${index + 1}` });
-    input.setAttribute("aria-label", `Tracker row ${index + 1}`);
+    Object.assign(input, { type: "text", value, placeholder: "Maya" });
+    input.setAttribute("aria-label", `Name ${index + 1}`);
     input.addEventListener("input", () => { state.members[index] = input.value; });
     input.addEventListener("change", refresh);
     const remove = el("button");
     remove.type = "button";
     remove.textContent = "×";
-    remove.setAttribute("aria-label", `Remove row ${index + 1}`);
+    remove.setAttribute("aria-label", `Remove name ${index + 1}`);
     remove.addEventListener("click", () => {
       state.members.splice(index, 1); renderMembers(); refresh();
     });
@@ -240,7 +325,7 @@ function syncPreviewChoices() {
     option.selected = page.slug === state.preview;
     select.append(option);
   });
-  $("#brand-sub").textContent = `${pages.length} page${pages.length === 1 ? "" : "s"} · ${state.page_size}`;
+  $("#brand-sub").textContent = `${pages.length} page${pages.length === 1 ? "" : "s"} · ${state.page_size === "a4" ? "A4" : "US Letter"}`;
 }
 
 /* --- preview -------------------------------------------------------------- */
@@ -260,7 +345,9 @@ async function loadPreview() {
     $("#preview").srcdoc = data.html;
     requestAnimationFrame(applyZoom);
   } catch (error) {
-    if (seq === previewSeq) toast(error.message, "error");
+    if (seq === previewSeq) {
+      toast(friendlyError(error, "Could not update the preview. Keep the planner window open and try again."), "error");
+    }
   } finally {
     if (seq === previewSeq) $("#spinner").hidden = true;
   }
@@ -283,7 +370,7 @@ function applyZoom() {
   sheet.style.transform = `scale(${scale})`;
   // Reserve the scaled footprint so the scroll area matches what is drawn.
   sheet.style.margin = `${(h * scale - h) / 2}px ${(w * scale - w) / 2}px`;
-  $("#zoom-level").textContent = state.zoom ? `${Math.round(scale * 100)}%` : "Fit";
+  $("#zoom-level").textContent = state.zoom ? `${Math.round(scale * 100)}%` : "Fit page";
 }
 
 function nudgeZoom(direction) {
@@ -303,12 +390,12 @@ async function build(button) {
   const original = label.textContent;
   button.dataset.busy = "1";
   button.disabled = true;
-  label.textContent = "Building…";
+  label.textContent = "Making PDF…";
   try {
     const data = await api("/api/build", { ...state });
-    toast(`Built ${data.pages} pages · ${data.megabytes} MB`, "ok", data.pdf);
+    toast("Your PDF is ready to print.", "ok", { action: "Open PDF", path: data.pdf });
   } catch (error) {
-    toast(error.message, "error");
+    toast(friendlyError(error, "Could not make the PDF. Keep the planner window open and try again."), "error");
   } finally {
     delete button.dataset.busy;
     button.disabled = false;
@@ -318,20 +405,72 @@ async function build(button) {
 
 async function saveConfig() {
   try {
-    const data = await api("/api/save", { ...state, path: "family.yaml" });
-    toast("Saved", "ok", data.saved);
+    await api("/api/save", { ...state, path: "family.yaml" });
+    toast("Saved. The next time you open the planner, these choices will be here.", "ok");
   } catch (error) {
-    toast(error.message, "error");
+    toast(friendlyError(error, "Could not save. Keep the planner window open and try again."), "error");
   }
 }
 
+async function openBuilt(path) {
+  try {
+    await api("/api/open", { path });
+  } catch (error) {
+    toast(friendlyError(error, "Could not open the PDF. Make a PDF again, then open it from here."), "error");
+  }
+}
+
+function paintForm() {
+  $("#year").value = state.year;
+  $("#cover-text").value = state.cover_text || "";
+  $("#family").value = state.family_name;
+  $("#size").value = state.page_size;
+  $("#week").value = state.week_starts;
+  $("#dated").checked = state.dated_months;
+  if (!state.cover_year) state.cover_year = "auto";
+  syncCoverYearRow();
+  renderThemes(); renderTypefaces(); renderSizes(); renderDesigns(); renderMembers();
+  syncPreviewChoices(); renderPages();
+}
+
+function newBook() {
+  state.family_name = "";
+  state.cover_text = "";
+  state.members = ["", ""];
+  state.pages = [...meta.defaultPages];
+  state.theme = "linen";
+  state.fonts = "elegant";
+  state.design = "original";
+  state.dated_months = true;
+  state.cover_year = "auto";
+  state.week_starts = "sunday";
+  state.page_size = "letter";
+  state.type_size = { title: 30, cover: 66, body: 9, script: 13 };
+  state.preview = "cover";
+  paintForm();
+  refresh();
+  toast("Cleared this screen. Nothing is saved until you click Save for next time.");
+}
+
 /* --- wiring --------------------------------------------------------------- */
+
+function syncCoverYearRow() {
+  const row = $("#cover-year-row");
+  row.hidden = state.dated_months;
+  const select = $("#cover-year");
+  const mode = state.cover_year;
+  select.value = (mode === "omit" || mode === "print" || mode === "blank") ? mode : "blank";
+}
 
 function bind() {
   $("#year").addEventListener("change", (e) => {
     const value = parseInt(e.target.value, 10);
     if (Number.isFinite(value) && value >= 1900 && value <= 2999) { state.year = value; refresh(); }
-    else { e.target.value = state.year; toast("Year must be between 1900 and 2999", "error"); }
+    else { e.target.value = state.year; toast("Enter a year between 1900 and 2999.", "error"); }
+  });
+  $("#cover-text").addEventListener("input", (e) => {
+    state.cover_text = e.target.value;
+    refresh();
   });
   $("#family").addEventListener("input", (e) => { state.family_name = e.target.value; });
   $("#family").addEventListener("change", refresh);
@@ -339,10 +478,21 @@ function bind() {
     state.page_size = e.target.value; syncPreviewChoices(); applyZoom(); refresh();
   });
   $("#week").addEventListener("change", (e) => { state.week_starts = e.target.value; refresh(); });
-  $("#dated").addEventListener("change", (e) => { state.dated_months = e.target.checked; refresh(); });
+  $("#dated").addEventListener("change", (e) => {
+    state.dated_months = e.target.checked;
+    if (!state.dated_months && (state.cover_year === "auto" || !state.cover_year)) {
+      state.cover_year = "blank";
+    }
+    syncCoverYearRow();
+    refresh();
+  });
+  $("#cover-year").addEventListener("change", (e) => {
+    state.cover_year = e.target.value;
+    refresh();
+  });
 
   $("#add-member").addEventListener("click", () => {
-    if (state.members.length >= 10) return toast("Ten rows is the practical maximum", "error");
+    if (state.members.length >= 10) return toast("You can list up to 10 people.", "error");
     state.members.push(""); renderMembers(); refresh();
   });
   $("#reset-pages").addEventListener("click", () => {
@@ -356,6 +506,7 @@ function bind() {
   $("#zoom-out").addEventListener("click", () => nudgeZoom(-1));
   $("#build").addEventListener("click", (e) => build(e.currentTarget));
   $("#save").addEventListener("click", saveConfig);
+  $("#fresh").addEventListener("click", newBook);
 
   window.addEventListener("resize", () => { if (!state.zoom) applyZoom(); });
   new ResizeObserver(() => { if (!state.zoom) applyZoom(); }).observe($("#canvas"));
@@ -369,18 +520,13 @@ async function start() {
   try {
     meta = await api("/api/state");
   } catch (error) {
-    toast(`Could not reach the planner: ${error.message}`, "error");
+    toast("Could not open the planner. Double-click Start Planner and leave that window open.", "error");
     return;
   }
   Object.assign(state, meta.config);
-  $("#year").value = state.year;
-  $("#family").value = state.family_name;
-  $("#size").value = state.page_size;
-  $("#week").value = state.week_starts;
-  $("#dated").checked = state.dated_months;
-
-  renderThemes(); renderTypefaces(); renderMembers();
-  syncPreviewChoices(); renderPages();
+  if (!state.design) state.design = "original";
+  state.type_size = { title: 30, cover: 66, body: 9, script: 13, ...(state.type_size || {}) };
+  paintForm();
   bind(); applyZoom(); loadPreview();
 }
 

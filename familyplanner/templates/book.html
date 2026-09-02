@@ -19,6 +19,10 @@
   --font-display: {{ font_display|safe }};
   --font-script: {{ font_script|safe }};
   --font-body: {{ font_body|safe }};
+  --type-title: {{ cfg.type_size.title }}pt;
+  --type-cover: {{ cfg.type_size.cover }}pt;
+  --type-body: {{ cfg.type_size.body }}pt;
+  --type-script: {{ cfg.type_size.script }}pt;
 }
 
 {{ css|safe }}
@@ -33,7 +37,7 @@
 {% endif %}
 </style>
 </head>
-<body>
+<body class="design-{{ cfg.design }}">
 {% include "icons.html" %}
 {% for body in bodies %}
 {{ body|safe }}

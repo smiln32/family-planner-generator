@@ -3,6 +3,10 @@
 Generates the adorable printable planner pages as a print-ready PDF, for any
 year, any family, any colours.
 
+**If you just want to make a book:** double-click `Start Planner.bat`. Keep that
+window open. Your browser is the app. Click **Make PDF** when the pages look
+right.
+
 ```
 python planner.py fonts     # once - downloads the three display fonts
 python planner.py ui        # visual editor + live preview
@@ -45,11 +49,16 @@ python planner.py ui
 Opens a local app at `http://127.0.0.1:8733` with a live preview of the real
 rendered page - same code path as `build`, so what you see is what prints.
 
-- year, family name, paper size, week start, dated or blank grids
+On Windows, `Start Planner.bat` does this without typing a command. If the
+planner is already running, it just opens the browser again.
+
+- year, family name (optional), paper size, week start, dated or blank grids
 - colour themes and typeface sets as pickable cards, applied instantly
+- page looks named in plain language; paper, week start and lettering size sit under **Paper and lettering size**
 - tracker rows added and named inline
 - every page toggled in or out; click a page name to jump the preview to it
-- **Build PDF** runs the real build; **Save config** writes `family.yaml`
+- **Make PDF** builds the book and offers to open it; **Save for next time** writes `family.yaml`
+- **Start over** clears the name and people so you are not editing someone else's planner
 - `Ctrl/Cmd+B` builds, `Ctrl/Cmd+S` saves
 
 It binds to loopback only and runs builds on request, so treat it as a local
@@ -69,7 +78,7 @@ python planner.py build --undated    # blank month grids instead of real dates
 python planner.py build --only cover,months,year_end
 
 python planner.py build --theme berry    # recolour with a preset
-python planner.py build --fonts rounded  # different typefaces
+python planner.py build --fonts italics  # different typefaces
 
 python planner.py pages              # list what would be built
 python planner.py themes             # list the colour presets
@@ -112,9 +121,9 @@ python planner.py init      # writes family.yaml, fully commented
 
 ### Ready-made themes
 
-Colour presets ship with the generator. Most are complementary pairs
-(blue/orange, purple/gold, green/magenta) so the book does not always look
-like a recast of the classic rainbow:
+Colour presets ship with the generator. The factory default is `linen`: sage,
+dusty rose and clay on warm paper, with Playfair Display headings. `classic`
+keeps the original bright jewel-tone printable.
 
 ```
 python planner.py themes                       # list them with swatches
@@ -122,7 +131,7 @@ python planner.py build --theme pastel         # whole book
 python planner.py build --theme berry --only year_goals --png   # one page
 ```
 
-`classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `slate`
+`linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `slate`
 
 Set `theme: pastel` in your config to make it the default. A theme is only a
 starting point - your own `palette:` block is applied on top, so you can take
@@ -135,17 +144,17 @@ Six typeface sets ship with the generator. Each fills three roles: `display`
 
 ```
 python planner.py typefaces                    # see the sets
-python planner.py fonts --fonts rounded        # download that set
-python planner.py build --fonts rounded        # build with it
+python planner.py fonts --fonts italics        # download that set
+python planner.py build --fonts italics        # build with it
 ```
 
 | set | display | script | body |
 |---|---|---|---|
-| `classic` | Fredoka | Pacifico | Nunito |
-| `rounded` | Baloo 2 | Caveat | Quicksand |
-| `modern` | Poppins | Sacramento | Inter |
 | `elegant` | Playfair Display | Great Vibes | Lato |
-| `bubbly` | Baloo 2 | Pacifico | Rubik |
+| `classic` | Open Sans | Open Sans | Open Sans |
+| `playful` | Fredoka | Pacifico | Nunito |
+| `modern` | Oxygen | Oxygen | Oxygen |
+| `italics` | Courgette | Courgette | Courgette |
 | `neat` | Montserrat | Kalam | Open Sans |
 
 Or name **any** Google Fonts families you like:
@@ -166,6 +175,8 @@ the swap is reported, rather than the build failing.
 The things people change most:
 
 - **`year`** - monthly grids and the year-at-a-glance page are dated from this.
+- **`cover_text`** - printed on the cover and year mastheads instead of `year`
+  (for example `Our` or `2027-2028`). Leave empty to use the year.
 - **`family_name`** - printed on the cover and used in the output filename.
 - **`members`** - one row per person on the health tracker. Add or remove
   entries to change how many rows it has; names are optional.
@@ -178,7 +189,9 @@ The things people change most:
   footer line. Positional, January first, and partial lists are fine.
 - **`pages`** - the running order. Comment out a line to drop that page.
 - **`dated_months: false`** - blank grids to fill in by hand, which is what the
-  original printable did.
+  original printable did. The cover year becomes fill-in blanks unless you set
+  `cover_text` (print that line), `cover_year: omit` (hide it) or
+  `cover_year: print` (keep the digits).
 
 Available motifs: `snowman`, `hearts`, `sprout`, `tulips`, `flowers`, `sun`,
 `beach`, `school`, `pumpkin`, `leaves`, `snowflake`.
@@ -250,10 +263,9 @@ Filenames starting with `_` are treated as partials and skipped, as is
   build finds it automatically; override with `--browser PATH` or by setting
   `CHROME_PATH`.
 
-The three display fonts (Fredoka, Nunito, Pacifico) are optional. Without them
-the pages fall back to system fonts and still build; with them they look right.
-All three are SIL Open Font License, so the PDFs you make are yours to print,
-give away or sell.
+The display fonts are optional. Without them the pages fall back to system
+fonts and still build; with them they look right. They are SIL Open Font
+License, so the PDFs you make are yours to print, give away or sell.
 
 ## Differences from the original printable
 

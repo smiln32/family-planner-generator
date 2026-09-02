@@ -9,24 +9,23 @@ from typing import Any
 
 import yaml
 
-from . import themes, typefaces
+from . import designs, themes, typefaces
 
-# The brand palette lifted from the reference planner. Every template reaches
-# for these through CSS custom properties, so re-theming the whole 31-page book
-# is a matter of editing the `palette` block in the config.
+# Factory colours: sage, dusty rose and clay on warm paper. Token names stay
+# the same (navy, teal, …) so templates do not care which look is default.
 DEFAULT_PALETTE: dict[str, str] = {
-    "navy": "#16325F",
-    "teal": "#14A0A5",
-    "pink": "#EF3E63",
-    "orange": "#F7A81B",
-    "green": "#6DB033",
-    "purple": "#7C4DA0",
-    "blue": "#2F6FD1",
-    "red": "#D93025",
-    "brown": "#8A5A2B",
-    "ink": "#1F2933",
-    "paper": "#FFFFFF",
-    "rule": "#B9C3CF",
+    "navy": "#3E5344",
+    "teal": "#5F7A62",
+    "pink": "#C4A09A",
+    "orange": "#C9956A",
+    "green": "#8AA084",
+    "purple": "#A0909C",
+    "blue": "#7A8B88",
+    "red": "#B56858",
+    "brown": "#8A6B52",
+    "ink": "#3A3F3A",
+    "paper": "#F6F1E8",
+    "rule": "#DDD6CC",
 }
 
 # Per-month personality: accent colour, seasonal motif, greeting strip and the
@@ -80,12 +79,19 @@ DEFAULT_CONFIG: dict[str, Any] = {
     # True prints real dates in the monthly grids. False reproduces the
     # reference book's undated (write-your-own) grids.
     "dated_months": True,
+    # Cover year when the book is undated: auto (fill-in blanks), print, blank, omit.
+    "cover_year": "auto",
+    # Printed on the cover and year mastheads instead of the numeric year.
+    # Empty means use `year`. "Our" or "2027-2028" are typical overrides.
+    "cover_text": "",
     # Adds tab-rail navigation and an index, for reading on a tablet.
     "linked": False,
     # Rows on the shared trackers, so a family of three is not stuck with five.
     "members": ["", "", "", "", ""],
-    "theme": "classic",
-    "fonts": "classic",
+    "theme": "linen",
+    "fonts": "elegant",
+    "design": "original",
+    "type_size": {},
     "palette": {},
     "months": [],
     "pages": [],
@@ -134,8 +140,12 @@ class Config:
     family_name: str
     week_starts: str
     dated_months: bool
+    cover_year: str
+    cover_text: str
     linked: bool
     theme: str
+    design: str
+    type_size: dict[str, float]
     faces: typefaces.Typefaces
     members: list[str]
     palette: dict[str, str]
@@ -152,6 +162,37 @@ class Config:
     @property
     def sunday_first(self) -> bool:
         return self.week_starts == "sunday"
+
+    @property
+    def cover_year_display(self) -> str:
+        """What to print where the year goes: custom cover line, or the year."""
+        text = (self.cover_text or "").strip()
+        return text if text else str(self.year)
+
+    @property
+    def cover_year_is_word(self) -> bool:
+        """True when the cover line is not a date-like numeral (skip uppercase)."""
+        compact = "".join(ch for ch in self.cover_year_display if ch.isalnum())
+        return bool(compact) and not compact.isdigit()
+
+    @property
+    def year_on_cover(self) -> str:
+        """Cover year treatment: print, blank (fill-in), or omit.
+
+        Dated books always print the cover line (custom text, or the year).
+        Undated books default to fill-in blanks; a non-empty cover_text prints
+        instead of blanks. `omit` hides the line.
+        """
+        if self.dated_months:
+            return "print"
+        mode = (self.cover_year or "auto").lower()
+        if mode == "omit":
+            return "omit"
+        if (self.cover_text or "").strip():
+            return "print"
+        if mode == "print":
+            return "print"
+        return "blank"
 
     @property
     def stem(self) -> str:
@@ -201,6 +242,16 @@ def load(path: Path | None) -> Config:
     except KeyError as exc:
         raise ConfigError(str(exc).strip("\"'")) from exc
 
+    try:
+        design = designs.resolve(data.get("design"))
+    except KeyError as exc:
+        raise ConfigError(str(exc).strip("\"'")) from exc
+
+    try:
+        type_size = designs.clamp_type_size(data.get("type_size") or {})
+    except KeyError as exc:
+        raise ConfigError(str(exc).strip("\"'")) from exc
+
     months = _merge_months(data.get("months") or [])
     pages = list(data.get("pages") or DEFAULT_PAGES)
     members = [str(m) for m in (data.get("members") or [])]
@@ -220,6 +271,10 @@ def load(path: Path | None) -> Config:
     if not 1900 <= year <= 2999:
         raise ConfigError("year must be between 1900 and 2999")
 
+    cover_year = str(data.get("cover_year") or "auto").lower()
+    if cover_year not in {"auto", "print", "blank", "omit"}:
+        raise ConfigError("cover_year must be auto, print, blank, or omit")
+
     return Config(
         year=year,
         title=str(data["title"]),
@@ -227,8 +282,12 @@ def load(path: Path | None) -> Config:
         family_name=str(data["family_name"]),
         week_starts=week_starts,
         dated_months=bool(data["dated_months"]),
+        cover_year=cover_year,
+        cover_text=str(data.get("cover_text") or ""),
         linked=bool(data.get("linked", False)),
         theme=str(data.get("theme") or themes.DEFAULT_THEME).lower(),
+        design=design,
+        type_size=type_size,
         faces=faces,
         members=members,
         palette=palette,

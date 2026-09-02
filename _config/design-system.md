@@ -10,13 +10,15 @@ Canonical print rules for the Family Success Planner. Templates and `familyplann
 
 ## Type
 
-Three roles, filled by a named typeface set in config (`classic`, `rounded`, `modern`, `elegant`, `bubbly`, `neat`) or a custom `display` / `script` / `body` trio.
+Three roles, filled by a named typeface set in config (`elegant`, `classic`, `playful`, `modern`, `italics`, `neat`) or a custom `display` / `script` / `body` trio. The factory default is `elegant` (Playfair Display, Great Vibes, Lato).
 
 - Display: chunky headings
 - Script: handwritten greeting lines
 - Body: worksheets, tables, footers
+- Masthead titles (the stacked lines in the top centre) share one display size (`type_size.title`, default 30pt) and sit at the top of the header row, not vertically centred on the house art. Cover stack uses `type_size.cover`. Banners stay their own role; sliders in the visual editor change the four `type_size` values.
+- `design: original` is this Family Success Planner. Looks `02`–`05` match four reference styles (boxed records, botanical, marker journal, soft intention). `06`–`10` are other visual languages. `11`–`16` redraw the cover as a daily-planner sheet (executive, bloom, boho, scrapbook, street journal, reset) and restyle interior chrome to match. `blank` hides illustration.
 
-Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green`, `purple`, `blue`, `red`, `brown`, `ink`, `paper`, `rule`). Themes are starting points built as complementary pairs (except `classic` and `slate`); a config `palette:` block overrides individual tokens.
+Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green`, `purple`, `blue`, `red`, `brown`, `ink`, `paper`, `rule`). The default `linen` theme is sage, dusty rose and clay. `classic` is the original bright printable. A config `palette:` block overrides individual tokens.
 
 ## Cards and chrome
 

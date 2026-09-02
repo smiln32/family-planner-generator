@@ -13,9 +13,16 @@ point rather than a straitjacket.
 from __future__ import annotations
 
 PRESETS: dict[str, dict[str, str]] = {
-    # The look of the original printable. Deliberately empty: it is the
-    # DEFAULT_PALETTE as-is.
-    "classic": {},
+    # Default: sage, dusty rose and clay. Empty because it is DEFAULT_PALETTE.
+    "linen": {},
+
+    # The original bright printable: jewel navy, hot pink, citrus, lime.
+    "classic": {
+        "navy": "#16325F", "teal": "#14A0A5", "pink": "#EF3E63",
+        "orange": "#F7A81B", "green": "#6DB033", "purple": "#7C4DA0",
+        "blue": "#2F6FD1", "red": "#D93025", "brown": "#8A5A2B",
+        "ink": "#1F2933", "paper": "#FFFFFF", "rule": "#B9C3CF",
+    },
 
     # Violet headings, gold banners. Complements: purple / yellow.
     "amber": {
@@ -98,11 +105,11 @@ PRESETS: dict[str, dict[str, str]] = {
     },
 }
 
-DEFAULT_THEME = "classic"
+DEFAULT_THEME = "linen"
 
 
 def names() -> list[str]:
-    """Preset names, classic first and the rest alphabetical."""
+    """Preset names, the factory default first and the rest alphabetical."""
     rest = sorted(n for n in PRESETS if n != DEFAULT_THEME)
     return [DEFAULT_THEME, *rest]
 
