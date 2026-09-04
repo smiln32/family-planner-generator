@@ -123,9 +123,83 @@ DEFAULT_PAGES: list[str] = [
 ]
 
 PAGE_SIZES: dict[str, tuple[float, float]] = {
+    "5.5x8": (5.5, 8.0),
+    "6x9": (6.0, 9.0),
     "letter": (8.5, 11.0),
-    "a4": (8.27, 11.69),
 }
+
+PAGE_SIZE_LABELS: dict[str, str] = {
+    "5.5x8": "5.5 × 8 in",
+    "6x9": "6 × 9 in",
+    "letter": "8.5 × 11 in",
+}
+
+# Older configs and typed-in sizes land on one of the three names above.
+PAGE_SIZE_ALIASES: dict[str, str] = {
+    "a4": "letter",
+    "8.5x11": "letter",
+    "usletter": "letter",
+    "us-letter": "letter",
+}
+
+
+def normalize_page_size(raw: str | None) -> str:
+    """Map a config or UI value onto one of PAGE_SIZES."""
+    key = str(raw or "letter").strip().lower().replace(" ", "").replace("×", "x")
+    key = PAGE_SIZE_ALIASES.get(key, key)
+    if key not in PAGE_SIZES:
+        raise ConfigError(
+            f"page_size must be one of {list(PAGE_SIZES)} (got {raw!r})"
+        )
+    return key
+
+
+PLAN_NOTE = """# Family Success Planner
+
+Keep this file.
+
+- Next year, open the planner, click **Open a plan**, then change the year.
+- Send a copy to a friend if they want the same look. They can change the family name.
+"""
+
+
+def render_plan_markdown(data: dict[str, Any]) -> str:
+    dumped = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
+    return f"---\n{dumped}---\n\n{PLAN_NOTE}"
+
+
+def parse_plan_text(text: str) -> dict[str, Any]:
+    """Read a downloaded plan (.md with YAML front matter) or a raw YAML file."""
+    body = (text or "").lstrip("\ufeff").strip()
+    if not body:
+        raise ConfigError("that file is empty")
+    if body.startswith("---"):
+        rest = body[3:].lstrip("\n")
+        end = rest.find("\n---")
+        if end < 0:
+            raise ConfigError("that plan file is missing the closing ---")
+        raw = rest[:end]
+    else:
+        raw = body
+    try:
+        loaded = yaml.safe_load(raw) or {}
+    except yaml.YAMLError as exc:
+        raise ConfigError(f"could not read that plan file: {exc}") from exc
+    if not isinstance(loaded, dict):
+        raise ConfigError("that plan file must start with settings, not a list")
+    unknown = set(loaded) - set(DEFAULT_CONFIG)
+    if unknown:
+        raise ConfigError(f"unknown option(s) {sorted(unknown)}")
+    if "page_size" in loaded:
+        loaded["page_size"] = normalize_page_size(loaded["page_size"])
+    return loaded
+
+
+def plan_filename(data: dict[str, Any]) -> str:
+    year = data.get("year") or "planner"
+    name = str(data.get("family_name") or "family").strip() or "family"
+    slug = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in name)
+    return f"{year}-{slug}-planner.md"
 
 
 class ConfigError(ValueError):
@@ -260,9 +334,7 @@ def load(path: Path | None) -> Config:
     if week_starts not in {"sunday", "monday"}:
         raise ConfigError("week_starts must be sunday or monday")
 
-    page_size = str(data["page_size"]).lower()
-    if page_size not in PAGE_SIZES:
-        raise ConfigError(f"page_size must be one of {sorted(PAGE_SIZES)}")
+    page_size = normalize_page_size(data["page_size"])
 
     try:
         year = int(data["year"])

@@ -10,7 +10,7 @@ Required for a typical run:
 - `dated_months` boolean
 - `cover_year` `auto`, `blank`, `omit`, or `print` (cover year when undated)
 - `cover_text` string, may be empty (printed instead of `year` on cover/mastheads)
-- `page_size` `letter` or `a4`
+- `page_size` `5.5x8`, `6x9`, or `letter` (8.5 by 11 in)
 - `members` list of strings
 - `theme` one of linen, classic, amber, berry, bold, citrus, forest, meadow, ocean, pastel, poppy, slate
 - `fonts` a set name (default `elegant`), or a mapping of display, script, body

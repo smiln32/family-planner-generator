@@ -9,7 +9,7 @@ Copy this shape into `output/[slug]-brief.md`. Replace the bracketed values.
 - family_name: [Ramirez or empty]
 - week_starts: [sunday|monday]
 - dated_months: [true|false]
-- page_size: [letter|a4]
+- page_size: [5.5x8|6x9|letter]
 - members:
   - [name or empty line]
 ```

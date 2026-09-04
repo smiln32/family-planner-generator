@@ -35,7 +35,9 @@
 
   <div class="topbar-actions">
     <button id="fresh" class="btn btn-ghost" type="button">Start over</button>
-    <button id="save" class="btn btn-ghost" type="button">Save for next time</button>
+    <button id="open-plan" class="btn btn-ghost" type="button">Open a plan</button>
+    <button id="download" class="btn btn-ghost" type="button">Download plan</button>
+    <input id="plan-file" type="file" accept=".md,.markdown,.yaml,.yml,text/markdown,text/plain" hidden>
     <button id="build" class="btn btn-primary" type="button">
       <span class="btn-label">Make PDF</span>
     </button>
@@ -91,7 +93,7 @@
 
     <section class="group">
       <h2>Page look</h2>
-      <p class="group-note">Original is this planner. Other looks restyle every page.</p>
+      <p class="group-note">Original is the illustrated planner. Looks 02–10 are different family title pages. Looks 11–16 are daily pages on the cover.</p>
       <div id="designs" class="design-grid" role="radiogroup" aria-label="Page look"></div>
     </section>
 
@@ -104,8 +106,9 @@
       <div class="field-row">
         <label for="size">Paper size</label>
         <select id="size">
-          <option value="letter">US Letter (8.5 × 11 in)</option>
-          <option value="a4">A4 (210 × 297 mm)</option>
+          <option value="5.5x8">5.5 × 8 in</option>
+          <option value="6x9">6 × 9 in</option>
+          <option value="letter">8.5 × 11 in</option>
         </select>
       </div>
       <div class="field-row">

@@ -4,10 +4,9 @@ Colour is `theme`. Typefaces are `fonts`. This module is a third axis: a full
 visual language (paper, chrome, art, headers). Templates stay the same; a
 class on <body> restyles them.
 
-`original` is this Family Success Planner. `02`–`05` follow the four reference
-styles (boxed records, botanical, marker journal, soft intention). `06`–`10`
-are other languages. `11`–`16` follow six more daily-planner references.
-`blank` strips illustration.
+`original` is this Family Success Planner. `02`–`10` each have their own family
+title cover. `11`–`16` each ship a different daily-planner cover (not a restyle
+of Family Success). `blank` strips illustration.
 """
 
 from __future__ import annotations
@@ -41,12 +40,12 @@ PRESETS: dict[str, dict[str, str]] = {
     "08": {"label": "Stamp frame", "note": "Double rule"},
     "09": {"label": "Swiss grid", "note": "Flush and red"},
     "10": {"label": "Keepsake", "note": "Ornaments and script"},
-    "11": {"label": "Executive desk", "note": "Navy bars"},
-    "12": {"label": "Bloom", "note": "Rose florals and script"},
-    "13": {"label": "Boho earth", "note": "Brushstroke headers"},
-    "14": {"label": "Scrapbook", "note": "Teal, coral, mustard"},
-    "15": {"label": "Street journal", "note": "Black brush banners"},
-    "16": {"label": "Reset", "note": "Sage and terracotta"},
+    "11": {"label": "Executive desk", "note": "Daily Plan, navy bars"},
+    "12": {"label": "Bloom", "note": "Today, with Grace"},
+    "13": {"label": "Boho earth", "note": "Grounded, grateful"},
+    "14": {"label": "Scrapbook", "note": "Good Things collage"},
+    "15": {"label": "Street journal", "note": "Let's Get It"},
+    "16": {"label": "Reset", "note": "Reset & Refocus"},
     "blank": {"label": "Blank", "note": "Bare sheets to build on"},
 }
 

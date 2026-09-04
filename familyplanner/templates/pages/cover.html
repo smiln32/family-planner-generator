@@ -8,6 +8,10 @@
 {% set feet = [("check", "teal", "Organize Your Life"), ("users", "orange", "Create Lasting Memories"),
                ("heart", "green", "Support Each Other"), ("bulb", "pink", "Achieve Your Dreams"),
                ("star", "blue", "Build a Bright Future")] %}
+{% set hours_6_9 = ["6 AM","7 AM","8 AM","9 AM","10 AM","11 AM","12 PM",
+                    "1 PM","2 PM","3 PM","4 PM","5 PM","6 PM","7 PM","8 PM","9 PM"] %}
+{% set hours_7_10 = ["7 AM","8 AM","9 AM","10 AM","11 AM","12 PM",
+                     "1 PM","2 PM","3 PM","4 PM","5 PM","6 PM","7 PM","8 PM","9 PM","10 PM"] %}
 
 <section class="page cover-page">
   <div class="cover-body">
@@ -47,42 +51,348 @@
     </div>
   </div>
 
-  {# Daily-planner sheet used by looks 11–16. Hidden on Original and 02–10. #}
-  {% set hours = ["6 AM","7 AM","8 AM","9 AM","10 AM","11 AM","12 PM",
-                  "1 PM","2 PM","3 PM","4 PM","5 PM","6 PM","7 PM","8 PM","9 PM"] %}
-  <div class="look-sheet" aria-hidden="true">
-    <p class="ls-motto"></p>
-    <div class="ls-date"><b>DATE</b><i></i></div>
-    <div class="ls-prio">
-      <div class="ls-label"></div>
-      <ol class="ls-three"><li></li><li></li><li></li></ol>
+  {# Looks 02–10: each is its own family title page. House art stays on Original. #}
+  <article class="famcover famcover-02">
+    <div class="fc-box">
+      {{ year_mark("fc-year") }}
+      <h1>FAMILY</h1>
+      <h1>SUCCESS</h1>
+      <h1>PLANNER</h1>
+      <p class="fc-motto">{{ cfg.subtitle }}</p>
+      {% if cfg.family_name %}<p class="fc-fam">The {{ cfg.family_name }} Family</p>{% endif %}
     </div>
-    <section class="ls-mod ls-sched">
-      <h3></h3>
-      <div class="ls-slots">
-        {% for t in hours %}
-        <div class="ls-slot"><span class="ls-t">{{ t }}</span><span class="ls-rule"></span></div>
-        {% endfor %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-03">
+    <div class="fc-bloom" aria-hidden="true"></div>
+    {{ year_mark("fc-year") }}
+    <p class="fc-kicker">A year together</p>
+    <h1>Family</h1>
+    <h1>Success</h1>
+    <h1>Planner</h1>
+    <p class="fc-motto">{{ cfg.subtitle }}</p>
+    {% if cfg.family_name %}<p class="fc-fam script">The {{ cfg.family_name }} Family</p>{% endif %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-04">
+    {{ year_mark("fc-year") }}
+    <h1>FAMILY</h1>
+    <h1>SUCCESS</h1>
+    <h1>PLANNER</h1>
+    <p class="fc-motto"><span>♡</span> {{ cfg.subtitle }} <span>♡</span></p>
+    {% if cfg.family_name %}<p class="fc-fam">The {{ cfg.family_name }} Family</p>{% endif %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-05">
+    {{ year_mark("fc-year") }}
+    <h1>family</h1>
+    <h1>success</h1>
+    <h1>planner</h1>
+    <p class="fc-motto">{{ cfg.subtitle }}</p>
+    {% if cfg.family_name %}<p class="fc-fam script">The {{ cfg.family_name }} Family</p>{% endif %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-06">
+    <p class="fc-subject">Subject: Our year</p>
+    {{ year_mark("fc-year") }}
+    <h1>Family</h1>
+    <h1>Success</h1>
+    <h1>Planner</h1>
+    {% if cfg.family_name %}<p class="fc-fam">Name: The {{ cfg.family_name }} Family</p>
+    {% else %}<p class="fc-fam">Name: <i></i></p>{% endif %}
+    <p class="fc-motto">{{ cfg.subtitle }}</p>
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-07">
+    {{ year_mark("fc-year") }}
+    <h1>Family</h1>
+    <h1>Success</h1>
+    <h1>Planner</h1>
+    <p class="fc-rule"></p>
+    <p class="fc-motto">{{ cfg.subtitle }}</p>
+    {% if cfg.family_name %}<p class="fc-fam">The {{ cfg.family_name }} Family</p>{% endif %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-08">
+    <div class="fc-stamp">
+      {{ year_mark("fc-year") }}
+      <h1>FAMILY</h1>
+      <h1>SUCCESS</h1>
+      <h1>PLANNER</h1>
+      <p class="fc-motto">{{ cfg.subtitle }}</p>
+      {% if cfg.family_name %}<p class="fc-fam">The {{ cfg.family_name }} Family</p>{% endif %}
+    </div>
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-09">
+    {{ year_mark("fc-year") }}
+    <h1>Family</h1>
+    <h1>Success</h1>
+    <h1>Planner</h1>
+    <p class="fc-motto">{{ cfg.subtitle }}</p>
+    {% if cfg.family_name %}<p class="fc-fam">The {{ cfg.family_name }} Family</p>{% endif %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="famcover famcover-10">
+    <p class="fc-orn">❀ · ❀ · ❀</p>
+    {{ year_mark("fc-year") }}
+    <h1>Family</h1>
+    <h1>Success</h1>
+    <h1>Planner</h1>
+    <p class="fc-motto">{{ cfg.subtitle }}</p>
+    {% if cfg.family_name %}<p class="fc-fam script">The {{ cfg.family_name }} Family</p>{% endif %}
+    <ul class="fc-pills">{% for icon, colour, label in feet %}<li>{{ label }}</li>{% endfor %}</ul>
+    <p class="fc-orn">❀</p>
+  </article>
+
+  {# Looks 11–16: the cover *is* the daily page. Original stack is hidden. #}
+
+  <article class="daily daily-11">
+    <header class="d11-head">
+      <div>
+        <h1>Daily Plan</h1>
+        <p>Focus · Execute · Achieve</p>
+        {% if cfg.family_name %}<em>{{ cfg.family_name }}</em>{% endif %}
       </div>
+      <div class="d11-date"><span>Date</span><i></i></div>
+    </header>
+    <div class="d11-rule"></div>
+    <section class="d11-prio">
+      <h2>{{ ico("target") }} Goals &amp; Priorities</h2>
+      <ol><li></li><li></li><li></li></ol>
     </section>
-    <section class="ls-mod ls-tasks">
-      <h3></h3>
-      <ul class="ls-checks">{% for _ in range(10) %}<li></li>{% endfor %}</ul>
+    <div class="d11-grid">
+      <section class="d11-sched">
+        <h2>{{ ico("clock") }} Timed Schedule</h2>
+        {% for t in hours_6_9 %}
+        <div class="d11-slot"><b>{{ t }}</b><span></span></div>
+        {% endfor %}
+      </section>
+      <div class="d11-stack">
+        <section>
+          <h2>{{ ico("check") }} Tasks</h2>
+          <ul class="d-checks">{% for _ in range(10) %}<li></li>{% endfor %}</ul>
+        </section>
+        <section>
+          <h2>{{ ico("mail") }} Calls / Emails</h2>
+          <ul class="d-dots">{% for _ in range(4) %}<li></li>{% endfor %}</ul>
+        </section>
+        <section class="d11-notes">
+          <h2>{{ ico("clipboard") }} Notes</h2>
+          <div class="d-dotsheet"></div>
+        </section>
+        <section>
+          <h2>{{ ico("calendar") }} Tomorrow's Focus</h2>
+          <ul class="d-lines">{% for _ in range(3) %}<li></li>{% endfor %}</ul>
+        </section>
+      </div>
+    </div>
+    <footer class="d11-foot">///</footer>
+  </article>
+
+  <article class="daily daily-12">
+    <header class="d12-head">
+      <p class="d12-kicker">Today,</p>
+      <h1>with Grace</h1>
+      <p class="d12-date">Date <i></i></p>
+      {% if cfg.family_name %}<p class="d12-fam">{{ cfg.family_name }}</p>{% endif %}
+    </header>
+    <div class="d12-cols">
+      <section class="d12-sched">
+        <h2>Schedule</h2>
+        {% for t in hours_6_9 %}
+        <div class="d12-slot"><b>{{ t }}</b><span></span></div>
+        {% endfor %}
+      </section>
+      <div class="d12-stack">
+        <section>
+          <h2>Top 3 Priorities</h2>
+          <ol class="d12-num"><li></li><li></li><li></li></ol>
+        </section>
+        <section>
+          <h2>To-Do List</h2>
+          <ul class="d-checks">{% for _ in range(10) %}<li></li>{% endfor %}</ul>
+        </section>
+        <section class="d12-notes">
+          <h2>Notes</h2>
+          <div class="d12-pad"></div>
+        </section>
+        <section>
+          <h2>Self-Care &amp; Gratitude</h2>
+          <p class="d12-prompt">Today I will nurture myself by:</p>
+          <div class="d-rule"></div>
+          <p class="d12-prompt">I am grateful for:</p>
+          <ul class="d12-hearts"><li></li><li></li><li></li></ul>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <article class="daily daily-13">
+    <header class="d13-head">
+      <h1>Grounded. Grateful. Growing.</h1>
+      <p>Date <i></i></p>
+      {% if cfg.family_name %}<p>{{ cfg.family_name }}</p>{% endif %}
+    </header>
+    <div class="d13-main">
+      <div class="d13-left">
+        <section>
+          <h2>Top Priorities</h2>
+          <ol class="d12-num"><li></li><li></li><li></li></ol>
+        </section>
+        <section>
+          <h2>To-Do List</h2>
+          <ul class="d-checks">{% for _ in range(9) %}<li></li>{% endfor %}</ul>
+        </section>
+      </div>
+      <section class="d13-sched">
+        <h2>Schedule</h2>
+        {% for t in hours_6_9 %}
+        <div class="d12-slot"><b>{{ t }}</b><span></span></div>
+        {% endfor %}
+      </section>
+    </div>
+    <div class="d13-bottom">
+      <section class="d13-notes">
+        <h2>Notes &amp; Reflections</h2>
+        <div class="d-dotsheet"></div>
+      </section>
+      <section>
+        <h2>Today I Will</h2>
+        <ul class="d12-hearts">{% for _ in range(6) %}<li></li>{% endfor %}</ul>
+      </section>
+    </div>
+    <footer class="d13-foot">You don't have to be perfect to make progress.</footer>
+  </article>
+
+  <article class="daily daily-14">
+    <header class="d14-head">
+      <h1><span>G</span><span>o</span><span>o</span><span>d</span> <span>T</span><span>h</span><span>i</span><span>n</span><span>g</span><span>s</span></h1>
+      <p class="d14-ribbon">Are happening</p>
+      <p class="d14-date">Date <i></i></p>
+      {% if cfg.family_name %}<p class="d14-fam">{{ cfg.family_name }}</p>{% endif %}
+    </header>
+    <div class="d14-grid">
+      <section class="d14-week">
+        <h2>This Week / Today</h2>
+        <ul class="d14-stars">{% for _ in range(7) %}<li></li>{% endfor %}</ul>
+      </section>
+      <section class="d14-must">
+        <h2>Must Do</h2>
+        <ul class="d-checks">{% for _ in range(6) %}<li></li>{% endfor %}</ul>
+      </section>
+      <section class="d14-wins">
+        <h2>Little Wins</h2>
+        <ul class="d12-hearts">{% for _ in range(5) %}<li></li>{% endfor %}</ul>
+      </section>
+      <section class="d14-fuel">
+        <h2>Fuel &amp; Hydrate</h2>
+        <div class="d14-meals"><span>B</span><span>L</span><span>D</span><span>S</span></div>
+        <div class="d14-water">{% for _ in range(8) %}<i></i>{% endfor %}</div>
+        <div class="d14-well"><span>Move</span><span>Rest</span><span>Fuel</span><span>Focus</span><span>Joy</span></div>
+      </section>
+      <section class="d14-dump">
+        <h2>Brain Dump</h2>
+        <div class="d-dotsheet"></div>
+      </section>
+      <section class="d14-notes">
+        <h2>Notes</h2>
+        <ul class="d-lines">{% for _ in range(6) %}<li></li>{% endfor %}</ul>
+      </section>
+    </div>
+  </article>
+
+  <article class="daily daily-15">
+    <header class="d15-head">
+      {{ ico("bolt") }}
+      <div>
+        <h1>Let's Get It</h1>
+        <p>Date <i></i></p>
+        {% if cfg.family_name %}<p>{{ cfg.family_name }}</p>{% endif %}
+      </div>
+      {{ ico("star") }}
+    </header>
+    <div class="d15-grid">
+      <div class="d15-left">
+        <section>
+          <h2>Top Priorities</h2>
+          <ol class="d12-num"><li></li><li></li><li></li></ol>
+        </section>
+        <section>
+          <h2>To-Do List</h2>
+          <ul class="d-checks">{% for _ in range(12) %}<li></li>{% endfor %}</ul>
+        </section>
+        <section class="d15-forget">
+          <h2>Don't Forget</h2>
+          <div class="d15-blank"></div>
+        </section>
+      </div>
+      <div class="d15-right">
+        <section class="d15-sched">
+          <h2>Schedule</h2>
+          {% for t in hours_7_10 %}
+          <div class="d12-slot"><b>{{ t }}</b><span></span></div>
+          {% endfor %}
+        </section>
+        <section>
+          <h2>Notes</h2>
+          <div class="d-dotsheet"></div>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <article class="daily daily-16">
+    <header class="d16-head">
+      <div>
+        <h1>Reset &amp; Refocus</h1>
+        <p>Small steps. Big change.</p>
+        {% if cfg.family_name %}<em>{{ cfg.family_name }}</em>{% endif %}
+      </div>
+      <div class="d16-date"><span>Date</span><i></i></div>
+    </header>
+    <div class="d16-grid">
+      <section class="d16-sched">
+        <h2>Schedule</h2>
+        {% for t in hours_6_9 %}
+        <div class="d12-slot"><b>{{ t }}</b><span></span></div>
+        {% endfor %}
+      </section>
+      <div class="d16-stack">
+        <section class="d16-int">
+          <h2>Intentions</h2>
+          <ul class="d-lines"><li></li><li></li></ul>
+        </section>
+        <section class="d16-prio">
+          <h2>Top Priorities</h2>
+          <ol class="d12-num"><li></li><li></li><li></li></ol>
+        </section>
+        <section class="d16-habits">
+          <h2>Healthy Habits</h2>
+          <p>Water</p>
+          <div class="d14-water">{% for _ in range(8) %}<i></i>{% endfor %}</div>
+          <div class="d16-acts"><span>Move</span><span>Nourish</span><span>Mindful</span><span>Rest</span></div>
+        </section>
+        <section>
+          <h2>To-Do List</h2>
+          <ul class="d-checks">{% for _ in range(10) %}<li></li>{% endfor %}</ul>
+        </section>
+      </div>
+    </div>
+    <section class="d16-notes">
+      <h2>Notes &amp; Reflections</h2>
+      <ul class="d-lines">{% for _ in range(4) %}<li></li>{% endfor %}</ul>
     </section>
-    <section class="ls-mod ls-extra">
-      <h3></h3>
-      <ul class="ls-lines">{% for _ in range(4) %}<li></li>{% endfor %}</ul>
-    </section>
-    <section class="ls-mod ls-notes">
-      <h3></h3>
-      <div class="ls-dots"></div>
-    </section>
-    <section class="ls-mod ls-next">
-      <h3></h3>
-      <ul class="ls-lines">{% for _ in range(3) %}<li></li>{% endfor %}</ul>
-    </section>
-    <p class="ls-quote"></p>
-  </div>
+    <footer class="d16-foot">Focus on progress, not perfection.</footer>
+  </article>
 
   <svg class="cover-scene" viewBox="0 0 620 452" preserveAspectRatio="xMidYMid meet"
        role="img" aria-label="A family planning together at a table">

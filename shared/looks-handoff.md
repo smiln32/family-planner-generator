@@ -1,6 +1,8 @@
 # Page looks — handoff for the next agent
 
-Human paused implementation on 2 Sep 2026. Do not treat current looks 02–16 as done.
+Updated 3 Sep 2026. Family title covers 02–10 and daily covers 11–16 now have **their own markup** in `cover.html` (`.famcover-*` and `.daily-*`). Original house cover is hidden for those looks.
+
+Still not reference-perfect: daily density and brush/floral drawing vs the chat images. Re-ask the human if those files are not in the thread. Check Cover first in `python planner.py ui`.
 
 ## What “good” is
 
@@ -43,12 +45,12 @@ The human: *“Each page is a lame variation on the original instead of complete
 4. **One real structure per look** (or a few real layouts), not one template restyled.
 5. Check **Cover first** in `python planner.py ui`, then one interior. If a family cover still shows the house in the lower half, it failed.
 
-## Code today (do not assume it is correct)
+## Code today
 
-- Cover: `familyplanner/templates/pages/cover.html` — original house cover plus six `.daily-11` … `.daily-16` articles; CSS shows one daily and hides `.cover-body` for 11–16.
+- Cover: `familyplanner/templates/pages/cover.html` — original house cover, nine `.famcover-02` … `-10` title pages, six `.daily-11` … `-16` dailies. CSS shows one of those and hides `.cover-body` / `.cover-scene` / `.cover-feet`.
 - Looks CSS: `familyplanner/static/planner.css` (`body.design-*`).
 - Preset names: `familyplanner/designs.py`.
-- Print rule file still describes looks; update `_config/design-system.md` when the behaviour is actually true.
+- Print rules: `_config/design-system.md`.
 - Editor: `familyplanner/static/ui/` — look picker; Windows start: `Start Planner.bat`.
 
 References were given as chat images (executive daily, Grace/bloom, street doodle, reset, cottagecore floral, boho daily, scrapbook Good Things, sparse Swiss family cover, graph-paper family cover). Re-ask the human if those files are not in the thread.

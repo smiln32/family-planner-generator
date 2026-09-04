@@ -14,7 +14,7 @@ const state = {
   design: "original", type_size: { title: 30, cover: 66, body: 9, script: 13 },
   preview: null, zoom: null,
 };
-let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [] };
+let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [] };
 let previewSeq = 0;
 
 /* --- helpers -------------------------------------------------------------- */
@@ -325,7 +325,9 @@ function syncPreviewChoices() {
     option.selected = page.slug === state.preview;
     select.append(option);
   });
-  $("#brand-sub").textContent = `${pages.length} page${pages.length === 1 ? "" : "s"} · ${state.page_size === "a4" ? "A4" : "US Letter"}`;
+  const size = (meta.pageSizes || []).find((s) => s.id === state.page_size);
+  const label = size ? size.label : "8.5 × 11 in";
+  $("#brand-sub").textContent = `${pages.length} page${pages.length === 1 ? "" : "s"} · ${label}`;
 }
 
 /* --- preview -------------------------------------------------------------- */
@@ -355,7 +357,10 @@ async function loadPreview() {
 
 /* Page size in CSS pixels at 96dpi, so the sheet matches the paper choice. */
 function sheetSize() {
-  return state.page_size === "a4" ? [794, 1123] : [816, 1056];
+  const size = (meta.pageSizes || []).find((s) => s.id === state.page_size);
+  const widthIn = size ? size.width : 8.5;
+  const heightIn = size ? size.height : 11;
+  return [Math.round(widthIn * 96), Math.round(heightIn * 96)];
 }
 
 function applyZoom() {
@@ -403,12 +408,36 @@ async function build(button) {
   }
 }
 
-async function saveConfig() {
+async function downloadPlan() {
   try {
-    await api("/api/save", { ...state, path: "family.yaml" });
-    toast("Saved. The next time you open the planner, these choices will be here.", "ok");
+    const data = await api("/api/export", { ...state });
+    const blob = new Blob([data.markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = data.filename || "family-planner.md";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    toast("Downloaded your plan. Keep that file for next year, or send it to a friend.", "ok");
   } catch (error) {
-    toast(friendlyError(error, "Could not save. Keep the planner window open and try again."), "error");
+    toast(friendlyError(error, "Could not download the plan. Keep the planner window open and try again."), "error");
+  }
+}
+
+async function importPlanFile(file) {
+  try {
+    const text = await file.text();
+    const data = await api("/api/import", { text });
+    Object.assign(state, data.config);
+    if (!(meta.pageSizes || []).some((s) => s.id === state.page_size)) state.page_size = "letter";
+    state.type_size = { title: 30, cover: 66, body: 9, script: 13, ...(state.type_size || {}) };
+    paintForm();
+    refresh();
+    toast("Loaded that plan. Change the year or the name, then make a PDF.", "ok");
+  } catch (error) {
+    toast(friendlyError(error, "Could not open that file. Use a plan you downloaded, or a family.yaml."), "error");
   }
 }
 
@@ -449,7 +478,7 @@ function newBook() {
   state.preview = "cover";
   paintForm();
   refresh();
-  toast("Cleared this screen. Nothing is saved until you click Save for next time.");
+  toast("Cleared this screen. Download a plan if you want to keep these choices.");
 }
 
 /* --- wiring --------------------------------------------------------------- */
@@ -505,14 +534,20 @@ function bind() {
   $("#zoom-in").addEventListener("click", () => nudgeZoom(1));
   $("#zoom-out").addEventListener("click", () => nudgeZoom(-1));
   $("#build").addEventListener("click", (e) => build(e.currentTarget));
-  $("#save").addEventListener("click", saveConfig);
+  $("#download").addEventListener("click", downloadPlan);
+  $("#open-plan").addEventListener("click", () => $("#plan-file").click());
+  $("#plan-file").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (file) importPlanFile(file);
+  });
   $("#fresh").addEventListener("click", newBook);
 
   window.addEventListener("resize", () => { if (!state.zoom) applyZoom(); });
   new ResizeObserver(() => { if (!state.zoom) applyZoom(); }).observe($("#canvas"));
   window.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") { e.preventDefault(); build($("#build")); }
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); saveConfig(); }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); downloadPlan(); }
   });
 }
 
@@ -525,6 +560,7 @@ async function start() {
   }
   Object.assign(state, meta.config);
   if (!state.design) state.design = "original";
+  if (!(meta.pageSizes || []).some((s) => s.id === state.page_size)) state.page_size = "letter";
   state.type_size = { title: 30, cover: 66, body: 9, script: 13, ...(state.type_size || {}) };
   paintForm();
   bind(); applyZoom(); loadPreview();

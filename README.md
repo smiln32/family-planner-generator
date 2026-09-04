@@ -23,7 +23,7 @@ Start at `CLAUDE.md` and `CONTEXT.md`. Factory rules live in `_config/`. Per-run
 
 ## What it makes
 
-Thirty 8.5x11" pages at exactly letter size, with real vector text (searchable,
+Thirty pages at the chosen paper size (5.5×8, 6×9, or 8.5×11), with real vector text (searchable,
 crisp at any zoom, no upscaled bitmaps):
 
 | # | Page | # | Page |
@@ -57,9 +57,11 @@ planner is already running, it just opens the browser again.
 - page looks named in plain language; paper, week start and lettering size sit under **Paper and lettering size**
 - tracker rows added and named inline
 - every page toggled in or out; click a page name to jump the preview to it
-- **Make PDF** builds the book and offers to open it; **Save for next time** writes `family.yaml`
-- **Start over** clears the name and people so you are not editing someone else's planner
-- `Ctrl/Cmd+B` builds, `Ctrl/Cmd+S` saves
+- **Make PDF** builds the book and offers to open it
+- **Download plan** saves a `.md` file you can keep, use next year, or send to a friend
+- **Open a plan** loads that file (or an older `family.yaml`)
+- **Start over** clears the name and people
+- `Ctrl/Cmd+B` builds, `Ctrl/Cmd+S` downloads the plan file
 
 It binds to loopback only and runs builds on request, so treat it as a local
 tool rather than something to expose on a network.
@@ -200,7 +202,8 @@ Available motifs: `snowman`, `hearts`, `sprout`, `tulips`, `flowers`, `sun`,
 
 Print at **100% / "Actual size"**. Do not let the printer "fit to page" - that
 shrinks the sheet and throws off the margins. The pages are designed for
-single-sided printing on letter paper; set `page_size: a4` for A4.
+single-sided printing on paper that matches the size you picked (`page_size`:
+`5.5x8`, `6x9`, or `letter` for 8.5×11).
 
 ## Consistency rules
 

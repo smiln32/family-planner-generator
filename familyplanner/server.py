@@ -55,7 +55,7 @@ def _config_from(payload: dict, base: Config) -> Config:
     if "cover_text" in payload:
         cfg.cover_text = str(payload["cover_text"])
     if "page_size" in payload:
-        cfg.page_size = str(payload["page_size"])
+        cfg.page_size = config.normalize_page_size(payload["page_size"])
     if "members" in payload:
         cfg.members = [str(m) for m in payload["members"]]
     if "pages" in payload and payload["pages"]:
@@ -143,6 +143,10 @@ class Handler(BaseHTTPRequestHandler):
                 self._build(payload)
             elif path == "/api/save":
                 self._save(payload)
+            elif path == "/api/export":
+                self._export(payload)
+            elif path == "/api/import":
+                self._import(payload)
             elif path == "/api/open":
                 self._open(payload)
             else:
@@ -202,6 +206,11 @@ class Handler(BaseHTTPRequestHandler):
                           for slug, title in catalogue.items()],
             "months": [m["name"] for m in cfg.months],
             "defaultPages": config.DEFAULT_PAGES,
+            "pageSizes": [
+                {"id": name, "label": config.PAGE_SIZE_LABELS[name],
+                 "width": size[0], "height": size[1]}
+                for name, size in config.PAGE_SIZES.items()
+            ],
         }
 
     def _preview(self, payload: dict) -> None:
@@ -237,14 +246,23 @@ class Handler(BaseHTTPRequestHandler):
         import yaml
 
         target = Path(payload.get("path") or "family.yaml")
-        body = {
+        body = self._plan_fields(payload)
+        target.write_text(
+            "# Written by `planner.py ui`. Edit freely.\n"
+            + yaml.safe_dump(body, sort_keys=False, allow_unicode=True),
+            encoding="utf-8",
+        )
+        self._json({"saved": str(target.resolve())})
+
+    def _plan_fields(self, payload: dict) -> dict:
+        return {
             "year": int(payload.get("year", self.base_config.year)),
             "family_name": str(payload.get("family_name", "")),
             "week_starts": str(payload.get("week_starts", "sunday")),
             "dated_months": bool(payload.get("dated_months", True)),
             "cover_year": str(payload.get("cover_year") or "auto"),
             "cover_text": str(payload.get("cover_text") or ""),
-            "page_size": str(payload.get("page_size", "letter")),
+            "page_size": config.normalize_page_size(payload.get("page_size", "letter")),
             "members": [str(m) for m in payload.get("members", [])],
             "theme": str(payload.get("theme") or themes.DEFAULT_THEME),
             "fonts": _fonts_for_save(payload.get("fonts")),
@@ -252,12 +270,32 @@ class Handler(BaseHTTPRequestHandler):
             "type_size": designs.clamp_type_size(payload.get("type_size") or {}),
             "pages": [str(p) for p in payload.get("pages", [])],
         }
-        target.write_text(
-            "# Written by `planner.py ui`. Edit freely.\n"
-            + yaml.safe_dump(body, sort_keys=False, allow_unicode=True),
-            encoding="utf-8",
-        )
-        self._json({"saved": str(target.resolve())})
+
+    def _export(self, payload: dict) -> None:
+        body = self._plan_fields(payload)
+        self._json({
+            "markdown": config.render_plan_markdown(body),
+            "filename": config.plan_filename(body),
+        })
+
+    def _import(self, payload: dict) -> None:
+        loaded = config.parse_plan_text(str(payload.get("text") or ""))
+        seed = {
+            "year": config.DEFAULT_CONFIG["year"],
+            "family_name": "",
+            "week_starts": "sunday",
+            "dated_months": True,
+            "cover_year": "auto",
+            "cover_text": "",
+            "page_size": "letter",
+            "members": [],
+            "theme": themes.DEFAULT_THEME,
+            "fonts": typefaces.DEFAULT_SET,
+            "design": designs.DEFAULT_DESIGN,
+            "type_size": {},
+            "pages": list(config.DEFAULT_PAGES),
+        }
+        self._json({"config": self._plan_fields({**seed, **loaded})})
 
     def _open(self, payload: dict) -> None:
         """Open a PDF this session wrote, in the computer's usual reader."""

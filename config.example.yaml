@@ -46,7 +46,7 @@ members:
   - ""
   - ""
 
-# letter (8.5x11in) or a4
+# 5.5x8, 6x9, or letter (8.5x11in)
 page_size: letter
 
 # Overrides the generated filename stem. Leave blank for "<year>-<family>-Family-Planner".
@@ -92,19 +92,19 @@ theme: linen
 # above, so uncommenting the whole block would pin every colour and make the
 # theme setting do nothing.
 # ---------------------------------------------------------------------------
-palette: {}
-  # navy:   "#3E5344"
-  # teal:   "#5F7A62"
-  # pink:   "#C4A09A"
-  # orange: "#C9956A"
-  # green:  "#8AA084"
-  # purple: "#A0909C"
-  # blue:   "#7A8B88"
-  # red:    "#B56858"
-  # brown:  "#8A6B52"
-  # ink:    "#3A3F3A"
-  # paper:  "#F6F1E8"
-  # rule:   "#DDD6CC"
+# palette:
+#   navy:   "#3E5344"
+#   teal:   "#5F7A62"
+#   pink:   "#C4A09A"
+#   orange: "#C9956A"
+#   green:  "#8AA084"
+#   purple: "#A0909C"
+#   blue:   "#7A8B88"
+#   red:    "#B56858"
+#   brown:  "#8A6B52"
+#   ink:    "#3A3F3A"
+#   paper:  "#F6F1E8"
+#   rule:   "#DDD6CC"
 
 # ---------------------------------------------------------------------------
 # Which pages to build, in order. "months" expands to the twelve monthly
