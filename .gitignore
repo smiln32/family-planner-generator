@@ -1,6 +1,11 @@
 # Build output from the visual editor (`python planner.py ui`)
 out/
 
+# Local default config for direct CLI/UI use outside the stage pipeline
+# (`python planner.py build` reads ./family.yaml if it exists). Each run's
+# canonical config lives in stages/02-customize/output/ instead.
+/family.yaml
+
 # Downloaded typefaces - fetched by `python planner.py fonts`.
 # Kept out of the repo so font binaries are not redistributed without their
 # licence files; the fetcher pulls them from Google Fonts on demand.
