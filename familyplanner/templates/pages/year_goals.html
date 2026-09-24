@@ -1,5 +1,5 @@
 {# title: Family Goals #}
-{% from "macros.html" import divider, footer, ico, chip, year_mark with context %}
+{% from "macros.html" import divider, footer, ico, chip, year_mark, field, lines with context %}
 {% from "art.html" import house_family with context %}
 {% set goals = [
      ("target", "teal"), ("family", "pink"), ("heart", "orange"),
@@ -11,22 +11,45 @@
     <div class="headings">
       {{ year_mark("year-tint") }}
       <div class="display" style="color:{{ p.navy }}">Family Goals</div>
+      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">For This Year</div>
       {{ divider() }}
     </div>
-    <span></span>
+    <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Target and star">
+      <circle cx="78" cy="78" r="52" fill="none" stroke="{{ p.teal }}" stroke-width="10"/>
+      <circle cx="78" cy="78" r="32" fill="none" stroke="{{ p.pink }}" stroke-width="10"/>
+      <circle cx="78" cy="78" r="12" fill="{{ p.orange }}"/>
+      <path d="M148 28l8 22h24l-19 14 8 22-21-14-21 14 8-22-19-14h24z" fill="{{ p.green }}"/>
+    </svg>
   </header>
 
   <div class="goal-rows">
     {% for icon, colour in goals %}
     <div class="goal-row" style="--c:{{ p[colour] }}">
       <span class="num">{{ loop.index }}</span>
-      {{ chip(icon, colour, "wash", ".52in") }}
+      {{ chip(icon, colour, "wash", ".42in") }}
       <div class="goal-box">
-        <span class="dot-line"></span>
-        <span class="dot-line"></span>
+        <div class="field"><span class="label">Goal</span><span class="dot-line"></span></div>
+        <div class="field"><span class="label">Why it matters</span><span class="dot-line"></span></div>
+        <div class="goal-meta">
+          {{ field("First step:") }}
+          {{ field("Who:") }}
+          {{ field("By:") }}
+        </div>
       </div>
     </div>
     {% endfor %}
+  </div>
+
+  <div class="grid cols-2 goal-foot-row">
+    <div class="card has-tab" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("check") }} Mid-Year Check</div>
+      {{ field("Date:") }}
+      {{ lines(2) }}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.orange }}">
+      <div class="card-tab">{{ ico("star") }} We'll Celebrate</div>
+      {{ lines(3) }}
+    </div>
   </div>
 
   {{ footer("Dream it. Plan it. Do it together.") }}

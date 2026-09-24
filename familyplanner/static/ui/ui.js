@@ -12,9 +12,9 @@ const state = {
   cover_year: "auto", cover_text: "",
   page_size: "letter", members: [], pages: [], theme: "linen", fonts: "elegant",
   design: "original", type_size: { title: 30, cover: 66, body: 9, script: 13 },
-  preview: null, zoom: null,
+  palette: {}, preview: null, zoom: null,
 };
-let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [] };
+let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [], paletteRoles: [], themePalettes: {} };
 let previewSeq = 0;
 
 /* --- helpers -------------------------------------------------------------- */
@@ -92,12 +92,126 @@ function renderThemes() {
     const input = el("input");
     Object.assign(input, { type: "radio", name: "theme", value: theme.name,
                            checked: state.theme === theme.name });
-    input.addEventListener("change", () => { state.theme = theme.name; renderThemes(); refresh(); });
+    input.addEventListener("change", () => {
+      state.theme = theme.name;
+      state.palette = {};
+      renderThemes();
+      renderPalette();
+      refresh();
+    });
     const name = el("span", "swatch-name");
     name.textContent = theme.name;
     label.append(input, chips, name);
     host.append(label);
   }
+}
+
+function hexForPicker(value) {
+  const text = String(value || "").trim();
+  const raw = text.startsWith("#") ? text.slice(1) : text;
+  if (/^[0-9A-Fa-f]{3}$/.test(raw)) {
+    return `#${raw[0]}${raw[0]}${raw[1]}${raw[1]}${raw[2]}${raw[2]}`.toLowerCase();
+  }
+  if (/^[0-9A-Fa-f]{6}$/.test(raw)) return `#${raw}`.toLowerCase();
+  return "";
+}
+
+function themeColors(name) {
+  const palettes = meta.themePalettes || {};
+  return palettes[name] || palettes[meta.themes?.[0]?.name] || {};
+}
+
+function currentPalette() {
+  return { ...themeColors(state.theme), ...(state.palette || {}) };
+}
+
+function hasPaletteOverrides() {
+  return Object.keys(state.palette || {}).length > 0;
+}
+
+function setPaletteToken(key, hex) {
+  const next = hexForPicker(hex);
+  if (!next) return false;
+  const base = (themeColors(state.theme)[key] || "").toUpperCase();
+  const palette = { ...(state.palette || {}) };
+  if (next.toUpperCase() === base) delete palette[key];
+  else palette[key] = next.toUpperCase();
+  state.palette = palette;
+  return next;
+}
+
+function renderPalette() {
+  const host = $("#palette");
+  if (!host) return;
+  host.textContent = "";
+  const resolved = currentPalette();
+  const base = themeColors(state.theme);
+  for (const role of meta.paletteRoles || []) {
+    const value = hexForPicker(resolved[role.id] || "#000000") || "#000000";
+    const replaced = (value.toUpperCase() !== (base[role.id] || "").toUpperCase());
+
+    const row = el("div", "palette-row");
+    row.dataset.replaced = replaced ? "1" : "0";
+
+    const name = el("span", "palette-name");
+    name.textContent = role.label;
+
+    const picker = el("input");
+    Object.assign(picker, { type: "color", value });
+    picker.setAttribute("aria-label", `${role.label} colour`);
+    picker.addEventListener("input", () => {
+      const applied = setPaletteToken(role.id, picker.value);
+      if (applied) hex.value = applied.toUpperCase();
+      row.dataset.replaced = (state.palette || {})[role.id] ? "1" : "0";
+      undo.hidden = !(state.palette || {})[role.id];
+      syncPaletteReset();
+      refresh();
+    });
+
+    const hex = el("input");
+    Object.assign(hex, { type: "text", value: value.toUpperCase(), spellcheck: false });
+    hex.setAttribute("aria-label", `${role.label} hex colour`);
+    hex.maxLength = 7;
+    hex.addEventListener("change", () => {
+      const applied = setPaletteToken(role.id, hex.value);
+      if (!applied) {
+        hex.value = (currentPalette()[role.id] || value).toUpperCase();
+        toast("Use a hex colour like #3E5344.", "error");
+        return;
+      }
+      picker.value = applied;
+      hex.value = applied.toUpperCase();
+      row.dataset.replaced = (state.palette || {})[role.id] ? "1" : "0";
+      undo.hidden = !(state.palette || {})[role.id];
+      syncPaletteReset();
+      refresh();
+    });
+
+    const undo = el("button", "palette-undo");
+    undo.type = "button";
+    undo.textContent = "Reset";
+    undo.hidden = !replaced;
+    undo.setAttribute("aria-label", `Reset ${role.label} to the theme colour`);
+    undo.addEventListener("click", () => {
+      const restored = hexForPicker(base[role.id]) || value;
+      setPaletteToken(role.id, restored);
+      picker.value = restored;
+      hex.value = restored.toUpperCase();
+      row.dataset.replaced = "0";
+      undo.hidden = true;
+      syncPaletteReset();
+      refresh();
+    });
+
+    row.append(name, picker, hex, undo);
+    host.append(row);
+  }
+  syncPaletteReset();
+}
+
+function syncPaletteReset() {
+  const btn = $("#reset-palette");
+  if (btn) btn.hidden = !hasPaletteOverrides();
 }
 
 /* A config may name three families instead of a preset. That choice has to be
@@ -433,6 +547,7 @@ async function importPlanFile(file) {
     Object.assign(state, data.config);
     if (!(meta.pageSizes || []).some((s) => s.id === state.page_size)) state.page_size = "letter";
     state.type_size = { title: 30, cover: 66, body: 9, script: 13, ...(state.type_size || {}) };
+    state.palette = data.config.palette || {};
     paintForm();
     refresh();
     toast("Loaded that plan. Change the year or the name, then make a PDF.", "ok");
@@ -458,7 +573,7 @@ function paintForm() {
   $("#dated").checked = state.dated_months;
   if (!state.cover_year) state.cover_year = "auto";
   syncCoverYearRow();
-  renderThemes(); renderTypefaces(); renderSizes(); renderDesigns(); renderMembers();
+  renderThemes(); renderPalette(); renderTypefaces(); renderSizes(); renderDesigns(); renderMembers();
   syncPreviewChoices(); renderPages();
 }
 
@@ -468,6 +583,7 @@ function newBook() {
   state.members = ["", ""];
   state.pages = [...meta.defaultPages];
   state.theme = "linen";
+  state.palette = {};
   state.fonts = "elegant";
   state.design = "original";
   state.dated_months = true;
@@ -527,6 +643,11 @@ function bind() {
   $("#reset-pages").addEventListener("click", () => {
     state.pages = [...meta.defaultPages]; syncPreviewChoices(); renderPages(); refresh();
   });
+  $("#reset-palette").addEventListener("click", () => {
+    state.palette = {};
+    renderPalette();
+    refresh();
+  });
 
   $("#preview-page").addEventListener("change", (e) => {
     state.preview = e.target.value; markCurrentPage(); refresh();
@@ -562,6 +683,7 @@ async function start() {
   if (!state.design) state.design = "original";
   if (!(meta.pageSizes || []).some((s) => s.id === state.page_size)) state.page_size = "letter";
   state.type_size = { title: 30, cover: 66, body: 9, script: 13, ...(state.type_size || {}) };
+  state.palette = state.palette || {};
   paintForm();
   bind(); applyZoom(); loadPreview();
 }

@@ -29,6 +29,22 @@ DEFAULT_PALETTE: dict[str, str] = {
     "rule": "#DDD6CC",
 }
 
+# Plain-language names for the visual editor. Token keys stay as templates use them.
+PALETTE_ROLES: list[tuple[str, str]] = [
+    ("navy", "Headings"),
+    ("teal", "Main accent"),
+    ("pink", "Soft accent"),
+    ("orange", "Warm accent"),
+    ("green", "Green"),
+    ("purple", "Purple"),
+    ("blue", "Blue"),
+    ("red", "Red"),
+    ("brown", "Brown"),
+    ("ink", "Body text"),
+    ("paper", "Paper"),
+    ("rule", "Lines"),
+]
+
 _HEX_RE = re.compile(r"^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$")
 
 
@@ -67,6 +83,13 @@ def sanitize_palette(raw: Any) -> dict[str, str]:
             )
         out[name] = normalize_hex(value)
     return out
+
+
+def palette_overrides(theme: str, palette: Any) -> dict[str, str]:
+    """Tokens that differ from the chosen theme, for saving in a plan file."""
+    base = theme_palette(theme)
+    cleaned = sanitize_palette(palette)
+    return {key: value for key, value in cleaned.items() if value != base[key]}
 
 
 # Per-month personality: accent colour, seasonal motif, greeting strip and the

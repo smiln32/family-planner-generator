@@ -53,7 +53,7 @@ On Windows, `Start Planner.bat` does this without typing a command. If the
 planner is already running, it just opens the browser again.
 
 - year, family name (optional), paper size, week start, dated or blank grids
-- colour themes and typeface sets as pickable cards, applied instantly
+- colour themes as pickable cards, then a colour picker to replace any of the twelve print colours
 - page looks named in plain language; paper, week start and lettering size sit under **Paper and lettering size**
 - tracker rows added and named inline
 - every page toggled in or out; click a page name to jump the preview to it

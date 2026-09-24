@@ -14,7 +14,7 @@ Required for a typical run:
 - `members` list of strings
 - `theme` one of linen, classic, amber, berry, bold, citrus, forest, meadow, ocean, pastel, poppy, slate
 - `fonts` a set name (default `elegant`), or a mapping of display, script, body
-- `design` `original`, `02`–`16`, or `blank`
+- `design` `original`, `02`–`17`, or `blank` (looks 02–17 are unfinished; see `shared/looks-handoff.md`)
 - `type_size` optional mapping of `title`, `cover`, `body`, `script` (points)
 
 Optional: `pages`, `palette`, `months`, `title`, `subtitle`, `output_name`, `linked`.

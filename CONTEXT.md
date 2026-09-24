@@ -24,7 +24,7 @@ Layer 1. Given what the user wants, go to one stage. Then load only that stage's
 | Default 30-page order | `_config/page-catalog.md` |
 | YAML keys the app accepts | `config.example.yaml` |
 | Cross-stage decisions | `shared/` |
-| Page looks 02–16 (unfinished) | `shared/looks-handoff.md` |
+| Page looks 02–17 (unfinished; human paused design) | `shared/looks-handoff.md` |
 
 ## Session start
 

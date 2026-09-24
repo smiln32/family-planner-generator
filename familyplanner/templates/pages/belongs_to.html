@@ -1,5 +1,5 @@
 {# title: This Planner Belongs To #}
-{% from "macros.html" import divider, footer, chip with context %}
+{% from "macros.html" import divider, footer, chip, ico, field with context %}
 {% from "art.html" import house_small, person with context %}
 
 <section class="page belongs-page">
@@ -38,6 +38,27 @@
       <span class="dot-line"></span>
     </div>
     {% endfor %}
+  </div>
+
+  <div class="grid cols-2 belongs-mid">
+    <div class="card has-tab" style="--c:{{ p.teal }}">
+      <div class="card-tab">{{ ico("users") }} Family Members</div>
+      {% for _ in range(5) %}
+      <div class="belongs-member">
+        {{ chip("heart", ["teal", "pink", "orange", "green", "purple"][loop.index0], "", ".22in") }}
+        <span class="dot-line"></span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("calendar") }} About This Book</div>
+      <div class="belongs-about">
+        {{ field("We started this planner:") }}
+        {{ field("Kept at:") }}
+        {{ field("If found, return to:") }}
+        {{ field("Phone:") }}
+      </div>
+    </div>
   </div>
 
   <svg class="belongs-foot" viewBox="0 0 200 70" role="img" aria-label="Family">

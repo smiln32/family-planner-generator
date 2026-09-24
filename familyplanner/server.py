@@ -179,10 +179,17 @@ class Handler(BaseHTTPRequestHandler):
                 },
                 "design": cfg.design,
                 "type_size": cfg.type_size,
+                "palette": config.palette_overrides(cfg.theme, cfg.palette),
+            },
+            "paletteRoles": [
+                {"id": key, "label": label} for key, label in config.PALETTE_ROLES
+            ],
+            "themePalettes": {
+                name: config.theme_palette(name) for name in themes.names()
             },
             "themes": [
                 {"name": name,
-                 "swatches": [dict(config.DEFAULT_PALETTE, **themes.resolve(name))[k]
+                 "swatches": [config.theme_palette(name)[k]
                               for k in ("navy", "teal", "pink", "orange", "green", "purple")]}
                 for name in themes.names()
             ],
@@ -242,7 +249,7 @@ class Handler(BaseHTTPRequestHandler):
         })
 
     def _plan_fields(self, payload: dict) -> dict:
-        return {
+        body = {
             "year": config.check_year(payload.get("year", self.base_config.year)),
             "family_name": str(payload.get("family_name") or ""),
             "week_starts": config.check_week_starts(payload.get("week_starts")),
@@ -257,6 +264,8 @@ class Handler(BaseHTTPRequestHandler):
             "type_size": config.check_type_size(payload.get("type_size")),
             "pages": config.check_str_list(payload.get("pages"), "pages"),
         }
+        body["palette"] = config.palette_overrides(body["theme"], payload.get("palette"))
+        return body
 
     def _export(self, payload: dict) -> None:
         body = self._plan_fields(payload)
@@ -281,6 +290,7 @@ class Handler(BaseHTTPRequestHandler):
             "design": designs.DEFAULT_DESIGN,
             "type_size": {},
             "pages": list(config.DEFAULT_PAGES),
+            "palette": {},
         }
         self._json({"config": self._plan_fields({**seed, **loaded})})
 

@@ -1,12 +1,9 @@
 """Page-look presets for the whole book.
 
-Colour is `theme`. Typefaces are `fonts`. This module is a third axis: a full
-visual language (paper, chrome, art, headers). Templates stay the same; a
-class on <body> restyles them.
-
-`original` is this Family Success Planner. `02`–`10` each have their own family
-title cover. `11`–`16` each ship a different daily-planner cover (not a restyle
-of Family Success). `blank` strips illustration.
+Colour is `theme`. Typefaces are `fonts`. This module is a third axis: a class
+on <body> restyles paper and chrome. Cover markup for alternate looks lives in
+`templates/pages/cover.html`. Looks 02–17 are unfinished; see
+`shared/looks-handoff.md`.
 """
 
 from __future__ import annotations
@@ -41,11 +38,12 @@ PRESETS: dict[str, dict[str, str]] = {
     "09": {"label": "Swiss grid", "note": "Flush and red"},
     "10": {"label": "Keepsake", "note": "Ornaments and script"},
     "11": {"label": "Executive desk", "note": "Daily Plan, navy bars"},
-    "12": {"label": "Bloom", "note": "Today, with Grace"},
+    "12": {"label": "Beautiful day", "note": "Cottagecore florals"},
     "13": {"label": "Boho earth", "note": "Grounded, grateful"},
     "14": {"label": "Scrapbook", "note": "Good Things collage"},
     "15": {"label": "Street journal", "note": "Let's Get It"},
     "16": {"label": "Reset", "note": "Reset & Refocus"},
+    "17": {"label": "Intention", "note": "Plan with intention"},
     "blank": {"label": "Blank", "note": "Bare sheets to build on"},
 }
 

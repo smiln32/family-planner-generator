@@ -17,8 +17,8 @@ Three roles, filled by a named typeface set in config (`elegant`, `classic`, `pl
 - Body: worksheets, tables, footers
 - Masthead titles (the stacked lines in the top centre) share one display size (`type_size.title`, default 30pt) and sit at the top of the header row, not vertically centred on the house art. Cover stack uses `type_size.cover`. Banners stay their own role; sliders in the visual editor change the four `type_size` values.
 - `design: original` is the illustrated Family Success Planner (house scene, side badges, footer chips).
-- Looks `02`–`10` each have their own **family title cover** (stacked Family / Success / Planner, motto, family line, five pills, empty lower field). They do not show the house. Interior family sheets keep their jobs; chrome follows that look.
-- Looks `11`–`16` replace the cover with a **daily planner page** (executive, bloom, boho, scrapbook, street, reset). Interiors stay family worksheets with that look’s chrome.
+- Looks `02`–`10` swap in a different **family title cover** (markup in `cover.html`). They do not show the house. Quality is unfinished; see `shared/looks-handoff.md`.
+- Looks `11`–`17` swap the cover for a **daily planner page**. Interiors stay family worksheets with that look’s chrome. Unfinished.
 - `blank` hides illustration.
 
 Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green`, `purple`, `blue`, `red`, `brown`, `ink`, `paper`, `rule`). The default `linen` theme is sage, dusty rose and clay. `classic` is the original bright printable. A config `palette:` block overrides individual tokens.

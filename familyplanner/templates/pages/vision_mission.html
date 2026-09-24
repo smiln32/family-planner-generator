@@ -1,5 +1,5 @@
 {# title: Family Vision and Mission #}
-{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "macros.html" import divider, footer, ico, chip, lines, field with context %}
 {% from "art.html" import house_family with context %}
 
 <section class="page vision-page">
@@ -13,19 +13,39 @@
     </div>
   </header>
 
-  {% for icon, label, blurb, colour in [
-       ("telescope", "Our Vision", "What we dream for our family's future.", "teal"),
+  {% for icon, label, blurb, colour, prompts in [
+       ("telescope", "Our Vision", "What we dream for our family's future.", "teal",
+        ["In five years, our family looks like…", "We want our home to feel…"]),
        ("target", "Our Mission",
-        "What we value and how we will live and support each other every day.", "green")] %}
+        "What we value and how we will live and support each other every day.", "green",
+        ["We will treat each other with…", "Each week we will…"])] %}
   <div class="vm-block" style="--c:{{ p[colour] }}">
     <div class="vm-head">
       {{ chip(icon, colour, "ring", ".42in") }}
       <span class="vm-tag">{{ label|upper }}</span>
       <span class="vm-blurb">{{ blurb }}</span>
     </div>
-    <div class="vm-box"></div>
+    <div class="vm-box">
+      {% for prompt in prompts %}
+      <div class="vm-prompt caps tiny" style="color:{{ p[colour] }}">{{ prompt }}</div>
+      {{ lines(2) }}
+      {% endfor %}
+    </div>
   </div>
   {% endfor %}
+
+  <div class="grid cols-2 vm-foot-row">
+    <div class="card has-tab" style="--c:{{ p.pink }}">
+      <div class="card-tab">{{ ico("heart") }} Our Family Motto</div>
+      {{ lines(2) }}
+    </div>
+    <div class="card has-tab" style="--c:{{ p.orange }}">
+      <div class="card-tab">{{ ico("star") }} Remember This By</div>
+      {{ field("Picture / object:") }}
+      {{ field("Place:") }}
+      {{ lines(1) }}
+    </div>
+  </div>
 
   {{ footer("Our family, our vision, our future.") }}
 </section>
