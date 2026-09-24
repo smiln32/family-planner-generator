@@ -59,3 +59,4 @@ Stage 03 calls `build`. Humans who skip the agent pipeline can use `ui` alone.
 - Output folders are the handoff. If a human edited a file there, use that version.
 - Placeholders look like `{{SCREAMING_SNAKE_CASE}}`. After setup, none should remain in `_config/` or `setup/`.
 - Numbered stage folders encode order. Rename to reorder; do not add a coordinator script.
+- No real family names in the repo. Run outputs are gitignored and stay local; docs, examples and tests use blank or made-up names.

@@ -6,6 +6,12 @@ out/
 # canonical config lives in stages/02-customize/output/ instead.
 /family.yaml
 
+# Per-run pipeline outputs carry a real family's name and members. They stay
+# on this machine; only the empty folders (.gitkeep) are tracked. Personalise
+# a book through family.yaml or the UI, never by committing a run.
+stages/*/output/*
+!stages/*/output/.gitkeep
+
 # Downloaded typefaces - fetched by `python planner.py fonts`.
 # Kept out of the repo so font binaries are not redistributed without their
 # licence files; the fetcher pulls them from Google Fonts on demand.

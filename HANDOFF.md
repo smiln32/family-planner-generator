@@ -14,7 +14,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 - Design rules: `_config/design-system.md`, `_config/voice.md`, `_config/page-catalog.md`
 - Cross-stage notes: `shared/decisions.md`, `shared/looks-handoff.md` (the existing handoff doc *for the looks feature specifically* — read it before touching any cover/look work)
 - Renderer/app: `familyplanner/config.py`, `designs.py`, `server.py`, `templates/pages/cover.html`, `static/planner.css`, `static/ui/*`
-- Only completed run so far: Ramirez 2027 (`stages/01-intake/output/Ramirez-2027-brief.md` → `stages/02-customize/output/Ramirez-2027-family.yaml` → `stages/03-build/output/*` → `stages/04-review/output/Ramirez-2027-review.md`)
+- One run has been completed locally. Run outputs under `stages/*/output/` are gitignored, so family names never reach the repo; use `status` to see what exists on this machine.
 
 ## Build status
 
