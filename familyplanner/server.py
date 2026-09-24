@@ -43,7 +43,7 @@ def _config_from(payload: dict, base: Config) -> Config:
     cfg = replace(base)
 
     if "year" in payload:
-        cfg.year = int(payload["year"])
+        cfg.year = payload["year"]
     if "family_name" in payload:
         cfg.family_name = str(payload["family_name"])
     if "week_starts" in payload:
@@ -57,26 +57,27 @@ def _config_from(payload: dict, base: Config) -> Config:
     if "page_size" in payload:
         cfg.page_size = config.normalize_page_size(payload["page_size"])
     if "members" in payload:
-        cfg.members = [str(m) for m in payload["members"]]
+        cfg.members = config.check_str_list(payload["members"], "members")
     if "pages" in payload and payload["pages"]:
-        cfg.pages = [str(p) for p in payload["pages"]]
+        cfg.pages = config.check_str_list(payload["pages"], "pages")
 
-    palette = dict(config.DEFAULT_PALETTE)
-    palette.update(themes.resolve(str(payload.get("theme") or themes.DEFAULT_THEME)))
-    palette.update(payload.get("palette") or {})
+    cfg.theme = config.check_theme(payload.get("theme"))
+    palette = config.theme_palette(cfg.theme)
+    palette.update(config.sanitize_palette(payload.get("palette")))
     cfg.palette = palette
-    cfg.theme = str(payload.get("theme") or themes.DEFAULT_THEME)
 
-    cfg.faces = typefaces.resolve(payload.get("fonts") or typefaces.DEFAULT_SET)
-    cfg.design = designs.resolve(payload.get("design") or designs.DEFAULT_DESIGN)
-    cfg.type_size = designs.clamp_type_size(payload.get("type_size") or {})
-    return cfg
+    cfg.faces = config.check_fonts(payload.get("fonts") or typefaces.DEFAULT_SET)
+    cfg.design = config.check_design(payload.get("design") or designs.DEFAULT_DESIGN)
+    cfg.type_size = config.check_type_size(payload.get("type_size"))
+    # Same rules as `planner.py build`, so the UI cannot reach the renderer
+    # with a value the command line would have refused.
+    return config.validate(cfg)
 
 
 def _fonts_for_save(value) -> str | dict:
     """Preserve a custom {display, script, body} trio; otherwise a preset name."""
     if isinstance(value, dict):
-        faces = typefaces.resolve(value)
+        faces = config.check_fonts(value)
         return {"display": faces.display, "script": faces.script, "body": faces.body}
     return str(value or typefaces.DEFAULT_SET)
 
@@ -141,8 +142,6 @@ class Handler(BaseHTTPRequestHandler):
                 self._preview(payload)
             elif path == "/api/build":
                 self._build(payload)
-            elif path == "/api/save":
-                self._save(payload)
             elif path == "/api/export":
                 self._export(payload)
             elif path == "/api/import":
@@ -231,10 +230,10 @@ class Handler(BaseHTTPRequestHandler):
         out = self.out_dir
         out.mkdir(parents=True, exist_ok=True)
 
-        html_path = out / f"{cfg.stem}.html"
+        html_path = config.output_path(out, cfg.stem, ".html")
         html_path.write_text(render.render_html(cfg, pages), encoding="utf-8")
 
-        pdf_path = out / f"{cfg.stem}.pdf"
+        pdf_path = config.output_path(out, cfg.stem, ".pdf")
         render.html_to_pdf(html_path, pdf_path, render.find_browser())
         self._json({
             "pdf": str(pdf_path.resolve()),
@@ -242,33 +241,21 @@ class Handler(BaseHTTPRequestHandler):
             "megabytes": round(pdf_path.stat().st_size / 1_048_576, 1),
         })
 
-    def _save(self, payload: dict) -> None:
-        import yaml
-
-        target = Path(payload.get("path") or "family.yaml")
-        body = self._plan_fields(payload)
-        target.write_text(
-            "# Written by `planner.py ui`. Edit freely.\n"
-            + yaml.safe_dump(body, sort_keys=False, allow_unicode=True),
-            encoding="utf-8",
-        )
-        self._json({"saved": str(target.resolve())})
-
     def _plan_fields(self, payload: dict) -> dict:
         return {
-            "year": int(payload.get("year", self.base_config.year)),
-            "family_name": str(payload.get("family_name", "")),
-            "week_starts": str(payload.get("week_starts", "sunday")),
+            "year": config.check_year(payload.get("year", self.base_config.year)),
+            "family_name": str(payload.get("family_name") or ""),
+            "week_starts": config.check_week_starts(payload.get("week_starts")),
             "dated_months": bool(payload.get("dated_months", True)),
-            "cover_year": str(payload.get("cover_year") or "auto"),
+            "cover_year": config.check_cover_year(payload.get("cover_year")),
             "cover_text": str(payload.get("cover_text") or ""),
             "page_size": config.normalize_page_size(payload.get("page_size", "letter")),
-            "members": [str(m) for m in payload.get("members", [])],
-            "theme": str(payload.get("theme") or themes.DEFAULT_THEME),
+            "members": config.check_str_list(payload.get("members"), "members"),
+            "theme": config.check_theme(payload.get("theme")),
             "fonts": _fonts_for_save(payload.get("fonts")),
-            "design": designs.resolve(payload.get("design") or designs.DEFAULT_DESIGN),
-            "type_size": designs.clamp_type_size(payload.get("type_size") or {}),
-            "pages": [str(p) for p in payload.get("pages", [])],
+            "design": config.check_design(payload.get("design") or designs.DEFAULT_DESIGN),
+            "type_size": config.check_type_size(payload.get("type_size")),
+            "pages": config.check_str_list(payload.get("pages"), "pages"),
         }
 
     def _export(self, payload: dict) -> None:

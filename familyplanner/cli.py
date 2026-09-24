@@ -55,13 +55,13 @@ def _resolve_config(args: argparse.Namespace) -> Config:
         if cfg.source is not None:
             import yaml
             own = (yaml.safe_load(cfg.source.read_text(encoding="utf-8")) or {})
-            cfg.palette.update(own.get("palette") or {})
+            cfg.palette.update(config.sanitize_palette(own.get("palette")))
     if getattr(args, "design", None):
         try:
             cfg.design = designs.resolve(args.design)
         except KeyError as exc:
             raise ConfigError(str(exc).strip("\"'")) from exc
-    return cfg
+    return config.validate(cfg)
 
 
 def _page_label(index: int, total: int, page: render.Page) -> str:
@@ -83,7 +83,7 @@ def cmd_build(args: argparse.Namespace) -> int:
         print(_page_label(i, len(pages), page))
 
     html = render.render_html(cfg, pages)
-    html_path = out_dir / f"{cfg.stem}.html"
+    html_path = config.output_path(out_dir, cfg.stem, ".html")
     html_path.write_text(html, encoding="utf-8")
     print(f"\n  html -> {html_path}")
 
@@ -94,7 +94,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     browser = render.find_browser(args.browser)
     print(f"  using {browser.name} for printing")
 
-    pdf_path = out_dir / f"{cfg.stem}.pdf"
+    pdf_path = config.output_path(out_dir, cfg.stem, ".pdf")
     render.html_to_pdf(html_path, pdf_path, browser)
     size_mb = pdf_path.stat().st_size / 1_048_576
     print(f"  pdf  -> {pdf_path}  ({len(pages)} pages, {size_mb:.1f} MB)")

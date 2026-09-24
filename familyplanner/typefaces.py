@@ -61,6 +61,10 @@ _ALIASES = {"rounded": "italics", "bubbly": "playful"}
 
 DEFAULT_SET = "elegant"
 
+# Google Fonts family names are ASCII letters, digits and single spaces. The
+# name lands inside CSS quotes and a download URL, so nothing else gets in.
+FAMILY_NAME_RE = re.compile(r"[A-Za-z0-9]+(?: [A-Za-z0-9]+){0,7}")
+
 
 @dataclass(frozen=True)
 class Typefaces:
@@ -120,6 +124,12 @@ def resolve(spec: str | dict | None) -> Typefaces:
             )
         base = dict(PRESETS[DEFAULT_SET])
         base.update({k: str(v).strip() for k, v in spec.items() if v})
+        for role, family in base.items():
+            if not FAMILY_NAME_RE.fullmatch(family):
+                raise KeyError(
+                    f"font {role} {family!r} is not a font family name; "
+                    "use letters, digits and spaces, like 'Playfair Display'"
+                )
         return Typefaces(preset="", **base)
 
     raise KeyError("fonts must be a preset name or a mapping of display/script/body")

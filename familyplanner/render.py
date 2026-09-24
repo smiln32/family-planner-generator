@@ -16,6 +16,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
+from markupsafe import escape
 
 from . import calendars
 from .config import Config
@@ -330,16 +331,16 @@ def _tab_rail(cfg: Config, pages: list[Page], current: Page) -> str:
         on = " on" if current.slug == "index" else ""
         tabs.append(
             f'<a class="tab tab-home{on}" href="#index" '
-            f'style="--c:{cfg.palette["navy"]}" aria-label="Contents">'
+            f'style="--c:{escape(cfg.palette["navy"])}" aria-label="Contents">'
             f'<svg viewBox="0 0 24 24"><use href="#i-home"/></svg></a>'
         )
     for page in months:
         month = page.context["month"]
         on = " on" if page.slug == current.slug else ""
         tabs.append(
-            f'<a class="tab{on}" href="#{page.slug}" '
-            f'style="--c:{cfg.palette[month["accent"]]}">'
-            f'{month["name"][:3].upper()}</a>'
+            f'<a class="tab{on}" href="#{escape(page.slug)}" '
+            f'style="--c:{escape(cfg.palette[month["accent"]])}">'
+            f'{escape(month["name"][:3].upper())}</a>'
         )
     if not tabs:
         return ""
@@ -348,7 +349,7 @@ def _tab_rail(cfg: Config, pages: list[Page], current: Page) -> str:
 
 def _decorate(body: str, cfg: Config, pages: list[Page], page: Page) -> str:
     """Give a rendered page its anchor id, and the rail when linking is on."""
-    body = SECTION_RE.sub(lambda m: m.group(1) + f' id="{page.slug}"', body, count=1)
+    body = SECTION_RE.sub(lambda m: m.group(1) + f' id="{escape(page.slug)}"', body, count=1)
     if not cfg.linked:
         return body
     rail = _tab_rail(cfg, pages, page)

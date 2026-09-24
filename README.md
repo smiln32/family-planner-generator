@@ -266,6 +266,8 @@ Filenames starting with `_` are treated as partials and skipped, as is
   build finds it automatically; override with `--browser PATH` or by setting
   `CHROME_PATH`.
 
+Tests: `pip install -r requirements-dev.txt`, then `python -m pytest`.
+
 The display fonts are optional. Without them the pages fall back to system
 fonts and still build; with them they look right. They are SIL Open Font
 License, so the PDFs you make are yours to print, give away or sell.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,46 @@ DEFAULT_PALETTE: dict[str, str] = {
     "paper": "#F6F1E8",
     "rule": "#DDD6CC",
 }
+
+_HEX_RE = re.compile(r"^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$")
+
+
+def normalize_hex(raw: str) -> str:
+    """Accept #rgb or #rrggbb (optional leading #) and return #RRGGBB."""
+    text = str(raw or "").strip()
+    if text and not text.startswith("#"):
+        text = f"#{text}"
+    if not _HEX_RE.fullmatch(text):
+        raise ConfigError(f"colour must be a hex value like #3E5344 (got {raw!r})")
+    if len(text) == 4:
+        text = "#" + "".join(ch * 2 for ch in text[1:])
+    return text.upper()
+
+
+def theme_palette(theme: str) -> dict[str, str]:
+    """Twelve tokens for a named theme, before any personal replacements."""
+    merged = dict(DEFAULT_PALETTE)
+    merged.update(themes.resolve(theme or themes.DEFAULT_THEME))
+    return {key: normalize_hex(value) for key, value in merged.items()}
+
+
+def sanitize_palette(raw: Any) -> dict[str, str]:
+    """Keep only known tokens with valid hex values."""
+    if not raw:
+        return {}
+    if not isinstance(raw, dict):
+        raise ConfigError("palette must map colour names to hex values")
+    out: dict[str, str] = {}
+    for key, value in raw.items():
+        name = str(key)
+        if name not in DEFAULT_PALETTE:
+            raise ConfigError(
+                f"unknown palette colour {name!r}; "
+                f"valid names are {list(DEFAULT_PALETTE)}"
+            )
+        out[name] = normalize_hex(value)
+    return out
+
 
 # Per-month personality: accent colour, seasonal motif, greeting strip and the
 # footer line. `planner.py months` prints this table so it is easy to edit.
@@ -198,12 +239,115 @@ def parse_plan_text(text: str) -> dict[str, Any]:
 def plan_filename(data: dict[str, Any]) -> str:
     year = data.get("year") or "planner"
     name = str(data.get("family_name") or "family").strip() or "family"
-    slug = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in name)
-    return f"{year}-{slug}-planner.md"
+    return f"{safe_stem(f'{year}-{name}-planner', 'planner')}.md"
 
 
 class ConfigError(ValueError):
     """Raised when a config file is present but unusable."""
+
+
+# Windows refuses these as filenames whatever the extension.
+_RESERVED_STEMS = {"CON", "PRN", "AUX", "NUL",
+                   *(f"COM{i}" for i in range(1, 10)),
+                   *(f"LPT{i}" for i in range(1, 10))}
+
+
+def safe_stem(text: str, fallback: str = "Family-Planner") -> str:
+    """A filename stem that stays inside its folder on every OS.
+
+    Letters (any language), digits, `-`, `_` and `.` survive; everything
+    else, path separators included, becomes a single dash. Leading dots are
+    dropped so `..` can never name a parent folder.
+    """
+    kept = "".join(ch if ch.isalnum() or ch in "-_." else "-" for ch in str(text or ""))
+    kept = re.sub(r"[-.]{2,}", "-", kept).strip("-.")[:120].strip("-.")
+    if not kept or kept.upper().split(".")[0] in _RESERVED_STEMS:
+        return fallback
+    return kept
+
+
+def output_path(out_dir: Path, stem: str, suffix: str) -> Path:
+    """`out_dir/stem.suffix`, refusing anything that resolves elsewhere."""
+    root = Path(out_dir).resolve()
+    target = (root / f"{safe_stem(stem)}{suffix}").resolve()
+    if target.parent != root:
+        raise ConfigError(f"refusing to write outside {root}: {target}")
+    return target
+
+
+# --- field validators, shared by the YAML loader, the CLI and the UI --------
+
+WEEK_STARTS = ("sunday", "monday")
+COVER_YEAR_MODES = ("auto", "print", "blank", "omit")
+YEAR_RANGE = (1900, 2999)
+
+# Month names become page ids and tab labels, so keep them to plain words.
+_MONTH_NAME_RE = re.compile(r"^[^\W\d_](?:[^\W_]|[ .'-]){0,29}$")
+
+
+def check_year(raw: Any) -> int:
+    try:
+        year = int(raw)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("year must be a whole number") from exc
+    lo, hi = YEAR_RANGE
+    if not lo <= year <= hi:
+        raise ConfigError(f"year must be between {lo} and {hi}")
+    return year
+
+
+def check_week_starts(raw: Any) -> str:
+    value = str(raw or "sunday").strip().lower()
+    if value not in WEEK_STARTS:
+        raise ConfigError("week_starts must be sunday or monday")
+    return value
+
+
+def check_cover_year(raw: Any) -> str:
+    value = str(raw or "auto").strip().lower()
+    if value not in COVER_YEAR_MODES:
+        raise ConfigError("cover_year must be auto, print, blank, or omit")
+    return value
+
+
+def check_theme(raw: Any) -> str:
+    name = str(raw or themes.DEFAULT_THEME).strip().lower()
+    try:
+        themes.resolve(name)
+    except KeyError as exc:
+        raise ConfigError(str(exc).strip("\"'")) from exc
+    return name
+
+
+def check_fonts(raw: Any) -> typefaces.Typefaces:
+    try:
+        return typefaces.resolve(raw)
+    except KeyError as exc:
+        raise ConfigError(str(exc).strip("\"'")) from exc
+
+
+def check_design(raw: Any) -> str:
+    try:
+        return designs.resolve(raw)
+    except KeyError as exc:
+        raise ConfigError(str(exc).strip("\"'")) from exc
+
+
+def check_type_size(raw: Any) -> dict[str, float]:
+    if raw and not isinstance(raw, dict):
+        raise ConfigError("type_size must map display/body to numbers")
+    try:
+        return designs.clamp_type_size(raw or {})
+    except KeyError as exc:
+        raise ConfigError(str(exc).strip("\"'")) from exc
+
+
+def check_str_list(raw: Any, name: str) -> list[str]:
+    if raw is None:
+        return []
+    if not isinstance(raw, (list, tuple)):
+        raise ConfigError(f"{name} must be a list")
+    return [str(item) for item in raw]
 
 
 @dataclass
@@ -270,14 +414,18 @@ class Config:
 
     @property
     def stem(self) -> str:
-        """Filename stem for the built PDF, e.g. 2027-Ramirez-Family-Planner."""
-        if self.output_name:
-            return self.output_name
+        """Filename stem for the built PDF, e.g. 2027-Ramirez-Family-Planner.
+
+        Always a bare name: separators and leading dots are stripped, so a
+        family name or output_name can never point outside the output folder.
+        """
+        if self.output_name.strip():
+            return safe_stem(self.output_name)
         parts = [str(self.year)]
-        if self.family_name:
-            parts.append(self.family_name.replace(" ", "-"))
+        if self.family_name.strip():
+            parts.append(self.family_name)
         parts.append("Family-Planner")
-        return "-".join(parts)
+        return safe_stem("-".join(parts))
 
 
 def load(path: Path | None) -> Config:
@@ -303,72 +451,59 @@ def load(path: Path | None) -> Config:
 
     # Palette resolution, lowest precedence first: the built-in defaults, then
     # the named theme, then whatever the config's own `palette:` block sets.
-    try:
-        preset = themes.resolve(str(data.get("theme") or themes.DEFAULT_THEME))
-    except KeyError as exc:
-        raise ConfigError(str(exc).strip("\"'")) from exc
-    palette = dict(DEFAULT_PALETTE)
-    palette.update(preset)
-    palette.update(data.get("palette") or {})
-
-    try:
-        faces = typefaces.resolve(data.get("fonts"))
-    except KeyError as exc:
-        raise ConfigError(str(exc).strip("\"'")) from exc
-
-    try:
-        design = designs.resolve(data.get("design"))
-    except KeyError as exc:
-        raise ConfigError(str(exc).strip("\"'")) from exc
-
-    try:
-        type_size = designs.clamp_type_size(data.get("type_size") or {})
-    except KeyError as exc:
-        raise ConfigError(str(exc).strip("\"'")) from exc
-
-    months = _merge_months(data.get("months") or [])
-    pages = list(data.get("pages") or DEFAULT_PAGES)
-    members = [str(m) for m in (data.get("members") or [])]
-
-    week_starts = str(data["week_starts"]).lower()
-    if week_starts not in {"sunday", "monday"}:
-        raise ConfigError("week_starts must be sunday or monday")
-
-    page_size = normalize_page_size(data["page_size"])
-
-    try:
-        year = int(data["year"])
-    except (TypeError, ValueError) as exc:
-        raise ConfigError("year must be a whole number") from exc
-    if not 1900 <= year <= 2999:
-        raise ConfigError("year must be between 1900 and 2999")
-
-    cover_year = str(data.get("cover_year") or "auto").lower()
-    if cover_year not in {"auto", "print", "blank", "omit"}:
-        raise ConfigError("cover_year must be auto, print, blank, or omit")
+    theme = check_theme(data.get("theme"))
+    palette = theme_palette(theme)
+    palette.update(sanitize_palette(data.get("palette")))
 
     return Config(
-        year=year,
+        year=check_year(data["year"]),
         title=str(data["title"]),
         subtitle=str(data["subtitle"]),
-        family_name=str(data["family_name"]),
-        week_starts=week_starts,
+        family_name=str(data["family_name"] or ""),
+        week_starts=check_week_starts(data["week_starts"]),
         dated_months=bool(data["dated_months"]),
-        cover_year=cover_year,
+        cover_year=check_cover_year(data.get("cover_year")),
         cover_text=str(data.get("cover_text") or ""),
         linked=bool(data.get("linked", False)),
-        theme=str(data.get("theme") or themes.DEFAULT_THEME).lower(),
-        design=design,
-        type_size=type_size,
-        faces=faces,
-        members=members,
+        theme=theme,
+        design=check_design(data.get("design")),
+        type_size=check_type_size(data.get("type_size")),
+        faces=check_fonts(data.get("fonts")),
+        members=check_str_list(data.get("members"), "members"),
         palette=palette,
-        months=months,
-        pages=pages,
-        page_size=page_size,
-        output_name=str(data["output_name"]),
+        months=_merge_months(data.get("months") or []),
+        pages=check_str_list(data.get("pages"), "pages") or list(DEFAULT_PAGES),
+        page_size=normalize_page_size(data["page_size"]),
+        output_name=str(data["output_name"] or ""),
         source=path,
     )
+
+
+def validate(cfg: Config) -> Config:
+    """Re-check a Config after the CLI or the UI has changed fields on it.
+
+    `load` validates what it reads; this covers values set afterwards, so
+    every entry point reaches the renderer through the same rules.
+    """
+    cfg.year = check_year(cfg.year)
+    cfg.week_starts = check_week_starts(cfg.week_starts)
+    cfg.cover_year = check_cover_year(cfg.cover_year)
+    cfg.theme = check_theme(cfg.theme)
+    cfg.design = check_design(cfg.design)
+    cfg.type_size = check_type_size(cfg.type_size)
+    cfg.faces = check_fonts(cfg.faces.preset or cfg.faces.roles)
+    cfg.page_size = normalize_page_size(cfg.page_size)
+    cfg.members = check_str_list(cfg.members, "members")
+    cfg.pages = check_str_list(cfg.pages, "pages") or list(DEFAULT_PAGES)
+    cfg.family_name = str(cfg.family_name or "")
+    cfg.cover_text = str(cfg.cover_text or "")
+    cfg.output_name = str(cfg.output_name or "")
+
+    palette = dict(DEFAULT_PALETTE)
+    palette.update(sanitize_palette(cfg.palette))
+    cfg.palette = palette
+    cfg.months = _check_months(cfg.months)
+    return cfg
 
 
 def _merge_months(overrides: list[Any]) -> list[dict[str, str]]:
@@ -387,4 +522,27 @@ def _merge_months(overrides: list[Any]) -> list[dict[str, str]]:
         if unknown:
             raise ConfigError(f"months[{i}]: unknown key(s) {sorted(unknown)}")
         months[i].update({k: str(v) for k, v in override.items()})
+    return _check_months(months)
+
+
+def _check_months(months: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Month names become page ids and accents index the palette; check both."""
+    if len(months) != 12:
+        raise ConfigError("months must describe exactly twelve months")
+    seen: set[str] = set()
+    for i, month in enumerate(months):
+        name = str(month.get("name", "")).strip()
+        if not _MONTH_NAME_RE.fullmatch(name):
+            raise ConfigError(
+                f"months[{i}].name must be a plain word like 'January' (got {name!r})"
+            )
+        if name.lower() in seen:
+            raise ConfigError(f"months[{i}].name {name!r} is used twice")
+        seen.add(name.lower())
+        accent = str(month.get("accent", ""))
+        if accent not in DEFAULT_PALETTE:
+            raise ConfigError(
+                f"months[{i}].accent must be a palette name like 'teal' (got {accent!r})"
+            )
+        month["name"] = name
     return months
