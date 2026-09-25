@@ -230,3 +230,47 @@ def test_preview_and_export_still_work(api):
     assert body["filename"] == "2028-Ramirez-planner.md"
     status, body = _post(f"{api}/api/import", {"text": body["markdown"]})
     assert status == 200 and body["config"]["year"] == 2028
+
+
+# --- only the app's own page may drive the API ------------------------------
+
+def _raw_post(url: str, headers: dict, body: bytes = b"{}") -> int:
+    req = urllib.request.Request(url, data=body, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return resp.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
+
+
+def test_cross_site_post_rejected(api):
+    status = _raw_post(f"{api}/api/export", {"Content-Type": "application/json",
+                                             "Origin": "https://evil.example"})
+    assert status == 403
+
+
+def test_simple_form_post_rejected(api):
+    # A plain <form> or text/plain fetch skips the CORS preflight.
+    status = _raw_post(f"{api}/api/build", {"Content-Type": "text/plain"})
+    assert status == 403
+
+
+def test_rebound_host_rejected(api):
+    port = api.rsplit(":", 1)[1]
+    status = _raw_post(f"{api}/api/export", {"Content-Type": "application/json",
+                                             "Host": f"evil.example:{port}"})
+    assert status == 403
+    req = urllib.request.Request(f"{api}/api/state",
+                                 headers={"Host": f"evil.example:{port}"})
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        urllib.request.urlopen(req, timeout=10)
+    assert exc.value.code == 403
+
+
+@pytest.mark.parametrize("host", ["127.0.0.1", "localhost"])
+def test_own_page_allowed(api, host):
+    port = api.rsplit(":", 1)[1]
+    status = _raw_post(f"{api}/api/export", {"Content-Type": "application/json",
+                                             "Host": f"{host}:{port}",
+                                             "Origin": f"http://{host}:{port}"})
+    assert status == 200

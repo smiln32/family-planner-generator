@@ -295,6 +295,11 @@ def main(argv: list[str] | None = None) -> int:
     except (ConfigError, RenderError) as exc:
         print(f"\nerror: {exc}", file=sys.stderr)
         return 1
+    except OSError as exc:
+        # Unwritable -o, a file where a folder should be, a locked PDF.
+        where = f": {exc.filename}" if exc.filename else ""
+        print(f"\nerror: {exc.strerror or exc}{where}", file=sys.stderr)
+        return 1
     except KeyboardInterrupt:
         print("\ninterrupted", file=sys.stderr)
         return 130

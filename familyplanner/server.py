@@ -37,6 +37,10 @@ CONTENT_TYPES = {
 
 MAX_BODY = 1 << 20  # 1 MB is far more than any config payload needs.
 
+# Names this server answers to. Anything else in Host is a DNS-rebinding
+# attempt; anything else in Origin is another website posting to us.
+LOCAL_HOSTS = ("127.0.0.1", "localhost")
+
 
 def _config_from(payload: dict, base: Config) -> Config:
     """Build a Config from the UI's form state, on top of the loaded defaults."""
@@ -119,9 +123,32 @@ class Handler(BaseHTTPRequestHandler):
         ctype = CONTENT_TYPES.get(target.suffix, "application/octet-stream")
         self._send(200, target.read_bytes(), ctype)
 
+    def _local_request(self, post: bool) -> bool:
+        """True when the request came from this app's own page.
+
+        Browsers let any website send a simple POST to 127.0.0.1, so a page
+        open in another tab could otherwise start builds or open files. The
+        Host check stops DNS rebinding; the Origin check stops cross-site
+        posts; requiring JSON forces a CORS preflight we never answer.
+        """
+        port = self.server.server_address[1]
+        allowed = {f"{host}:{port}" for host in LOCAL_HOSTS}
+        if (self.headers.get("Host") or "").lower() not in allowed:
+            return False
+        if not post:
+            return True
+        origin = (self.headers.get("Origin") or "").lower()
+        if origin and origin not in {f"http://{a}" for a in allowed}:
+            return False
+        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        return ctype == "application/json"
+
     # --- routes -----------------------------------------------------------
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
+        if not self._local_request(post=False):
+            self._send(403, b"forbidden", "text/plain; charset=utf-8")
+            return
         path = urlparse(self.path).path
         if path in ("/", "/index.html"):
             self._static(UI_DIR, "index.html")
@@ -135,6 +162,9 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, b"not found", "text/plain; charset=utf-8")
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
+        if not self._local_request(post=True):
+            self._send(403, b"forbidden", "text/plain; charset=utf-8")
+            return
         path = urlparse(self.path).path
         try:
             payload = self._read_json()
