@@ -1,6 +1,6 @@
 # Handoff — 2026-09-24
 
-**Why parked:** continuity checkpoint after a security and privacy pass. Everything is committed and pushed; the working tree is clean. The only open product work is the paused page-looks design.
+**Why parked:** end of day after a security and privacy pass. Everything is committed and pushed; the working tree is clean. The only open product work is the paused page-looks design.
 
 ## What this is
 
@@ -26,7 +26,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Palette colour editor (theme, then replace any of the twelve print colours; round-trips through the plan file) | Committed. Covered by unit and API tests; **not yet exercised by hand in `planner.py ui`** |
 | Look 17 "Intention", look 12 renamed "Beautiful day" | Committed. Mechanical only; see looks row |
 | Security pass: `/api/save` removed, sanitized output stems, hex/font/month validation, escaped tab rail, one validator set for YAML, CLI and UI, Host/Origin/JSON guard on the local API, clean CLI `error:` lines for file errors | Done, 74 tests |
-| Privacy: run outputs untracked, git history rewritten so no commit carries a real family name, author email replaced with the GitHub noreply address | Done, force-pushed 2026-09-24 |
+| Privacy: run outputs untracked; history rewritten to drop real family names and the original source pack (reference PDF + `JPG/` page scans); author email replaced with the GitHub noreply address | Done 2026-09-24. GitHub repo deleted and recreated from the clean history, so no old commits exist there. Repo is ~185 KB and still **private** |
 | Looks 02–17 design quality | **Not done.** Human paused look design; covers are not print-quality. Only mechanical implementation from approved references should continue |
 | Last local book build | Predates the looks and security work. Re-run stage 03 before printing |
 
@@ -43,7 +43,9 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 ## Environment notes
 
 - Windows Smart App Control blocks Git for Windows' unsigned `libcurl-4.dll`, so HTTPS push and fetch fail or hang. This repo pushes over SSH with `core.sshCommand = C:/Windows/System32/OpenSSH/ssh.exe`. Do not switch the remote back to HTTPS.
-- Other clones made before the 2026-09-24 history rewrite must `git fetch` then `git reset --hard origin/main`, or be re-cloned, so the old history is not pushed back.
+- Any clone made before 2026-09-24 has the old history. Delete it and re-clone; never push from it, or the names and source pack return.
+- The original source pack (reference planner PDF and 31 page JPGs) lives outside the repo at `..\planner-source-pack\`. Do not copy it back in; it must not be published.
+- `git-filter-repo` is installed (`python -m git_filter_repo`) if history ever needs scrubbing again.
 
 ## What to do on resume
 
@@ -52,7 +54,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. Worth doing: open `python planner.py ui` and exercise the colour editor by hand (change a colour, preview, download the plan, open it again).
 5. If asked to continue look design, follow `shared/looks-handoff.md` exactly: get an approved reference first, implement one look at a time, then stop.
-6. Before the repo goes public: optionally ask GitHub Support to purge cached views of the pre-rewrite commits.
+6. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 7. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
 
 > FIRST TURN: read the referenced docs ONE AT A TIME (no parallel tool calls, no batched reads). Parallel reads on the first turn can wedge a new session; sequential reads avoid it.
