@@ -1,7 +1,12 @@
 {# title: Weekly Meal Planning Sheet #}
 {% from "macros.html" import divider, footer, ico, chip, field, lines with context %}
 {% from "art.html" import house_family with context %}
-{% set tints = ["#FDECEF", "#FDF1E6", "#FDF8E2", "#EAF6EC", "#E7F2FB", "#EFEAF7", "#F7EAF2"] %}
+{# Each day keeps its own tint and glyph wherever week_starts puts it. #}
+{% set day_style = {
+  "Monday": ("#FDECEF", "sun"), "Tuesday": ("#FDF1E6", "sun"), "Wednesday": ("#FDF8E2", "sun"),
+  "Thursday": ("#EAF6EC", "sun"), "Friday": ("#E7F2FB", "sun"),
+  "Saturday": ("#EFEAF7", "moon"), "Sunday": ("#F7EAF2", "moon"),
+} %}
 
 <section class="page meal-page">
   <header class="masthead">
@@ -39,12 +44,13 @@
       </tr>
     </thead>
     <tbody>
-      {% for day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] %}
+      {% for name in day_names(cfg.sunday_first) %}
+      {% set tint, glyph = day_style[name] %}
       <tr>
-        <td class="daycell" style="background:{{ tints[loop.index0] }}">
-          <span class="dayname">{{ day|upper }}</span>
-          <svg class="ico dayglyph" style="fill:{{ p.orange if loop.index0 < 5 else p.blue }}">
-            <use href="#i-{{ 'sun' if loop.index0 < 5 else 'moon' }}"/></svg>
+        <td class="daycell" style="background:{{ tint }}">
+          <span class="dayname">{{ name[:3]|upper }}</span>
+          <svg class="ico dayglyph" style="fill:{{ p.orange if glyph == 'sun' else p.blue }}">
+            <use href="#i-{{ glyph }}"/></svg>
         </td>
         <td></td><td></td><td></td><td></td><td></td>
       </tr>

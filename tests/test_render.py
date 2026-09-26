@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import re
 
 import pytest
 
@@ -98,6 +99,24 @@ def test_every_catalogue_page_renders(cfg):
         cfg.pages = [slug]
         html = render.render_html(cfg, render.plan_pages(cfg))
         assert f'id="{slug}"' in html
+
+
+@pytest.mark.parametrize("week_starts, expected", [
+    ("sunday", ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]),
+    ("monday", ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]),
+])
+def test_meal_plan_days_follow_week_starts(cfg, week_starts, expected):
+    cfg.week_starts = week_starts
+    cfg.pages = ["meal_plan"]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    days = re.findall(r'<span class="dayname">(\w+)</span>\s*'
+                      r'<svg class="ico dayglyph"[^>]*>\s*<use href="#i-(\w+)"', html)
+    assert [d for d, _ in days] == expected
+    # Each day keeps its own glyph when the order shifts.
+    assert {d: g for d, g in days} == {
+        "MON": "sun", "TUE": "sun", "WED": "sun", "THU": "sun", "FRI": "sun",
+        "SAT": "moon", "SUN": "moon",
+    }
 
 
 # --- determinism --------------------------------------------------------------
