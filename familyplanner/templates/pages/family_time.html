@@ -47,7 +47,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for name in day_names(false) %}
+      {% for name in day_names(cfg.sunday_first) %}
       <tr>
         <td class="daytag">
           {% set colour = ["teal", "green", "orange", "pink", "purple", "teal", "green"][loop.index0] %}

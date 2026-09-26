@@ -36,7 +36,7 @@
       </tr>
       <tr class="day-head">
         <th></th><th></th>
-        {% for initial in day_initials(false) %}
+        {% for initial in day_initials(cfg.sunday_first) %}
         <th style="color:{{ p[['pink','orange','green','teal','blue','purple','pink'][loop.index0]] }}">
           {{ initial }}</th>
         {% endfor %}

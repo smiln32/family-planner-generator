@@ -8,9 +8,9 @@
 
 {# Pick the page's accent colours from the palette by NAME, never by hex, so
    the page follows whatever `palette:` says in the config. #}
-{% set days = [("Monday", "teal"), ("Tuesday", "pink"), ("Wednesday", "orange"),
-               ("Thursday", "green"), ("Friday", "purple"), ("Saturday", "blue"),
-               ("Sunday", "pink")] %}
+{% set day_colours = {"Monday": "teal", "Tuesday": "pink", "Wednesday": "orange",
+                      "Thursday": "green", "Friday": "purple", "Saturday": "blue",
+                      "Sunday": "pink"} %}
 
 <section class="page gratitude-page">
   <header class="masthead no-art">
@@ -28,8 +28,9 @@
   <div class="grat-meta">{{ field("Week of:") }}{{ field("Our family word this week:") }}</div>
 
   <div class="grat-days">
-    {% for name, colour in days %}
-    <div class="card has-tab" style="--c:{{ p[colour] }}">
+    {# Days follow week_starts; each keeps its own colour. #}
+    {% for name in day_names(cfg.sunday_first) %}
+    <div class="card has-tab" style="--c:{{ p[day_colours[name]] }}">
       <div class="card-tab">{{ ico("heart") }} {{ name }}</div>
       {{ lines(2) }}
     </div>

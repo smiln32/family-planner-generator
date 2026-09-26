@@ -119,6 +119,36 @@ def test_meal_plan_days_follow_week_starts(cfg, week_starts, expected):
     }
 
 
+WEEK_NAMES = {
+    "sunday": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "monday": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+}
+
+
+@pytest.mark.parametrize("week_starts", ["sunday", "monday"])
+@pytest.mark.parametrize("slug", ["family_time", "school_activities", "example_gratitude"])
+def test_weekly_pages_list_days_in_week_order(cfg, slug, week_starts):
+    cfg.week_starts = week_starts
+    cfg.pages = [slug]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    days = re.findall(r"\b(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\b", html)
+    first_seen = list(dict.fromkeys(days))
+    assert first_seen == WEEK_NAMES[week_starts]
+
+
+@pytest.mark.parametrize("week_starts", ["sunday", "monday"])
+@pytest.mark.parametrize("slug, block, cell", [
+    ("chores", r'<tr class="day-head">(.*?)</tr>', r">\s*([SMTWF])\s*</th>"),
+    ("health_tracker", r'<div class="week-head">(.*?)</div>', r">([SMTWF])</span>"),
+])
+def test_tracker_initials_follow_week_starts(cfg, slug, block, cell, week_starts):
+    cfg.week_starts = week_starts
+    cfg.pages = [slug]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    head = re.search(block, html, re.S).group(1)
+    assert re.findall(cell, head) == [name[0] for name in WEEK_NAMES[week_starts]]
+
+
 # --- determinism --------------------------------------------------------------
 
 def test_same_config_renders_identical_html(cfg):

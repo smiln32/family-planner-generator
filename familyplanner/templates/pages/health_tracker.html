@@ -54,7 +54,7 @@
         {% for icon, colour, label, blurb in habits %}
         <th>
           <div class="week-head">
-            {% for initial in day_initials(false) %}
+            {% for initial in day_initials(cfg.sunday_first) %}
             <span style="color:{{ p[colour] }}">{{ initial }}</span>
             {% endfor %}
           </div>

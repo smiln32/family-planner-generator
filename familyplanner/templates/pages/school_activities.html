@@ -44,7 +44,7 @@
     <thead>
       <tr>
         <th style="background:{{ p.navy }}">Time</th>
-        {% for name in day_names(false) %}
+        {% for name in day_names(cfg.sunday_first) %}
         <th style="background:{{ p[['pink','orange','green','teal','purple','orange','green'][loop.index0]] }}">
           {{ name }}</th>
         {% endfor %}
