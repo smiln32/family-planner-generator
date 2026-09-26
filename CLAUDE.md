@@ -20,7 +20,7 @@ CONTEXT.md                Layer 1 routing
 _config/                  Layer 3 factory: design, voice, page catalog
 shared/                   Layer 3 cross-stage notes
 setup/questionnaire.md    One-time factory setup
-stages/
+stages/                   Each has CONTEXT.md (Layer 2), references/ (3), output/ (4)
   01-intake/              This run's family brief
   02-customize/           family.yaml for this run
   03-build/               HTML/PDF via local scripts
@@ -48,15 +48,30 @@ Stage 03 calls `build`. Humans who skip the agent pipeline can use `ui` alone.
 | Say | Do |
 |-----|-----|
 | `setup` | Read `setup/questionnaire.md`, ask once, bake answers into `_config/` and defaults |
-| `status` | Scan `stages/*/output/` (ignore `.gitkeep`) and print the pipeline diagram |
+| `status` | Scan `stages/*/output/`. A stage with files other than `.gitkeep` is COMPLETE (list them); otherwise PENDING. Print the ASCII pipeline diagram |
 | `ui` | Start or confirm `python planner.py ui`; do not invent a second frontend |
 | `build` | Route to stage 03 if a customize output exists; otherwise start at 01 |
+
+## What to load
+
+| Task | Load these | Do not load |
+|------|-----------|-------------|
+| New run, intake | `stages/01-intake/CONTEXT.md` and its Inputs | Other stages, `familyplanner/` code |
+| Customize a run | `stages/02-customize/CONTEXT.md` and its Inputs | Build output, templates, CSS |
+| Build | `stages/03-build/CONTEXT.md` and its Inputs | `_config/voice.md`; build does not write copy |
+| Review | `stages/04-review/CONTEXT.md` and its Inputs | `familyplanner/` code unless a template bug is found |
+| Print look change | `_config/design-system.md`, then the named template/CSS | Stage outputs from earlier runs |
+| Page looks 02 to 17 | `shared/looks-handoff.md` | Chat-invented art; the design is paused |
+
+## Stage handoffs
+
+Each stage writes to its own `output/`. The next stage reads from there. If a human edited a file in `output/`, the next stage uses the edited version.
 
 ## Rules
 
 - One stage, one job. Intake does not render. Build does not rewrite copy.
-- Stage contracts are Inputs, Process, Outputs. Follow them.
-- Output folders are the handoff. If a human edited a file there, use that version.
-- Placeholders look like `{{SCREAMING_SNAKE_CASE}}`. After setup, none should remain in `_config/` or `setup/`.
+- Stage contracts are Inputs, Process, optional Checkpoints and Audit, Outputs. Follow them.
+- References point one way: stages point to `_config/`, `shared/` and earlier stages' `output/`. Nothing points forward.
+- Placeholders look like `{{SCREAMING_SNAKE_CASE}}`. After setup, none should remain in `_config/` or `stages/`.
 - Numbered stage folders encode order. Rename to reorder; do not add a coordinator script.
 - No real family names in the repo. Run outputs are gitignored and stay local; docs, examples and tests use blank or made-up names.

@@ -989,7 +989,7 @@ body {
 .design-02 .card.has-tab { padding-top: 0.13in; }
 .design-02 .dot-line, .design-02 .solid-line { border-color: #111; }
 
-/* 3 — Botanical (sage washes, florals, rounded modules) */
+/* 3: Botanical (sage washes, florals, rounded modules) */
 .design-03 {
   --navy: #1E2A4A; --teal: #6B8F71; --pink: #A78BA2; --orange: #C4B59A;
   --green: #8AA084; --purple: #8B6E8A; --blue: #7A8B88; --red: #B56858;
@@ -1029,7 +1029,7 @@ body {
 }
 .design-03 .divider .bar { background: var(--green); height: 1px; width: 1.2in; }
 
-/* 4 — Marker journal (grid paper, brush headers, doodles) */
+/* 4: Marker journal (grid paper, brush headers, doodles) */
 .design-04 {
   --navy: #111; --teal: #111; --pink: #111; --orange: #111;
   --green: #111; --purple: #111; --blue: #111; --red: #111;
@@ -1073,7 +1073,7 @@ body {
 .design-04 .masthead .headings::before { left: 0.1in; top: 0; }
 .design-04 .masthead .headings::after { right: 0.1in; top: 0.12in; content: "☺"; }
 
-/* 5 — Soft intention (pastel modules, script title, botanicals) */
+/* 5: Soft intention (pastel modules, script title, botanicals) */
 .design-05 {
   --navy: #5C5348; --teal: #9AAE90; --pink: #E8C4B8; --orange: #F3D3C2;
   --green: #C5D1B8; --purple: #C9B8C4; --blue: #B8C4C0; --red: #D4A090;
@@ -1108,7 +1108,7 @@ body {
   opacity: 0.55; pointer-events: none;
 }
 
-/* 6 — School notebook */
+/* 6: School notebook */
 .design-06 {
   --paper: #FFFDF5; --ink: #1a2744; --navy: #1a2744; --rule: #A7C4E0;
   --teal: #C23B3B;
@@ -1131,7 +1131,7 @@ body {
 }
 .design-06 .banner::before, .design-06 .banner::after { display: none; }
 
-/* 7 — Editorial */
+/* 7: Editorial */
 .design-07 .page { background: #fff; }
 .design-07 .mark, .design-07 .art, .design-07 .cover-scene,
 .design-07 .cover-side, .design-07 .cover-feet { display: none !important; }
@@ -1148,7 +1148,7 @@ body {
 .design-07 .divider { justify-content: flex-start; }
 .design-07 .divider .bar { width: 0.4in; height: 4px; }
 
-/* 8 — Stamp frame */
+/* 8: Stamp frame */
 .design-08 .page {
   box-shadow:
     inset 0 0 0 0.07in var(--paper),
@@ -1161,7 +1161,7 @@ body {
 .design-08 .mark, .design-08 .art { display: none !important; }
 .design-08 .masthead, .design-08 .masthead.no-art { grid-template-columns: 1fr; }
 
-/* 9 — Swiss grid */
+/* 9: Swiss grid */
 .design-09 {
   --navy: #111; --teal: #E10600; --pink: #111; --paper: #fff; --ink: #111;
 }
@@ -1182,7 +1182,7 @@ body {
 }
 .design-09 .banner::before, .design-09 .banner::after { display: none; }
 
-/* 10 — Keepsake */
+/* 10: Keepsake */
 .design-10 .page { background: #F7F1E6; }
 .design-10 .mark, .design-10 .art { display: none !important; }
 .design-10 .masthead, .design-10 .masthead.no-art { grid-template-columns: 1fr; }
@@ -1300,7 +1300,7 @@ body {
 }
 .famcover-02 .fc-year, .famcover-02 .year-blank { margin-top: auto; padding-top: 0.35in; }
 
-/* 03 botanical cover. Rejected — do not iterate flora without a reference. */
+/* 03 botanical cover. Rejected: do not iterate flora without a reference. */
 .famcover-03 { align-items: center; text-align: center; padding-top: 1.45in; }
 .fc03-flora { position: absolute; pointer-events: none; overflow: visible; }
 .fc03-tl { top: -0.18in; left: -0.22in; width: 3.2in; }
@@ -1345,7 +1345,7 @@ body {
 }
 .fc05-cards i { display: block; border-bottom: 1px solid #C4B8A8; height: 0.28in; }
 
-/* 06 notebook cover. Incomplete — do not invent more decoration. */
+/* 06 notebook cover. Incomplete: do not invent more decoration. */
 .famcover-06 {
   padding: 0.14in 0.22in 0.12in 1.05in;
   position: relative;
@@ -1527,7 +1527,7 @@ body {
   border-radius: 0 0 50% 50% / 0 0 70% 70%; flex: none;
 }
 
-/* 11 — Executive desk */
+/* 11: Executive desk */
 .design-11 {
   --navy: #1B365D; --teal: #5A7394; --pink: #5A7394; --orange: #8A93A3;
   --green: #5A7394; --purple: #4A5A72; --blue: #5A7394; --red: #4A5568;
@@ -1617,7 +1617,7 @@ body {
 }
 .d11-foot span { flex: 1; max-width: 1.6in; height: 1px; background: #1B365D; }
 
-/* 12 — Beautiful Day cottagecore */
+/* 12: Beautiful Day cottagecore */
 .design-12 {
   --navy: #5C4033; --teal: #8FAE8A; --pink: #E8B4BE; --orange: #E8C4B8;
   --green: #8FAE8A; --purple: #D4C0E0; --blue: #C4B8B0; --red: #C46A78;
@@ -1675,7 +1675,7 @@ body {
 .d12-notes { flex: 0.9; border-color: #8FAE8A !important; }
 .d12-care { flex: 1.05; }
 
-/* 13 — Boho earth */
+/* 13: Boho earth */
 .design-13 {
   --navy: #4A3A2A; --teal: #8A9E7E; --pink: #E8C4B0; --orange: #C4785A;
   --green: #8A9E7E; --purple: #C4A090; --blue: #A8B8A0; --red: #C4785A;
@@ -1734,7 +1734,7 @@ body {
 .d13-rainbow { position: absolute; left: 0.02in; bottom: -0.04in; width: 1.15in; opacity: 0.9; }
 .daily-13 .d-checks, .daily-13 .d12-num, .daily-13 .d12-hearts { padding: 0.02in 0.12in 0.08in; }
 
-/* 14 — Scrapbook */
+/* 14: Scrapbook */
 .design-14 {
   --navy: #1E4A4A; --teal: #2A8A8A; --pink: #E85A4A; --orange: #E8B84A;
   --green: #3A9A8A; --purple: #E85A4A; --blue: #7AB8C8; --red: #E85A4A;
@@ -1845,7 +1845,7 @@ body {
 .d14-scallop { position: absolute; left: -0.32in; right: -0.32in; bottom: -0.28in; width: auto; height: 0.32in; }
 .d14-grid .d-checks, .d14-grid .d12-hearts, .d14-grid .d14-stars, .d14-grid .d-lines { padding: 0 0.1in 0.06in; }
 
-/* 15 — Street journal */
+/* 15: Street journal */
 .design-15 {
   --navy: #111; --teal: #111; --pink: #111; --orange: #111;
   --green: #111; --purple: #111; --blue: #111; --red: #111;
@@ -1905,7 +1905,7 @@ body {
 .d15-crown { position: absolute; right: 0.08in; bottom: 0.04in; width: 0.48in; }
 .daily-15 .d-checks, .daily-15 .d12-num { padding: 0.04in 0.1in 0.06in; }
 
-/* 16 — Reset */
+/* 16: Reset */
 .design-16 {
   --navy: #2A4A38; --teal: #7A9A7A; --pink: #C4846A; --orange: #C4846A;
   --green: #8AA888; --purple: #A88878; --blue: #7A9A8A; --red: #C07058;
@@ -1963,7 +1963,7 @@ body {
 .d16-foot .ico { width: 0.14in; height: 0.14in; fill: #8AA888; }
 .daily-16 .d-checks, .daily-16 .d12-num, .daily-16 .d-lines { padding: 0 0.1in 0.06in; }
 
-/* 17 — Plan with intention */
+/* 17: Plan with intention */
 .design-17 {
   --navy: #5C5348; --teal: #C2C8B8; --pink: #E8C8C4; --orange: #E8D8C8;
   --green: #C2C8B8; --purple: #D4C0B8; --blue: #C8C4B8; --red: #D4A8A0;

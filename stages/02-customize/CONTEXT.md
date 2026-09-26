@@ -39,7 +39,3 @@ Turn the intake brief into a generator config. Do not run Chrome or write a PDF.
 | Artifact | Location | Format |
 |----------|----------|--------|
 | Config | `output/[slug]-family.yaml` | YAML the generator can load |
-
-## Routing
-
-Next: `../03-build/` with `-c` pointing at this YAML.

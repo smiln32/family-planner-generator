@@ -19,4 +19,4 @@ Month taglines are one cheerful line, present tense, about being together. Foote
 
 ## Names
 
-Print "The {{family}} Family" on the cover when `family_name` is set. Leave the generic title when it is blank. Tracker rows may be blank for handwriting.
+Print "The [family name] Family" on the cover when `family_name` is set. Leave the generic title when it is blank. Tracker rows may be blank for handwriting.

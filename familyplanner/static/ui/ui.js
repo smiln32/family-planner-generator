@@ -676,7 +676,7 @@ async function start() {
   try {
     meta = await api("/api/state");
   } catch (error) {
-    toast("Could not open the planner. Double-click Start Planner and leave that window open.", "error");
+    toast("Could not open the planner. Double-click start-planner and leave that window open.", "error");
     return;
   }
   Object.assign(state, meta.config);

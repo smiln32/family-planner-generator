@@ -1,4 +1,4 @@
-# Handoff — 2026-09-24
+# Handoff, 2026-09-24
 
 **Why parked:** end of day after a security and privacy pass. Everything is committed and pushed; the working tree is clean. The only open product work is the paused page-looks design.
 

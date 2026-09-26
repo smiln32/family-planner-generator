@@ -28,7 +28,3 @@ Collect this run's family facts. Do not pick colours, fonts, or render a PDF.
 | Artifact | Location | Format |
 |----------|----------|--------|
 | Brief | `output/[slug]-brief.md` | Markdown from the template |
-
-## Routing
-
-Next: `../02-customize/`. If they only wanted the visual editor, stop and run `python planner.py ui`.

@@ -40,7 +40,7 @@ PRESETS: dict[str, dict[str, str]] = {
     # Clean sans throughout.
     "classic": {"display": "Open Sans", "script": "Open Sans", "body": "Open Sans"},
 
-    # Chunky caps and a brush script — the former classic set.
+    # Chunky caps and a brush script, the former classic set.
     "playful": {"display": "Fredoka", "script": "Pacifico", "body": "Nunito"},
 
     # Geometric sans throughout.

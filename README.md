@@ -3,7 +3,7 @@
 Generates the adorable printable planner pages as a print-ready PDF, for any
 year, any family, any colours.
 
-**If you just want to make a book:** double-click `Start Planner.bat`. Keep that
+**If you just want to make a book:** double-click `start-planner.bat`. Keep that
 window open. Your browser is the app. Click **Make PDF** when the pages look
 right.
 
@@ -49,7 +49,7 @@ python planner.py ui
 Opens a local app at `http://127.0.0.1:8733` with a live preview of the real
 rendered page - same code path as `build`, so what you see is what prints.
 
-On Windows, `Start Planner.bat` does this without typing a command. If the
+On Windows, `start-planner.bat` does this without typing a command. If the
 planner is already running, it just opens the browser again.
 
 - year, family name (optional), paper size, week start, dated or blank grids
@@ -260,13 +260,9 @@ Filenames starting with `_` are treated as partials and skipped, as is
 
 ## Requirements
 
-- Python 3.10+
-- `Jinja2` and `PyYAML` (`pip install -r requirements.txt`)
-- Google Chrome, Microsoft Edge, Chromium or Brave, for the PDF step. The
-  build finds it automatically; override with `--browser PATH` or by setting
-  `CHROME_PATH`.
-
-Tests: `pip install -r requirements-dev.txt`, then `python -m pytest`.
+Python 3.10+ and a Chromium-family browser (Chrome, Edge, Chromium or Brave).
+Install and check steps, including tests, are in
+[`stages/03-build/references/tool-setup.md`](stages/03-build/references/tool-setup.md).
 
 The display fonts are optional. Without them the pages fall back to system
 fonts and still build; with them they look right. They are SIL Open Font

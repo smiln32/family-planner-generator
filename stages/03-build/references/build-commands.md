@@ -16,4 +16,4 @@ python planner.py fonts -c <yaml>
 python planner.py ui -c <yaml>
 ```
 
-Needs Python 3.10+, `pip install -r requirements.txt`, and Chrome, Edge, Chromium, or Brave for PDF. `--html-only` is enough to inspect layout without a browser print step.
+Install steps for Python and the browser are in `tool-setup.md`. `--html-only` is enough to inspect layout without a browser print step.

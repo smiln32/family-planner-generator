@@ -52,6 +52,10 @@ page_size: letter
 # Overrides the generated filename stem. Leave blank for "<year>-<family>-Family-Planner".
 output_name: ""
 
+# Adds tab-rail navigation and a linked index page, for reading on a tablet
+# (31 pages). Same as `build --linked`.
+# linked: false
+
 # Typefaces. Either a set name:
 #   classic  playful  modern  elegant  italics  neat
 # or any three Google Fonts families of your own:
@@ -65,7 +69,8 @@ fonts: elegant
 
 # How the sheets are dressed. `original` is this book. `02` boxed records,
 # `03` botanical, `04` marker journal, `05` soft intention. `06`–`10` are
-# other languages. `11`–`16` are six more daily-planner looks. `blank` strips art.
+# other languages. `11`–`17` are more daily-planner looks. `blank` strips art.
+# Looks `02`–`17` are unfinished; see shared/looks-handoff.md before using one.
 design: original
 
 # Point sizes. The visual editor has sliders and type-in fields for these.

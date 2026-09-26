@@ -1,15 +1,49 @@
 # Setup questionnaire
 
-Ask these once. Answers configure the factory, not a single family's book. Per-run year and names belong in stage 01.
+<!-- Agent instructions: Read this file when the user types "setup". Ask ALL questions
+     in one conversational pass so the user can answer in a single message. Use the
+     default for anything they skip. Answers configure the factory, not a single
+     family's book. Per-run year and names are collected by stage 01. -->
 
-Ask all questions in one pass. Use the default if they skip.
+### Q1: Default paper size?
+- Files: `config.example.yaml` (`page_size`)
+- Type: selection
+- Options: `5.5x8`, `6x9`, `letter`
+- Default: `letter` (8.5 by 11 in)
+- Derived: if not `letter`, update the Page box section of `_config/design-system.md`
 
-1. Default paper size? (`5.5x8` / `6x9` / `letter`) Default: letter (8.5 by 11 in).
-   - Derived: `page_size` in future `planner.py init` files and `_config/design-system.md` if they did not keep letter.
-2. Default week start? (`sunday` / `monday`) Default: sunday.
-3. Default theme name? (`linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `slate`) Default: linen.
-4. Default typeface set? (`elegant` `classic` `playful` `modern` `italics` `neat`) Default: elegant.
-5. Typical household size for blank tracker rows? Number. Default: 5.
-6. Do you want dated monthly grids by default? (`yes` / `no`) Default: yes.
+### Q2: Default week start?
+- Files: `config.example.yaml` (`week_starts`)
+- Type: selection
+- Options: `sunday`, `monday`
+- Default: `sunday`
 
-After answers: write them into `config.example.yaml` comments or values only where they are factory defaults, and replace any `{{PLACEHOLDER}}` left in `_config/`. Do not put a specific family name into `_config/`.
+### Q3: Default colour theme?
+- Files: `config.example.yaml` (`theme`)
+- Type: selection
+- Options: the theme names listed in the `theme` comment of `config.example.yaml`
+- Default: `linen`
+
+### Q4: Default typeface set?
+- Files: `config.example.yaml` (`fonts`)
+- Type: selection
+- Options: the set names listed in the `fonts` comment of `config.example.yaml`
+- Default: `elegant`
+
+### Q5: Typical household size, for blank tracker rows?
+- Files: `config.example.yaml` (number of empty `members` entries)
+- Type: number
+- Default: 5
+
+### Q6: Dated monthly grids by default?
+- Files: `config.example.yaml` (`dated_months`)
+- Type: yes/no
+- Default: yes
+
+---
+
+## After onboarding
+
+Tell the user which defaults changed and that `python planner.py init` now writes them into new `family.yaml` files. Do not put a specific family name into `_config/` or `config.example.yaml`.
+
+Then scan `_config/` and `stages/` for any remaining `{{` patterns. This file is the source of the questions, not a target, so skip it. If any remain, ask for the missing information.

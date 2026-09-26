@@ -1,4 +1,4 @@
-# Page looks — handoff
+# Page looks handoff
 
 Updated 6 Sep 2026. Human stopped look design: covers are not at print quality. Do not keep drawing flora, notebook chrome, or new cover layouts in chat. Next look work needs approved reference images (or a designer), then mechanical implementation only.
 
@@ -37,13 +37,13 @@ A new look is a **different page**, not a costume on Family / Success / Planner.
 
 | Look | Cover in `cover.html` |
 |------|------------------------|
-| 11 Executive | DAILY PLAN — navy, DATE, goals 1–2–3, schedule 6:00 AM–9:00 PM, tasks, calls/emails, notes, tomorrow’s focus |
-| 12 Beautiful day | Today is a Beautiful Day — florals (still simple shapes), top 3, schedule + to-do + notes + self-care |
-| 13 Boho | Grounded. Grateful. Growing. — brush headers, schedule right, pot, Psalm 118:24 |
-| 14 Scrapbook | Good Things / Are happening — collage, no hourly schedule |
-| 15 Street | LET’S GET IT — graph paper, 7 AM–10 PM |
-| 16 Reset | Reset & Refocus — sage/terracotta, habits |
-| 17 Intention | plan with intention — pastel modules, gratitude + hydrate |
+| 11 Executive | DAILY PLAN: navy, DATE, goals 1–2–3, schedule 6:00 AM–9:00 PM, tasks, calls/emails, notes, tomorrow’s focus |
+| 12 Beautiful day | Today is a Beautiful Day: florals (still simple shapes), top 3, schedule + to-do + notes + self-care |
+| 13 Boho | Grounded. Grateful. Growing. Brush headers, schedule right, pot, Psalm 118:24 |
+| 14 Scrapbook | Good Things / Are happening: collage, no hourly schedule |
+| 15 Street | LET’S GET IT: graph paper, 7 AM–10 PM |
+| 16 Reset | Reset & Refocus: sage/terracotta, habits |
+| 17 Intention | plan with intention: pastel modules, gratitude + hydrate |
 
 ## Files
 

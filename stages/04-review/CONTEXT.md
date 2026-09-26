@@ -18,6 +18,7 @@ Read the built book against the factory rules. Do not rebuild unless the human a
 2. Run the audit table against the HTML or PDF.
 3. Write findings. Separate blockers from nits.
 4. If a blocker is a config mistake, point back to stage 02. If it is a template bug, say which template.
+5. If the human wants changes applied, they are made in stage 02 and rebuilt in stage 03. This stage does not rebuild.
 
 ## Audit
 
@@ -35,7 +36,3 @@ Read the built book against the factory rules. Do not rebuild unless the human a
 | Artifact | Location | Format |
 |----------|----------|--------|
 | Review | `output/[slug]-review.md` | Markdown: pass/fail per check, notes |
-
-## Routing
-
-Done for this run. Re-run 02 then 03 if the human wants changes applied.
