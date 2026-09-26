@@ -1,6 +1,6 @@
-# Handoff, 2026-09-25
+# Handoff, 2026-09-26
 
-**Why parked:** end of a session that brought the workspace into line with the ICM conventions and fixed the editor's worst accessibility findings. `main` is pushed and matches GitHub; there are no other branches. Open work: the rest of the editor audit list below, and the paused page-looks design.
+**Why parked:** end of a session that brought the workspace into line with the ICM conventions, fixed the editor's contrast and page-list findings, made every weekly page follow `week_starts`, and verified the privacy purge and the PDF path. `main` is pushed and matches GitHub; there are no other branches. Open work: the rest of the editor audit list below, and the paused page-looks design.
 
 ## What this is
 
@@ -26,12 +26,14 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 |------|-------|
 | ICM conformance | Done 2026-09-25, checked against `_core/CONVENTIONS.md` in github.com/RinDig/Interpretable-Context-Methodology. Stage contracts have no Routing sections (they pointed forward); stage 03 has an Audit; duplicate reference files removed; templates followed for Layer 0/1 and the questionnaire; no em dashes; launcher renamed from `Start Planner.bat` |
 | ICM deviations kept on purpose | Stage folders use `01-` (the conventions and reference repo do; the paper shows `01_`). `familyplanner/` has no hyphen (Python package). `README.md` is over 200 lines (human doc, agents do not load it). Built PDFs keep the `<year>-<family>-Family-Planner` name |
-| Editor audit (`/impeccable audit`) | Scored 12/20 before fixes. Fixed: `--muted` now `#6A655C` (4.8:1+), error toast on new `--error` `#96564E` (5.6:1), page-list names are real buttons beside the checkbox with `aria-current`, "Add a person" on new `--teal-deep` (5.2:1). Detector reports no low-contrast text now. Remaining items below |
+| Editor audit (`/impeccable audit`) | Scored 12/20 before fixes. Fixed: `--muted` now `#6A655C` (4.8:1+), error toast on new `--error` `#96564E` (5.6:1), page-list names are real buttons beside the checkbox with `aria-current`, "Add a person", `.linky` and `.palette-undo` on new `--teal-deep` (5.2:1). Detector reports no low-contrast text now. Remaining items below |
+| Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Meal plan and gratitude key each day's tint/glyph by name; the others keep their decorative colour runs positional |
 | Palette colour editor | Committed, covered by unit and API tests; **still not exercised by hand in `planner.py ui`** |
-| Security pass (validators, local API guard, clean CLI errors) | Done, 74 tests pass |
-| Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private** |
+| Security pass (validators, local API guard, clean CLI errors) | Done. Suite is 86 tests, all passing |
+| Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Not done.** Human paused look design; covers are not print-quality |
-| Local book build | A run was rebuilt and reviewed on 2026-09-25 after the looks and security work. Its files are local only |
+| Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
+| PDF path | Verified 2026-09-26 from the example config: exit 0, 30 pages matching the HTML, US Letter, no blank pages, fonts embedded. Chrome embeds Playfair Display as a Type 3 font; fine for home printing, but some print-shop preflight checks flag Type 3 |
 
 ## Editor audit: still open
 
@@ -41,10 +43,9 @@ In priority order. None block use at the normal full-screen desktop width.
 2. **Small, flat type (P2):** section heads 12px, labels 11px, body 10.5–11.5px. Suggested: `/impeccable typeset`.
 3. **Leftover blue-grey colours (P2):** about 20 hard-coded values outside `:root`, many from an older navy/bright-teal scheme (`#B8C4D4` hover borders, `rgba(20,160,165,.16)` selection ring, `rgba(22,50,95,…)` sheet shadow, `#A6B2C2` placeholder, `#CBD5E1` switch-off track). Map them to tokens.
 4. **Faint control outlines (P2):** input borders 1.4:1, page checkboxes 1.8:1, switch-off track 1.3:1; controls need 3:1.
-5. **Two links at 4.2:1:** "Show every page" and "Use theme colours" use `--teal` on the panel. Switching `.linky` and `.palette-undo` to `--teal-deep` fixes both.
-6. **Small targets (P2):** member remove buttons 24px, zoom buttons 26px.
-7. **Reduced motion (P3):** the global `.01ms` rule freezes the loading spinner; keep a gentle pulse instead.
-8. **Favicon (P3):** `index.html` still uses the old navy and bright teal.
+5. **Small targets (P2):** member remove buttons 24px, zoom buttons 26px.
+6. **Reduced motion (P3):** the global `.01ms` rule freezes the loading spinner; keep a gentle pulse instead.
+7. **Favicon (P3):** `index.html` still uses the old navy and bright teal.
 
 The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesign. Finish with `/impeccable polish`, then re-run `/impeccable audit`.
 
@@ -56,7 +57,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 - Every value from YAML, CLI flags or the UI goes through the validators in `config.py`. New fields get a `check_*` helper and a test; nothing reaches a template or a file path unchecked.
 - The local server answers only its own page. Keep all UI calls on the JSON `api()` helper in `ui.js`; a plain form post or `text/plain` fetch will get a 403.
 - ICM rules from the conventions: references point one way (stages point to `_config/`, `shared/` and earlier stages' `output/`, never forward); one canonical home per fact; CONTEXT.md files route and stay under 80 lines; no em dashes; no spaces in file names.
-- `out/` and root `family.yaml` are gitignored local scratch.
+- `out/` and root `family.yaml` are gitignored local scratch. A run's settings live only in `stages/02-customize/output/`; do not copy them to a root `family.yaml`. With no root file, `start-planner.bat` and plain `planner.py ui` open a blank planner; open a run with **Open a plan** or `planner.py ui -c <stage 02 yaml>`.
 - One stage, one job; no coordinator script; reorder stages by renaming the numbered folders only.
 
 ## Environment notes
