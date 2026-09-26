@@ -17,6 +17,7 @@
 :root {
   --navy: #3E5344;
   --teal: #5F7A62;
+  --teal-deep: #536A56; /* teal for small text: 5.2:1 on --paper */
   --pink: #C4A09A;
   --orange: #C9956A;
   --green: #8AA084;
@@ -128,14 +129,14 @@ body {
 .btn:active { transform: translateY(1px); }
 
 .btn-primary { background: var(--teal); color: #fff; box-shadow: 0 2px 0 #4A6350; }
-.btn-primary:hover { background: #536A56; }
+.btn-primary:hover { background: var(--teal-deep); }
 .btn-primary[data-busy] { background: var(--muted); box-shadow: none; cursor: progress; }
 
 .btn-ghost { background: #fff; color: var(--navy); border-color: var(--line); }
 .btn-ghost:hover { border-color: #B8C4D4; background: var(--cream); }
 
 .btn-quiet {
-  background: transparent; color: var(--teal);
+  background: transparent; color: var(--teal-deep);
   border: 1.5px dashed #C5D0C4; width: 100%; padding: 7px;
   border-radius: var(--r-sm); font-size: 12.5px;
 }
