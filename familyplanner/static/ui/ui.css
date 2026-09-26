@@ -24,11 +24,12 @@
   --blue: #7A8B88;
 
   --ink: #3A3F3A;
-  --muted: #7A756C;
+  --muted: #6A655C;    /* 4.8:1 on --wash, the darkest surface it sits on */
   --paper: #F6F1E8;
   --wash: #EFEAE2;
   --cream: #FBF7F0;
   --line: #DDD6CC;
+  --error: #96564E;    /* deep rose; white text on it is 5.6:1 */
 
   --display: "Playfair Display", Georgia, serif;
   --body: "Lato", "Segoe UI", system-ui, sans-serif;
@@ -336,12 +337,11 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
 .pages { display: flex; flex-direction: column; gap: 1px; }
 .page-row {
   display: flex; position: relative; align-items: center; gap: 9px;
-  padding: 6px 8px; border-radius: var(--r-sm); cursor: pointer;
+  padding: 0 0 0 8px; border-radius: var(--r-sm);
   transition: background .12s ease;
 }
 .page-row:hover { background: var(--wash); }
 .page-row[data-current="1"] { background: #E8EEE8; }
-.page-row:focus-visible { outline: none; box-shadow: var(--focus); }
 .page-check { display: grid; place-items: center; cursor: pointer; flex: none; }
 .page-row input { position: absolute; top: 0; left: 0; opacity: 0; width: 0; height: 0; }
 .page-row .box {
@@ -357,8 +357,15 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
 .page-row input:checked + .box { background: var(--teal); border-color: var(--teal); }
 .page-row input:checked + .box::after { transform: rotate(-45deg) scale(1); }
 .page-row input:focus-visible + .box { box-shadow: var(--focus); }
-.page-row .title { font-size: 12.5px; flex: 1 1 auto; min-width: 0;
-                   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The name is its own button, beside the checkbox rather than around it,
+   so screen readers announce both controls. It fills the rest of the row. */
+.page-row .title {
+  font: inherit; font-size: 12.5px; color: inherit; text-align: left;
+  flex: 1 1 auto; min-width: 0; padding: 6px 8px 6px 0;
+  background: none; border: 0; border-radius: var(--r-sm); cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.page-row .title:focus-visible { outline: none; box-shadow: var(--focus); }
 
 /* --- stage ----------------------------------------------------------------- */
 
@@ -431,7 +438,7 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
 }
 .toast button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,.45); }
 .toast[data-show="1"] { opacity: 1; transform: translate(-50%, 0); }
-.toast[data-kind="error"] { background: var(--pink); }
+.toast[data-kind="error"] { background: var(--error); }
 .toast[data-kind="ok"] { background: #12776F; }
 .toast code {
   font-family: ui-monospace, Menlo, Consolas, monospace;
