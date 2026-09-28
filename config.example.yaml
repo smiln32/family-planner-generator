@@ -81,8 +81,8 @@ design: original
 #   script: 13
 
 # A colour preset applied before `palette:` below. One of:
-#   linen  classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  slate
-# `linen` is the default (sage, dusty rose, clay). `classic` is the original
+#   linen  classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  blues
+# `linen` is the default (warm beige, ivory). `classic` is the original
 # bright jewel-tone printable.
 # Run `python planner.py themes` to see them. Anything under `palette:`
 # overrides the theme, so you can start from `forest` and change one colour.

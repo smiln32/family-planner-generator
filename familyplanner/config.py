@@ -12,19 +12,19 @@ import yaml
 
 from . import designs, themes, typefaces
 
-# Factory colours: sage, dusty rose and clay on warm paper. Token names stay
-# the same (navy, teal, …) so templates do not care which look is default.
+# Factory colours: warm taupe, beige and ivory on warm paper. Token names
+# stay the same (navy, teal, …) so templates do not care which look is default.
 DEFAULT_PALETTE: dict[str, str] = {
-    "navy": "#3E5344",
-    "teal": "#5F7A62",
-    "pink": "#C4A09A",
+    "navy": "#5C4A3A",
+    "teal": "#9C8768",
+    "pink": "#CBA89C",
     "orange": "#C9956A",
-    "green": "#8AA084",
-    "purple": "#A0909C",
-    "blue": "#7A8B88",
+    "green": "#A6A283",
+    "purple": "#A69088",
+    "blue": "#8C8577",
     "red": "#B56858",
     "brown": "#8A6B52",
-    "ink": "#3A3F3A",
+    "ink": "#3D362C",
     "paper": "#F6F1E8",
     "rule": "#DDD6CC",
 }
@@ -96,7 +96,7 @@ def palette_overrides(theme: str, palette: Any) -> dict[str, str]:
 # footer line. `planner.py months` prints this table so it is easy to edit.
 DEFAULT_MONTHS: list[dict[str, str]] = [
     {"name": "January", "accent": "teal", "motif": "snowman",
-     "tagline": "A New Month, New Memories Together!",
+     "tagline": "A New Month, New Memories Together",
      "footer": "Together is our favorite place to be."},
     {"name": "February", "accent": "pink", "motif": "hearts",
      "tagline": "Love Grows Here",

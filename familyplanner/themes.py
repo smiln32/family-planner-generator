@@ -24,10 +24,10 @@ PRESETS: dict[str, dict[str, str]] = {
         "ink": "#1F2933", "paper": "#FFFFFF", "rule": "#B9C3CF",
     },
 
-    # Violet headings, gold banners. Complements: purple / yellow.
+    # Violet headings, gold banners, rust instead of purple.
     "amber": {
         "navy": "#2A1548", "teal": "#A67C00", "pink": "#E0B429",
-        "orange": "#E8A317", "green": "#B8952A", "purple": "#6B3D9E",
+        "orange": "#E8A317", "green": "#B8952A", "purple": "#A0421E",
         "blue": "#4A2F78", "red": "#C45C1A", "brown": "#7A5410",
         "ink": "#221530", "paper": "#FFF9EF", "rule": "#E4D5B8",
     },
@@ -48,36 +48,38 @@ PRESETS: dict[str, dict[str, str]] = {
         "ink": "#0D1520", "rule": "#B7C9D4",
     },
 
-    # Cobalt and tangerine. Complements: blue / orange.
+    # Lemon, lime and tangerine. No cool blues, no dark green; headings are
+    # a deep mustard gold instead.
     "citrus": {
-        "navy": "#0E2A52", "teal": "#1E6BB8", "pink": "#F26A21",
-        "orange": "#F5A201", "green": "#2E7D9A", "purple": "#C45C12",
-        "blue": "#245EA8", "red": "#E03E12", "brown": "#A35A1A",
-        "ink": "#1A2433", "paper": "#F7FAFF", "rule": "#C5D0DE",
+        "navy": "#8C6F00", "teal": "#A8C23F", "pink": "#E8637A",
+        "orange": "#F2811D", "green": "#5D8C3C", "purple": "#C2410C",
+        "blue": "#4C7A5D", "red": "#D64526", "brown": "#8B5A2B",
+        "ink": "#2E2A1E", "paper": "#FFFBF0", "rule": "#E9E2C9",
     },
 
-    # Moss headings, clay accents. Complements: green / red-orange.
+    # Moss and soil, top to bottom. Complements stay in the green/brown family.
     "forest": {
-        "navy": "#1A3324", "teal": "#3B7A48", "pink": "#D46A45",
-        "orange": "#E0945A", "green": "#4A8F3C", "purple": "#B85A3A",
-        "blue": "#2A5A3C", "red": "#B33A28", "brown": "#6B4228",
-        "ink": "#1A241C", "paper": "#F7F6F0", "rule": "#D4CFC2",
+        "navy": "#1A3324", "teal": "#3B7A48", "pink": "#A85D3A",
+        "orange": "#C97F3E", "green": "#4A8F3C", "purple": "#7A4A2E",
+        "blue": "#2A5A3C", "red": "#8C3A24", "brown": "#6B4228",
+        "ink": "#241D14", "paper": "#F7F6F0", "rule": "#D4CFC2",
     },
 
-    # Deep green with rose. Complements: green / magenta.
+    # Shades of green top to bottom, pine to fresh grass. No pink or magenta,
+    # so it reads distinctly from `classic`'s jewel-tone rainbow.
     "meadow": {
-        "navy": "#143528", "teal": "#2E8F5B", "pink": "#D9367A",
-        "orange": "#E07A45", "green": "#3FA36A", "purple": "#A8326C",
-        "blue": "#1F6B4A", "red": "#C41E4A", "brown": "#6B3E28",
-        "ink": "#1A2B22", "paper": "#F7FBF6", "rule": "#C9D9CE",
+        "navy": "#12321F", "teal": "#3F8F52", "pink": "#8FC49A",
+        "orange": "#6B8F3C", "green": "#4FA85D", "purple": "#1F4A34",
+        "blue": "#2E7A6B", "red": "#355C2E", "brown": "#5C4A2E",
+        "ink": "#1A2A1F", "paper": "#F7FBF6", "rule": "#C9D9CE",
     },
 
-    # Sea and coral only. Complements: teal / red-orange.
+    # Blues, greens and seafoam only. No coral or red; warm accent is driftwood.
     "ocean": {
-        "navy": "#062A3F", "teal": "#148A9A", "pink": "#FF6A4D",
-        "orange": "#FF8A3D", "green": "#1A7A78", "purple": "#D45A45",
-        "blue": "#0B5A78", "red": "#E24A3C", "brown": "#A35A40",
-        "ink": "#122830", "paper": "#F4FBFC", "rule": "#C2D6DC",
+        "navy": "#062A3F", "teal": "#148A9A", "pink": "#6FBFB8",
+        "orange": "#C9A672", "green": "#2E8F72", "purple": "#3A4E8C",
+        "blue": "#0B5A78", "red": "#1C4E52", "brown": "#8A7A64",
+        "ink": "#102A30", "paper": "#F4FBFC", "rule": "#CBE0DD",
     },
 
     # Dusty periwinkle against peach. Complements: blue-violet / orange, muted.
@@ -88,16 +90,17 @@ PRESETS: dict[str, dict[str, str]] = {
         "ink": "#3A3A55", "paper": "#FBF8F6", "rule": "#E0DCE8",
     },
 
-    # Wine headings, cyan banners. Complements: red / cyan.
+    # Bright pinks and reds throughout, no dark or muted tones, one leaf-green
+    # accent. No cyan.
     "poppy": {
-        "navy": "#3A1218", "teal": "#0098A8", "pink": "#E31C3D",
-        "orange": "#F05A20", "green": "#1A9B9A", "purple": "#A81828",
-        "blue": "#0D7A88", "red": "#D01020", "brown": "#8A3E2A",
+        "navy": "#E0132E", "teal": "#C4177C", "pink": "#E31C3D",
+        "orange": "#F05A20", "green": "#7CB342", "purple": "#E0457B",
+        "blue": "#D6336C", "red": "#D01020", "brown": "#8A3E2A",
         "ink": "#241014", "paper": "#FFF7F7", "rule": "#E4C9CC",
     },
 
     # One hue in seven steps. Cheapest to print and the quietest to look at.
-    "slate": {
+    "blues": {
         "navy": "#16325F", "teal": "#34527A", "pink": "#4E6C99",
         "orange": "#6B85AC", "green": "#8399BE", "purple": "#9BADCF",
         "blue": "#2A4470", "red": "#16325F", "brown": "#5A6B85",

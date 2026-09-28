@@ -133,7 +133,7 @@ python planner.py build --theme pastel         # whole book
 python planner.py build --theme berry --only year_goals --png   # one page
 ```
 
-`linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `slate`
+`linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `blues`
 
 Set `theme: pastel` in your config to make it the default. A theme is only a
 starting point - your own `palette:` block is applied on top, so you can take
