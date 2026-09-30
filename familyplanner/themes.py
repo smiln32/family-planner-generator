@@ -13,7 +13,8 @@ point rather than a straitjacket.
 from __future__ import annotations
 
 PRESETS: dict[str, dict[str, str]] = {
-    # Default: sage, dusty rose and clay. Empty because it is DEFAULT_PALETTE.
+    # Default: warm taupe, dusty rose and clay on ivory. Empty because it is
+    # DEFAULT_PALETTE.
     "linen": {},
 
     # The original bright printable: jewel navy, hot pink, citrus, lime.

@@ -123,9 +123,9 @@ python planner.py init      # writes family.yaml, fully commented
 
 ### Ready-made themes
 
-Colour presets ship with the generator. The factory default is `linen`: sage,
-dusty rose and clay on warm paper, with Playfair Display headings. `classic`
-keeps the original bright jewel-tone printable.
+Colour presets ship with the generator. The factory default is `linen`: warm
+taupe, dusty rose and clay on ivory paper, with Playfair Display headings.
+`classic` keeps the original bright jewel-tone printable.
 
 ```
 python planner.py themes                       # list them with swatches
