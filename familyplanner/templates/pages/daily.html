@@ -1,0 +1,57 @@
+{# title: Daily Plan #}
+{% from "layout_kit.html" import box, ruled, checks, numbered, schedule, meals, water, dots, write_in with context %}
+{% set L = look.layout or "a" %}
+<section class="page lx lx-{{ L }} box-{{ look.box }} lx-daily">
+{% if L == "a" %}
+  <div class="lx-top">
+    <div class="lx-name"><div class="lx-title">Daily Plan</div>{{ write_in("Date") }}</div>
+    {{ dots() }}
+  </div>
+  {% call box("Today's focus", cls="lx-fit") %}{{ ruled(1) }}{% endcall %}
+  <div class="lx-cols lx-two" style="flex-grow:1">
+    <div class="lx-col">
+      {% call box("Schedule") %}{{ schedule() }}{% endcall %}
+    </div>
+    <div class="lx-col">
+      {% call box("Top 3", 5) %}{{ numbered(3) }}{% endcall %}
+      {% call box("To do", 8) %}{{ checks(6) }}{% endcall %}
+      {% call box("Meals", 6) %}{{ meals() }}{% endcall %}
+      {% call box("Grateful for", 4) %}{{ ruled(2) }}{% endcall %}
+      {% call box("Tomorrow", 4) %}{{ ruled(2) }}{% endcall %}
+    </div>
+  </div>
+{% elif L == "b" %}
+  <div class="lx-top">
+    <div class="lx-title">Daily Plan</div>
+    {{ write_in("Date") }}
+  </div>
+  {% call box("Top 3 priorities", cls="lx-fit") %}{{ numbered(3) }}{% endcall %}
+  {% call box("Schedule", 9) %}{{ schedule(two=true) }}{% endcall %}
+  {% call box("To do", 6) %}{{ checks(8, two=true) }}{% endcall %}
+  <div class="lx-cols lx-three" style="flex-grow:6">
+    {% call box("Meals") %}{{ meals() }}{% endcall %}
+    {% call box("Water") %}{{ water() }}{% endcall %}
+    {% call box("Grateful for") %}{{ ruled(3) }}{% endcall %}
+  </div>
+{% else %}
+  <div class="lx-cols lx-side" style="flex-grow:1">
+    <div class="lx-col">
+      <div class="lx-stamp">
+        <span class="lx-bignum"></span>
+        <div class="lx-title lx-sm">Daily Plan</div>
+        {{ write_in("Date") }}
+      </div>
+      {% call box("Top 3", 5) %}{{ numbered(3) }}{% endcall %}
+      {% call box("Water", 3) %}{{ water() }}{% endcall %}
+      {% call box("Meals", 6) %}{{ meals() }}{% endcall %}
+      {% call box("Grateful", 5) %}{{ ruled(3) }}{% endcall %}
+    </div>
+    <div class="lx-col">
+      {% call box("Today's focus", cls="lx-fit") %}{{ ruled(1) }}{% endcall %}
+      {% call box("Schedule", 16) %}{{ schedule() }}{% endcall %}
+      {% call box("To do", 7) %}{{ checks(5) }}{% endcall %}
+      {% call box("Notes", 4) %}{{ ruled(3) }}{% endcall %}
+    </div>
+  </div>
+{% endif %}
+</section>

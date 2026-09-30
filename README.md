@@ -141,12 +141,15 @@ starting point - your own `palette:` block is applied on top, so you can take
 
 ### Typefaces
 
-Six typeface sets ship with the generator. Each fills three roles: `display`
-(chunky headings), `script` (handwritten lines) and `body` (everything else).
+Forty typeface sets ship with the generator: six general ones, in the table
+below, and two suggested pairings for each page look. Each fills three roles:
+`display` (chunky headings), `script` (handwritten lines) and `body`
+(everything else).
 
 ```
 python planner.py typefaces                    # see the sets
 python planner.py fonts --fonts italics        # download that set
+python planner.py fonts --all                  # download every set
 python planner.py build --fonts italics        # build with it
 ```
 
@@ -159,6 +162,10 @@ python planner.py build --fonts italics        # build with it
 | `italics` | Courgette | Courgette | Courgette |
 | `neat` | Montserrat | Kalam | Open Sans |
 
+The look pairings have names like `sunday-kitchen`, `ledger` and
+`wedding-album`; `python planner.py typefaces` lists all of them. Choosing a
+look does not change the typefaces, so set `fonts:` yourself.
+
 Or name **any** Google Fonts families you like:
 
 ```yaml
@@ -170,9 +177,23 @@ fonts:
 
 Then `python planner.py fonts` downloads them. The visual editor picks a
 custom trio up too: it appears in TYPE as a **Custom** card, selected, above
-the six presets. If a family does not publish a
+the presets. If a family does not publish a
 weight the planner asks for, the closest available weight is substituted and
 the swap is reported, rather than the build failing.
+
+### Planner layouts
+
+Twelve layouts turn the book into a boxed planner: `02a` `02b` `02c`, `06a`
+`06b` `06c`, `11a` `11b` `11c`, `12a` `12b` `12c`. The digits pick a page
+look, the letter a structure (`a` split, `b` stacked bands, `c` sidebar).
+A layout swaps in a boxed monthly page and adds a Weekly Plan and a Daily
+Plan before the months, so the book is 32 pages. The family worksheets stay.
+
+```
+python planner.py build --design 06b --fonts composition-book
+```
+
+Set `design: 06b` in your config, or pick it in the editor's look picker.
 
 The things people change most:
 

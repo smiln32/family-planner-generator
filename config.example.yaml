@@ -58,6 +58,7 @@ output_name: ""
 
 # Typefaces. Either a set name:
 #   classic  playful  modern  elegant  italics  neat
+# (or one of the two pairings made for each page look, such as `ledger`),
 # or any three Google Fonts families of your own:
 #   fonts:
 #     display: Chewy
@@ -71,6 +72,12 @@ fonts: elegant
 # `03` botanical, `04` marker journal, `05` soft intention. `06`–`10` are
 # other languages. `11`–`17` are more daily-planner looks. `blank` strips art.
 # Looks `02`–`17` are unfinished; see shared/looks-handoff.md before using one.
+# Planner layouts cross a look with a page structure: `02a` `02b` `02c`,
+# `06a` `06b` `06c`, `11a` `11b` `11c`, `12a` `12b` `12c` (a split, b stacked,
+# c sidebar). They keep the look's colours, use a boxed monthly page and add
+# `weekly` and `daily` sheets before the months. `python planner.py build --help`
+# lists every id. Suggested fonts: 02 ledger, 06 composition-book,
+# 11 boardroom, 12 garden-party.
 design: original
 
 # Point sizes. The visual editor has sliders and type-in fields for these.

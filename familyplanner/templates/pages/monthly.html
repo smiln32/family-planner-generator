@@ -3,6 +3,9 @@
 {% set names = day_names(cfg.sunday_first) %}
 {% set hues = ["teal", "pink", "orange", "green", "blue", "purple", "orange"] %}
 {% if not cfg.sunday_first %}{% set hues = hues[1:] + hues[:1] %}{% endif %}
+{% if look.layout %}
+{% include "layout_monthly.html" %}
+{% else %}
 
 <section class="page month-page">
 
@@ -109,3 +112,4 @@
 
   {{ footer(month.footer) }}
 </section>
+{% endif %}

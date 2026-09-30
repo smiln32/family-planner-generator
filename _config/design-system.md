@@ -10,7 +10,7 @@ Canonical print rules for the Family Success Planner. Templates and `familyplann
 
 ## Type
 
-Three roles, filled by a named typeface set in config (`elegant`, `classic`, `playful`, `modern`, `italics`, `neat`) or a custom `display` / `script` / `body` trio. The factory default is `elegant` (Playfair Display, Great Vibes, Lato).
+Three roles, filled by a named typeface set in config or a custom `display` / `script` / `body` trio. Six general sets (`elegant`, `classic`, `playful`, `modern`, `italics`, `neat`) plus two pairings per look, defined in `familyplanner/typefaces.py` and listed by `python planner.py typefaces`. A pairing is a suggestion; choosing a look does not switch the set. The factory default is `elegant` (Playfair Display, Great Vibes, Lato).
 
 - Display: chunky headings
 - Script: handwritten greeting lines
@@ -19,9 +19,10 @@ Three roles, filled by a named typeface set in config (`elegant`, `classic`, `pl
 - `design: original` is the illustrated Family Success Planner (house scene, side badges, footer chips).
 - Looks `02`–`10` swap in a different **family title cover** (markup in `cover.html`). They do not show the house. Quality is unfinished; see `shared/looks-handoff.md`.
 - Looks `11`–`17` swap the cover for a **daily planner page**. Interiors stay family worksheets with that look’s chrome. Unfinished.
+- Planner layouts `02a` to `12c` cross one of looks `02`, `06`, `11`, `12` with a page structure (`a` split, `b` stacked bands, `c` sidebar). The body carries both classes (`design-06 design-06b`), so the look's paper and chrome still apply; the layout adds its own box style (`box-06b`) to a boxed monthly page and to the `weekly` and `daily` sheets. Parts live in `templates/layout_kit.html`, `templates/layout_monthly.html`, `templates/pages/daily.html`, `templates/pages/weekly.html` and the "planner layouts" section at the end of `planner.css`. Sizes there are in `--u` (1/300 of the page width) so a sheet keeps its proportions at every page size. Added 2026-09-30 from the owner's design export; see `shared/looks-handoff.md`.
 - `blank` hides illustration.
 
-Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green`, `purple`, `blue`, `red`, `brown`, `ink`, `paper`, `rule`). The default `linen` theme is warm beige and ivory. `classic` is the original bright printable. Each named theme should read as its name at a glance (`citrus` stays lemon/lime/tangerine, `ocean` stays blue/green/seafoam with no coral or red, `forest` stays green/brown, `poppy` stays pink/red with no cyan) — when adding or editing a theme, keep its twelve tokens inside that colour family rather than defaulting to a generic dark-navy-plus-bright-accent scheme. A config `palette:` block overrides individual tokens.
+Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green`, `purple`, `blue`, `red`, `brown`, `ink`, `paper`, `rule`). The default `linen` theme is warm beige and ivory. `classic` is the original bright printable. Each named theme should read as its name at a glance (`citrus` stays lemon/lime/tangerine, `ocean` stays blue/green/seafoam with no coral or red, `forest` stays green/brown, `poppy` stays pink/red with no cyan). When adding or editing a theme, keep its twelve tokens inside that colour family rather than defaulting to a generic dark-navy-plus-bright-accent scheme. A config `palette:` block overrides individual tokens.
 
 ## Cards and chrome
 

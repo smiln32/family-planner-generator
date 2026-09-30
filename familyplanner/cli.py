@@ -196,10 +196,10 @@ def cmd_ui(args: argparse.Namespace) -> int:
 def cmd_typefaces(args: argparse.Namespace) -> int:
     print("Built-in typeface sets:")
     print()
-    print(f"  {'':<9} {'DISPLAY':<18} {'SCRIPT':<16} BODY")
+    print(f"  {'':<20} {'DISPLAY':<24} {'SCRIPT':<22} BODY")
     for name in typefaces.names():
         faces = typefaces.resolve(name)
-        print(f"  {name:<9} {faces.display:<18} {faces.script:<16} {faces.body}")
+        print(f"  {name:<20} {faces.display:<24} {faces.script:<22} {faces.body}")
     print()
     print("Use one with:  python planner.py build --fonts italics")
     print("Or name any Google Fonts families yourself in your config:")
@@ -213,9 +213,15 @@ def cmd_typefaces(args: argparse.Namespace) -> int:
 
 def cmd_fonts(args: argparse.Namespace) -> int:
     from .fonts import fetch_fonts
+    dest = Path(__file__).parent / "static" / "fonts"
+    if getattr(args, "all", False):
+        worst = 0
+        for name in typefaces.names():
+            worst = max(worst, fetch_fonts(dest, typefaces.resolve(name), force=args.force))
+            print()
+        return worst
     cfg = _resolve_config(args)
-    return fetch_fonts(Path(__file__).parent / "static" / "fonts",
-                       cfg.faces, force=args.force)
+    return fetch_fonts(dest, cfg.faces, force=args.force)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -283,6 +289,7 @@ def build_parser() -> argparse.ArgumentParser:
     f = sub.add_parser("fonts", help="download the typefaces for best fidelity")
     shared(f)
     f.add_argument("--force", action="store_true", help="re-download existing fonts")
+    f.add_argument("--all", action="store_true", help="download every built-in typeface set")
     f.set_defaults(func=cmd_fonts)
 
     return parser

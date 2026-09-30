@@ -12,13 +12,14 @@ import re
 import shutil
 import subprocess
 import tempfile
+from calendar import monthrange
 from dataclasses import dataclass, replace
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import escape
 
-from . import calendars
+from . import calendars, designs
 from .config import Config
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -98,6 +99,8 @@ def build_environment() -> Environment:
     env.globals["day_names"] = calendars.day_names
     env.globals["day_initials"] = calendars.day_initials
     env.globals["range"] = range
+    env.globals["month_days"] = lambda year, month: monthrange(year, month)[1]
+    env.globals["abbr"] = lambda text, n=3: str(text)[:n]
     return env
 
 
@@ -145,8 +148,15 @@ def plan_pages(cfg: Config) -> list[Page]:
     # as well as through the "months" keyword.
     by_month = {m["name"].lower(): (i, m) for i, m in enumerate(cfg.months, start=1)}
 
+    names = list(cfg.pages)
+    # A planner layout brings its weekly and daily sheets along, just before
+    # the months, unless the page list already places one of them.
+    if designs.parts(cfg.design)["layout"] and not set(designs.LAYOUT_PAGES) & set(names):
+        at = names.index(MONTHS_KEYWORD) if MONTHS_KEYWORD in names else len(names)
+        names[at:at] = designs.LAYOUT_PAGES
+
     pages: list[Page] = []
-    for name in cfg.pages:
+    for name in names:
         if name == MONTHS_KEYWORD:
             for index, month in enumerate(cfg.months, start=1):
                 pages.append(monthly(index, month))
@@ -194,6 +204,7 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     """
     nav = nav_pages if nav_pages is not None else pages
     env = build_environment()
+    look = designs.parts(cfg.design)
     shell = env.get_template("book.html")
     page_template_cache: dict[str, object] = {}
 
@@ -207,6 +218,7 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
             cfg=cfg, page=page, p=cfg.palette,
             script_stack=cfg.faces.stack("script"),
             body_stack=cfg.faces.stack("body"),
+            look=look,
             **page.context,
         )
         bodies.append(_decorate(rendered, cfg, nav, page))
@@ -214,6 +226,7 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     width_in, height_in = cfg.page_inches
     return shell.render(
         cfg=cfg,
+        look=look,
         pages=pages,
         bodies=bodies,
         css=(STATIC_DIR / "planner.css").read_text(encoding="utf-8"),

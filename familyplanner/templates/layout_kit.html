@@ -1,0 +1,69 @@
+{# Parts for the planner layouts (designs 02a to 12c): daily, weekly and the
+   layout version of the monthly page. Sizes are in --u, 1/300 of the page
+   width, so a sheet keeps its proportions at every page size. Box styles come
+   from the box-* class on the section; see "planner layouts" in planner.css. #}
+
+{# A titled box. `grow` is its share of the column height. #}
+{% macro box(title, grow=0, cls="") %}
+<div class="lx-box {{ cls }}"{% if grow %} style="flex-grow:{{ grow }}"{% endif %}>
+  <div class="lx-hd">{{ title }}</div>
+  <div class="lx-bd">{{ caller() }}</div>
+</div>
+{% endmacro %}
+
+{% macro ruled(n) %}{% for _ in range(n) %}<span class="lx-ln"></span>{% endfor %}{% endmacro %}
+
+{% macro checks(n, two=false) %}
+<div class="lx-list{% if two %} two{% endif %}">
+  {% for _ in range(n) %}<div class="lx-row"><span class="lx-cb"></span><span class="lx-ln"></span></div>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro numbered(n) %}
+<div class="lx-list">
+  {% for i in range(1, n + 1) %}<div class="lx-row"><span class="lx-num">{{ i }}</span><span class="lx-ln"></span></div>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro labelled(labels, two=false) %}
+<div class="lx-list{% if two %} two{% endif %}">
+  {% for label in labels %}<div class="lx-row"><span class="lx-lab">{{ label }}</span><span class="lx-ln"></span></div>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro schedule(two=false) %}{{ labelled(["7 AM", "8", "9", "10", "11", "12 PM", "1", "2", "3", "4", "5", "6", "7", "8 PM"], two) }}{% endmacro %}
+
+{% macro meals() %}{{ labelled(["B", "L", "D", "S"]) }}{% endmacro %}
+
+{% macro water() %}
+<div class="lx-water">{% for _ in range(8) %}<span></span>{% endfor %}</div>
+{% endmacro %}
+
+{# Habit rows: a write-in name, then one tick cell per column. #}
+{% macro habits(rows, heads) %}
+<div class="lx-habits" style="--cols:{{ heads|length }}">
+  <span></span>{% for h in heads %}<span class="lx-hh">{{ h }}</span>{% endfor %}
+  {% for _ in range(rows) %}
+  <span class="lx-ln"></span>{% for _ in heads %}<span class="lx-hc"></span>{% endfor %}
+  {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro dots() %}
+<div class="lx-dots">{% for i in day_initials(cfg.sunday_first) %}<span>{{ i }}</span>{% endfor %}</div>
+{% endmacro %}
+
+{% macro write_in(label) %}
+<div class="lx-date"><span class="lx-script">{{ label }}</span><span class="lx-ln"></span></div>
+{% endmacro %}
+
+{% macro calendar(month_number) %}
+<div class="lx-cal">
+  <div class="lx-cal-hd">{% for name in day_names(cfg.sunday_first) %}<span>{{ abbr(name)|upper }}</span>{% endfor %}</div>
+  <div class="lx-cal-grid">
+    {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
+    {% for day in week %}<div class="lx-day">{% if cfg.dated_months and day.number %}{{ day.number }}{% endif %}</div>{% endfor %}
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}

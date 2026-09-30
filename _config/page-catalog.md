@@ -24,6 +24,6 @@ Default running order (`config.DEFAULT_PAGES`). Slug is the template name except
 | 29 | home_maintenance | Home Maintenance Checklist |
 | 30 | year_end | Year-End Family Reflection |
 
-Optional extras (not in the default book): `index` (digital contents, added by `--linked`), `reading_log`, `example_gratitude`.
+Optional extras (not in the default book): `index` (digital contents, added by `--linked`), `reading_log`, `example_gratitude`, `weekly` (Weekly Plan) and `daily` (Daily Plan). A layout design (`02a` to `12c`, see `design-system.md`) adds `weekly` and `daily` just before the months on its own, unless `pages:` already places one of them; it also swaps the twelve month pages for the layout's monthly page. That book is 32 pages.
 
 Comment a slug out of `pages:` in family.yaml to drop it. There is no duplicate dated January; twelve unique months is the book.

@@ -1,6 +1,39 @@
-# Handoff, 2026-09-26
+# Handoff, 2026-09-30
 
-**Why parked:** end of a session that brought the workspace into line with the ICM conventions, fixed the editor's contrast and page-list findings, made every weekly page follow `week_starts`, and verified the privacy purge and the PDF path. `main` is pushed and matches GitHub; there are no other branches. Open work: the rest of the editor audit list below, and the paused page-looks design.
+**Why parked:** end of three short sessions. 2026-09-28 reworked the colour theme presets so each one actually looks like its name, fixed a text-overlap bug on one unfinished cover look, and made a small copy fix permanent at the source instead of a per-run edit. 2026-09-29 and 2026-09-30 brought in the owner's design export: 34 typeface sets (two per look), `fonts --all`, and twelve planner layouts with Weekly Plan and Daily Plan sheets. The 2026-09-28 work is pushed; the export commit is local until the owner pushes it. There are no other branches. Open work: the editor audit list and the paused page-looks design, both unchanged from before (see the 2026-09-26 notes further down).
+
+## Sessions 2026-09-29 and 2026-09-30: the design export
+
+Everything here was copied in from the owner's design export, kept outside the repo (in Downloads: `Look pairings and color exploration (1)\export`, with a `LAYOUTS.md` listing the files). It is owner-supplied design, not a chat invention. All twelve files from the export are in; the `cli.py` and `typefaces.py` half landed on 2026-09-29, the layouts on 2026-09-30.
+
+- **34 typeface sets added** in `familyplanner/typefaces.py`: two named pairings for the original and for each of looks `02` to `17` (for example `sunday-kitchen` and `heirloom` for the original, `wedding-album` and `midnight-keepsake` for Keepsake). There are 40 sets now. The six general ones (`elegant`, `classic`, `playful`, `modern`, `italics`, `neat`) are unchanged and `elegant` is still the default. `python planner.py typefaces` lists them all, with wider columns to fit the longer names.
+- **A set is not tied to a look.** The grouping by look is only a comment in `typefaces.py`, and `designs.LAYOUT_FONTS` is a suggestion the code never applies. Picking `design: 06b` does not change the fonts; set `fonts:` separately in the config or the editor.
+- **`python planner.py fonts --all`** is new and downloads every built-in set. All 40 sets are already downloaded on this machine (`familyplanner/static/fonts/` is gitignored), so a fresh clone needs `fonts --all` once before building with one of the new sets.
+- **Twelve planner layouts** `02a` to `12c`: looks `02`, `06`, `11`, `12` crossed with `a` split, `b` stacked bands, `c` sidebar. `designs.py` gains `LAYOUT_PRESETS`, `parts()`, `LAYOUT_PAGES` and `LAYOUT_FONTS`; the ids sit in the normal picker list with `blank` kept last. `render.py` passes `look` to every template, adds the `month_days` and `abbr` globals, and inserts `weekly` and `daily` just before the months when a layout is chosen and the page list does not already place one of them. `book.html` gives the body both classes (`design-06 design-06b`) so the parent look's CSS still applies. `pages/monthly.html` includes `layout_monthly.html` for a layout. New templates: `layout_kit.html` (boxes, lines, schedule, calendar, habit grid), `layout_monthly.html`, `pages/daily.html`, `pages/weekly.html`. `planner.css` has a "planner layouts" section appended at the end; sizes there use `--u`, 1/300 of the page width.
+- **Verified 2026-09-30:** the default book is unchanged at 30 pages. `--design 06b` from the example config builds a 32-page PDF; `06b`, `11a`, `12c` and `02c` were also built to PNG and the weekly, daily and January pages looked right (boxes filled the sheet, calendar dated, week order followed the config). Not checked: the other eight layouts by eye, page sizes other than letter, the `--linked` edition with a layout, and the editor's look picker with 30 cards.
+- **The editor's TYPE picker reads the same list**, so it now shows 40 cards plus Custom. Not looked at by hand yet.
+- **Tests:** 103 tests (`tests/test_layouts.py` adds 17), all passing. `test_security.py` resolves every set name; nothing covers `fonts --all`. Two socket tests there (`test_simple_form_post_rejected`, `test_rebound_host_rejected`) sometimes fail with `ConnectionAbortedError` on a full run and pass alone or on re-run; seen before the export landed too, so it is a pre-existing Windows flake in `_raw_post`, not a regression.
+- **Docs updated to match:** README (typefaces, `fonts --all`, planner layouts), `config.example.yaml` (font sets, layout ids), `_config/design-system.md` (sets, layouts, one em dash removed), `_config/page-catalog.md` (`weekly`, `daily`), `shared/looks-handoff.md` (a row for the layouts, files table).
+
+## Session 2026-09-28: themes
+
+- **Themes reworked to match their names.** Several presets did not look like what they were called: `citrus` was mostly cobalt blue, `ocean` leaned on coral and red, `poppy` had cyan running through it, and `meadow` was close enough to `classic`'s rainbow to be hard to tell apart in the picker. Fixed:
+  - `linen` (the default): sage-green cast replaced with warm taupe/beige/ivory.
+  - `citrus`: no more blue; headings changed from dark olive-green to a deep mustard gold. Lemon/lime/tangerine family throughout.
+  - `ocean`: no more coral or red; blue/green/seafoam/indigo only.
+  - `poppy`: no more cyan, and no dark colours at all. The near-black wine heading and dark maroon accent are now bright crimson and bright rose. Pink/red family throughout, one leaf-green accent.
+  - `forest`: light touch. Accent tokens shifted from peachy orange-red to soil-brown, so it reads as green-and-brown, not green-and-orange.
+  - `meadow`: rebuilt as shades of green (pine to fresh grass); no more pink/magenta, so it no longer looks like `classic`.
+  - `amber`: the dark violet "purple" token replaced with a rust tone.
+  - `slate` **renamed to `blues`** everywhere (theme file, README, config.example.yaml). Any old `family.yaml` with `theme: slate` will now fail to load; reopen it and pick `blues`.
+  - All 12 named presets: `linen classic amber berry bold citrus forest meadow ocean pastel poppy blues`.
+- **January's tagline** no longer ends in "!". Fixed in the factory default (`familyplanner/config.py`), not a per-run override, so it applies automatically to every future run.
+- **Keepsake cover (look 10) overlap fixed.** The script "Family" heading's descender was colliding with "SUCCESS PLANNER" underneath it. Added line-height and bottom padding to clear it. This is a spacing bug fix only. Keepsake is still an unfinished look per `shared/looks-handoff.md`; nothing about its content or layout changed.
+- Commit: `18957da Rework theme palettes to match their names, fix Keepsake cover overlap`. Pushed.
+- **Not done / still open from this session:** the other four themes (`classic`, `berry`, `bold`, `pastel`) were not touched, only the ones flagged in conversation. If any of those also feel mismatched to their name, that's a new ask, not something already covered.
+- The real, already-printed run (local only; see `status`) was built before this session's theme changes and uses `linen`. Its cover wording is unaffected, but if it's ever rebuilt, `linen`'s look will be slightly different (warmer, less sage-green) than the PDF already printed.
+
+Everything below this point is from the 2026-09-26 session and earlier; still accurate except where the notes above override it (theme names/colours, January's tagline, the typeface sets).
 
 ## What this is
 
@@ -29,6 +62,9 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Editor audit (`/impeccable audit`) | Scored 12/20 before fixes. Fixed: `--muted` now `#6A655C` (4.8:1+), error toast on new `--error` `#96564E` (5.6:1), page-list names are real buttons beside the checkbox with `aria-current`, "Add a person", `.linky` and `.palette-undo` on new `--teal-deep` (5.2:1). Detector reports no low-contrast text now. Remaining items below |
 | Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Meal plan and gratitude key each day's tint/glyph by name; the others keep their decorative colour runs positional |
 | Palette colour editor | Committed, covered by unit and API tests; **still not exercised by hand in `planner.py ui`** |
+| Theme presets | Reworked 2026-09-28 so each named theme (`citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`, `forest`) actually matches its name; `slate` renamed to `blues`. See "Session 2026-09-28" above. Not hand-checked in the UI yet; do that alongside item 5 below |
+| Typeface sets | 40 since 2026-09-29: the six general sets plus two pairings per look, and `fonts --all` to download them. TYPE picker not hand-checked with 40 cards |
+| Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
 | Security pass (validators, local API guard, clean CLI errors) | Done. Suite is 86 tests, all passing |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Not done.** Human paused look design; covers are not print-quality |
@@ -75,7 +111,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
-5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand (change a colour, preview, download the plan, open it again).
+5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand (change a colour, preview, download the plan, open it again). While there, click through every theme in the picker (especially `citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`) to confirm the 2026-09-28 rework actually reads right on screen, not just in the hex values. Also scroll the TYPE picker, which now holds 40 sets, and pick one of the new ones; then pick a planner layout such as `06b` in the look picker and check the Weekly Plan, Daily Plan and a month at letter and at `5.5x8`.
 6. If asked to continue look design, follow `shared/looks-handoff.md` exactly: get an approved reference first, implement one look at a time, then stop.
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 8. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.

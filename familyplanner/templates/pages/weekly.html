@@ -1,0 +1,51 @@
+{# title: Weekly Plan #}
+{% from "layout_kit.html" import box, ruled, checks, numbered, labelled, habits, write_in with context %}
+{% set L = look.layout or "a" %}
+{% set names = day_names(cfg.sunday_first) %}
+<section class="page lx lx-{{ L }} box-{{ look.box }} lx-weekly">
+{% if L == "a" %}
+  <div class="lx-top">
+    <div class="lx-name"><div class="lx-title">Week of</div>{{ write_in("Dates") }}</div>
+    <div class="lx-tag">Week <span class="lx-ln"></span></div>
+  </div>
+  <div class="lx-grid2">
+    {% for name in names %}
+    {% call box(name) %}{{ ruled(3) }}{% endcall %}
+    {% endfor %}
+    {% call box("Weekly goals") %}{{ numbered(3) }}{% endcall %}
+    {% call box("Notes", cls="lx-span2") %}{{ ruled(3) }}{% endcall %}
+  </div>
+{% elif L == "b" %}
+  <div class="lx-top">
+    <div class="lx-title">Week of</div>
+    {{ write_in("Dates") }}
+  </div>
+  {% for name in names %}
+  {% call box(name, 3) %}{{ ruled(2) }}{% endcall %}
+  {% endfor %}
+  <div class="lx-cols lx-three" style="flex-grow:8">
+    {% call box("Top 3") %}{{ numbered(3) }}{% endcall %}
+    {% call box("To do") %}{{ checks(5) }}{% endcall %}
+    {% call box("Meals") %}{{ labelled(day_initials(cfg.sunday_first)) }}{% endcall %}
+  </div>
+{% else %}
+  <div class="lx-cols lx-side" style="flex-grow:1">
+    <div class="lx-col">
+      <div class="lx-stamp">
+        <div class="lx-title lx-sm">Week of</div>
+        {{ write_in("Dates") }}
+        <div class="lx-tag">Week <span class="lx-ln"></span></div>
+      </div>
+      {% call box("Habits", 7) %}{{ habits(5, day_initials(cfg.sunday_first)) }}{% endcall %}
+      {% call box("Goals", 5) %}{{ numbered(3) }}{% endcall %}
+      {% call box("Meals", 8) %}{{ labelled(day_initials(cfg.sunday_first)) }}{% endcall %}
+      {% call box("Notes", 5) %}{{ ruled(3) }}{% endcall %}
+    </div>
+    <div class="lx-col">
+      {% for name in names %}
+      {% call box(abbr(name)) %}{{ ruled(3) }}{% endcall %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+</section>

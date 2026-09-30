@@ -47,6 +47,58 @@ PRESETS: dict[str, dict[str, str]] = {
     "blank": {"label": "Blank", "note": "Bare sheets to build on"},
 }
 
+# Planner layouts: a look (02, 06, 11, 12) crossed with a page structure
+# (a split, b stacked bands, c sidebar). Each id keeps its parent look's
+# colours and chrome and adds its own box style. Monthly pages switch to the
+# layout version, and a weekly and a daily sheet join the book.
+LAYOUTS: dict[str, str] = {
+    "a": "Split",
+    "b": "Stacked",
+    "c": "Sidebar",
+}
+
+LAYOUT_PRESETS: dict[str, dict[str, str]] = {
+    "02a": {"label": "Boxed records A", "note": "Split, black header bars"},
+    "02b": {"label": "Boxed records B", "note": "Stacked, double-rule frames"},
+    "02c": {"label": "Boxed records C", "note": "Sidebar, ledger rules"},
+    "06a": {"label": "School notebook A", "note": "Split, ruled paper with red margin"},
+    "06b": {"label": "School notebook B", "note": "Stacked, washi-tape labels"},
+    "06c": {"label": "School notebook C", "note": "Sidebar, index cards"},
+    "11a": {"label": "Executive desk A", "note": "Split, navy header bars"},
+    "11b": {"label": "Executive desk B", "note": "Stacked, hairline rules"},
+    "11c": {"label": "Executive desk C", "note": "Sidebar, framed with inset titles"},
+    "12a": {"label": "Beautiful day A", "note": "Split, rounded cards with pill tabs"},
+    "12b": {"label": "Beautiful day B", "note": "Stacked, soft tinted panels"},
+    "12c": {"label": "Beautiful day C", "note": "Sidebar, stitched borders"},
+}
+
+# Font sets the layouts were drawn with. Suggested, not enforced.
+LAYOUT_FONTS: dict[str, str] = {
+    "02": "ledger",
+    "06": "composition-book",
+    "11": "boardroom",
+    "12": "garden-party",
+}
+
+# Pages a layout design adds to the book when the page list names neither.
+LAYOUT_PAGES: list[str] = ["weekly", "daily"]
+
+# Keep blank last in the picker.
+_blank = PRESETS.pop("blank")
+PRESETS.update(LAYOUT_PRESETS)
+PRESETS["blank"] = _blank
+
+
+def parts(design: str) -> dict[str, str]:
+    """Split a design id into its look, layout and box style.
+
+    `02b` -> base 02, layout b, box 02b. Plain looks have no layout; their
+    daily and weekly sheets use layout a with a neutral box.
+    """
+    if design in LAYOUT_PRESETS:
+        return {"base": design[:2], "layout": design[2], "box": design}
+    return {"base": design, "layout": "", "box": "plain"}
+
 
 def names() -> list[str]:
     return list(PRESETS)

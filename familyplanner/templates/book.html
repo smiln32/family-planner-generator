@@ -37,7 +37,7 @@
 {% endif %}
 </style>
 </head>
-<body class="design-{{ cfg.design }}">
+<body class="design-{{ look.base }}{% if look.layout %} design-{{ cfg.design }}{% endif %}">
 {% include "icons.html" %}
 {% for body in bodies %}
 {{ body|safe }}

@@ -54,6 +54,74 @@ PRESETS: dict[str, dict[str, str]] = {
 
     # Tidy and neutral, with a relaxed handwriting accent.
     "neat": {"display": "Montserrat", "script": "Kalam", "body": "Open Sans"},
+
+    # Look original (Original) pairings.
+    "sunday-kitchen": {"display": "Baloo 2", "script": "Caveat", "body": "Nunito"},
+    "heirloom": {"display": "DM Serif Display", "script": "Homemade Apple", "body": "Source Sans 3"},
+
+    # Look 02 (Boxed records) pairings.
+    "ledger": {"display": "IBM Plex Sans Condensed", "script": "Nothing You Could Do", "body": "IBM Plex Sans"},
+    "carbon-copy": {"display": "Libre Baskerville", "script": "Reenie Beanie", "body": "Libre Franklin"},
+
+    # Look 03 (Botanical) pairings.
+    "herbarium": {"display": "Cormorant Garamond", "script": "Pinyon Script", "body": "Mulish"},
+    "eucalyptus": {"display": "Lora", "script": "Parisienne", "body": "Work Sans"},
+
+    # Look 04 (Marker journal) pairings.
+    "sharpie": {"display": "Permanent Marker", "script": "Kalam", "body": "Nunito Sans"},
+    "fineliner": {"display": "Space Grotesk", "script": "Shadows Into Light", "body": "Space Grotesk"},
+
+    # Look 05 (Soft intention) pairings.
+    "morning-pages": {"display": "Cormorant", "script": "Allura", "body": "Nunito"},
+    "linen-and-clay": {"display": "Josefin Sans", "script": "Sacramento", "body": "Josefin Sans"},
+
+    # Look 06 (School notebook) pairings.
+    "composition-book": {"display": "Oswald", "script": "Indie Flower", "body": "Nunito"},
+    "pencil-case": {"display": "Fredoka", "script": "Gochi Hand", "body": "Andika"},
+
+    # Look 07 (Editorial) pairings.
+    "magazine": {"display": "Bodoni Moda", "script": "Mrs Saint Delafield", "body": "Public Sans"},
+    "quarterly": {"display": "Instrument Serif", "script": "Dancing Script", "body": "Instrument Sans"},
+
+    # Look 08 (Stamp frame) pairings.
+    "par-avion": {"display": "Alfa Slab One", "script": "Yellowtail", "body": "Zilla Slab"},
+    "post-office-green": {"display": "Abril Fatface", "script": "Satisfy", "body": "Cabin"},
+
+    # Look 09 (Swiss grid) pairings.
+    "grotesk-red": {"display": "Archivo", "script": "Archivo", "body": "Archivo"},
+    "zurich-blue": {"display": "Manrope", "script": "Manrope", "body": "Manrope"},
+
+    # Look 10 (Keepsake) pairings.
+    "wedding-album": {"display": "Cormorant Garamond", "script": "Great Vibes", "body": "EB Garamond"},
+    "midnight-keepsake": {"display": "Cinzel", "script": "Alex Brush", "body": "Lato"},
+
+    # Look 11 (Executive desk) pairings.
+    "boardroom": {"display": "Montserrat", "script": "Montserrat", "body": "Source Sans 3"},
+    "charcoal": {"display": "Barlow Condensed", "script": "Barlow", "body": "Barlow"},
+
+    # Look 12 (Beautiful day) pairings.
+    "garden-party": {"display": "Lora", "script": "Dancing Script", "body": "Quicksand"},
+    "wildflower": {"display": "Amatic SC", "script": "Caveat", "body": "Nunito"},
+
+    # Look 13 (Boho earth) pairings.
+    "terracotta": {"display": "Tenor Sans", "script": "Caveat Brush", "body": "Mulish"},
+    "desert-sun": {"display": "Yeseva One", "script": "Reenie Beanie", "body": "Karla"},
+
+    # Look 14 (Scrapbook) pairings.
+    "cut-and-paste": {"display": "Chewy", "script": "Gochi Hand", "body": "Nunito"},
+    "sticker-sheet": {"display": "Rubik", "script": "Covered By Your Grace", "body": "Rubik"},
+
+    # Look 15 (Street journal) pairings.
+    "sticker-bomb": {"display": "Anton", "script": "Permanent Marker", "body": "Archivo"},
+    "zine": {"display": "Big Shoulders Display", "script": "Rock Salt", "body": "Space Mono"},
+
+    # Look 16 (Reset) pairings.
+    "sage-and-terracotta": {"display": "Crimson Pro", "script": "La Belle Aurore", "body": "Nunito Sans"},
+    "clean-slate": {"display": "Outfit", "script": "Caveat", "body": "Outfit"},
+
+    # Look 17 (Intention) pairings.
+    "pastel-modules": {"display": "Quicksand", "script": "Homemade Apple", "body": "Quicksand"},
+    "blush-and-stone": {"display": "Jost", "script": "Allura", "body": "Jost"},
 }
 
 # Old config files that still name retired sets.

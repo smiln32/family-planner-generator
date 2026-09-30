@@ -25,6 +25,7 @@ The visual editor is `python planner.py ui`. Check **Cover** first.
 | 10 Keepsake | Cover markup exists | Photo well + script. Unfinished. |
 | 11–17 dailies | Cover markup exists | Built to match chat reference *layouts* (see table below). Interiors are still family worksheets with restyled chrome. Not a replacement book. Human did not accept these as done in this session. |
 | blank | Mechanical | Hides illustration. Fine. |
+| 02a–12c layouts | Owner-supplied, 2026-09-30 | Twelve planner layouts from the owner's own design export ("Look pairings and color exploration"), copied in mechanically: looks 02, 06, 11, 12 crossed with a split / stacked / sidebar page structure. Each adds a boxed monthly page plus Weekly Plan and Daily Plan sheets. The cover is still the parent look's unfinished cover. Not a chat invention; do not restyle them without the owner. |
 
 ## What “good” was supposed to be
 
@@ -49,9 +50,11 @@ A new look is a **different page**, not a costume on Family / Success / Planner.
 
 | File | Role |
 |------|------|
-| `familyplanner/designs.py` | Look ids and UI labels (`original`, `02`–`17`, `blank`) |
+| `familyplanner/designs.py` | Look ids and UI labels (`original`, `02`–`17`, `02a`–`12c`, `blank`); `parts()` splits a layout id into look, layout and box style |
 | `familyplanner/templates/pages/cover.html` | Original house cover + `famcover-02`…`10` + `daily-11`…`17` |
-| `familyplanner/static/planner.css` | `.design-02`…`.design-17` paper/chrome; `.famcover-*` and `.daily-*` layouts |
+| `familyplanner/templates/layout_kit.html`, `layout_monthly.html`, `pages/daily.html`, `pages/weekly.html` | The planner layouts' boxes, lines, schedule, calendar and habit grid; the layout monthly page; the Weekly Plan and Daily Plan sheets |
+| `familyplanner/static/planner.css` | `.design-02`…`.design-17` paper/chrome; `.famcover-*` and `.daily-*` layouts; "planner layouts" section (`.lx-*`, `.box-*`) at the end |
+| `familyplanner/typefaces.py` | Two suggested font pairings per look (`ledger`, `composition-book`, `boardroom`, `garden-party` and the rest). Suggestions only; a look does not switch fonts |
 | `familyplanner/static/ui/` | Look picker copy |
 | `_config/design-system.md` | Print rules; looks are named there, not blessed |
 

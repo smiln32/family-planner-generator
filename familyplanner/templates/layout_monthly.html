@@ -1,0 +1,45 @@
+{# The monthly page for a planner layout. Included by pages/monthly.html when
+   the design has a layout, with `month` and `month_number` in scope. #}
+{% from "layout_kit.html" import box, ruled, numbered, habits, calendar with context %}
+{% set L = look.layout %}
+{% set ndays = month_days(cfg.year, month_number) if cfg.dated_months else 31 %}
+<section class="page lx lx-{{ L }} box-{{ look.box }} lx-month month-page">
+{% if L == "a" %}
+  <div class="lx-top">
+    <div class="lx-title lx-lg">{{ month.name }}</div>
+    {% if cfg.dated_months %}<div class="lx-script lx-lg">{{ cfg.year }}</div>{% endif %}
+  </div>
+  {% call box("This month", 5) %}{{ calendar(month_number) }}{% endcall %}
+  <div class="lx-cols lx-two" style="flex-grow:1">
+    {% call box("Goals") %}{{ numbered(3) }}{% endcall %}
+    {% call box("Notes") %}{{ ruled(3) }}{% endcall %}
+  </div>
+{% elif L == "b" %}
+  <div class="lx-top">
+    <div class="lx-title lx-lg">{{ month.name }}</div>
+    {% if cfg.dated_months %}<div class="lx-script lx-lg">{{ cfg.year }}</div>{% endif %}
+  </div>
+  <div class="lx-cols lx-two" style="flex-grow:5">
+    {% call box("Top goals") %}{{ numbered(3) }}{% endcall %}
+    {% call box("Important dates") %}{{ ruled(3) }}{% endcall %}
+  </div>
+  {% call box("Calendar", 22) %}{{ calendar(month_number) }}{% endcall %}
+  {% call box("Habit tracker", 7) %}{{ habits(4, range(1, ndays + 1)) }}{% endcall %}
+{% else %}
+  <div class="lx-cols lx-side" style="flex-grow:1">
+    <div class="lx-col">
+      <div class="lx-stamp">
+        <div class="lx-title lx-lg">{{ abbr(month.name) }}</div>
+        {% if cfg.dated_months %}<div class="lx-script lx-lg">{{ cfg.year }}</div>{% endif %}
+      </div>
+      {% call box("Goals", 5) %}{{ numbered(3) }}{% endcall %}
+      {% call box("Birthdays", 5) %}{{ ruled(3) }}{% endcall %}
+      {% call box("Bills due", 5) %}{{ ruled(3) }}{% endcall %}
+      {% call box("Notes", 6) %}{{ ruled(4) }}{% endcall %}
+    </div>
+    <div class="lx-col">
+      {% call box("Calendar") %}{{ calendar(month_number) }}{% endcall %}
+    </div>
+  </div>
+{% endif %}
+</section>
