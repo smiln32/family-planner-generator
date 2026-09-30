@@ -115,6 +115,18 @@ class Handler(BaseHTTPRequestHandler):
             return {}
         return json.loads(self.rfile.read(length) or b"{}")
 
+    def _reject(self) -> None:
+        """Answer 403, reading the body first so the reply gets through.
+
+        Closing a socket with unread bytes makes Windows send a reset, and a
+        client that sees the reset drops the reply it was about to read. An
+        oversized body is left alone; that sender gets the reset on purpose.
+        """
+        length = int(self.headers.get("Content-Length") or 0)
+        if 0 < length <= MAX_BODY:
+            self.rfile.read(length)
+        self._send(403, b"forbidden", "text/plain; charset=utf-8")
+
     def _static(self, directory: Path, name: str) -> None:
         target = (directory / name).resolve()
         if not target.is_file() or directory.resolve() not in target.parents:
@@ -147,7 +159,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         if not self._local_request(post=False):
-            self._send(403, b"forbidden", "text/plain; charset=utf-8")
+            self._reject()
             return
         path = urlparse(self.path).path
         if path in ("/", "/index.html"):
@@ -163,7 +175,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         if not self._local_request(post=True):
-            self._send(403, b"forbidden", "text/plain; charset=utf-8")
+            self._reject()
             return
         path = urlparse(self.path).path
         try:
