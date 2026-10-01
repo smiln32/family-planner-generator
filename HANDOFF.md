@@ -16,7 +16,7 @@ The owner rejected the old covers and asked for every style to be different. Thi
 
 The update arrived as an unzipped copy of the repo in Downloads (`family-planner-generator-updated`). The 19 files it changed were copied in byte for byte; every other tracked file already matched that copy.
 
-- **Commit:** `2163063 Add thirteen new looks with their own covers, monthly pages, colours and fonts`, on branch `thirteen-looks`, pushed to `origin/thirteen-looks`. **`main` is still at `95a032e`, here and on GitHub. The branch is not merged yet.** A fast-forward merge is enough: `git switch main`, `git merge --ff-only thirteen-looks`, `git push` (owner runs them, one at a time).
+- **Commit:** `2163063 Add thirteen new looks with their own covers, monthly pages, colours and fonts`, made on branch `thirteen-looks`, followed by `8d7142d Update handoff and retire stale wording about the old looks`. **Both are merged into `main` (fast-forward) and pushed: `main` and `origin/main` are at `8d7142d`.** The branch `thirteen-looks` still exists here and on GitHub at the same commit; it is no longer needed and can be deleted.
 - **`python planner.py fonts --all`:** exit 0. There are 52 typeface sets now.
 - **`python -m pytest`:** 142 passed.
 - **Builds:** all thirteen looks built `--only cover,january --png --dpi 110` with exit 0. Every cover and every January was looked at: complete, right fonts and colours, calendar starts Friday 1 January 2027, nothing cut off or blank. Not checked: the other months and the worksheets in each look, page sizes other than letter, the `--linked` edition, and whether each page matches the approved canvas.
@@ -32,7 +32,7 @@ Stale wording in files the update did not touch was fixed the same evening, with
 
 Outside the repo: `Downloads\family-planner-generator-updated` is now identical to the repo and can be deleted by the owner whenever convenient.
 
-**Why parked:** end of three short sessions. 2026-09-28 reworked the colour theme presets so each one actually looks like its name, fixed a text-overlap bug on one unfinished cover look, and made a small copy fix permanent at the source instead of a per-run edit. 2026-09-29 and 2026-09-30 brought in the owner's design export: 34 typeface sets (two per look), `fonts --all`, and twelve planner layouts with Weekly Plan and Daily Plan sheets. The 2026-09-28 work and the export commits are pushed (`main` at `95a032e`). The thirteen looks sit on the pushed branch `thirteen-looks`, waiting to be merged into `main`. Open work: that merge and the editor audit list (see the 2026-09-26 notes further down).
+**Why parked:** end of three short sessions. 2026-09-28 reworked the colour theme presets so each one actually looks like its name, fixed a text-overlap bug on one unfinished cover look, and made a small copy fix permanent at the source instead of a per-run edit. 2026-09-29 and 2026-09-30 brought in the owner's design export: 34 typeface sets (two per look), `fonts --all`, and twelve planner layouts with Weekly Plan and Daily Plan sheets. The 2026-09-28 work and the export commits are pushed (`main` at `95a032e`). The thirteen looks are merged into `main` and pushed (`8d7142d`). Open work: the editor audit list (see the 2026-09-26 notes further down).
 
 ## Sessions 2026-09-29 and 2026-09-30: the design export
 
@@ -96,7 +96,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Palette colour editor | Committed, covered by unit and API tests; **still not exercised by hand in `planner.py ui`** |
 | Theme presets | Reworked 2026-09-28 so each named theme (`citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`, `forest`) actually matches its name; `slate` renamed to `blues`. See "Session 2026-09-28" above. Not hand-checked in the UI yet; do that alongside item 5 below |
 | Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), and `fonts --all` to download them. TYPE picker not hand-checked end to end |
-| Thirteen looks (`editorial` to `coastal`) | In since 2026-09-30 on branch `thirteen-looks`, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor. Not merged into `main` yet |
+| Thirteen looks (`editorial` to `coastal`) | In `main` since 2026-09-30, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
 | Security pass (validators, local API guard, clean CLI errors) | Done. The whole suite is 142 tests as of 2026-09-30, all passing |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
@@ -132,7 +132,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 ## Environment notes
 
 - Windows Smart App Control blocks Git for Windows' unsigned `libcurl-4.dll`, so HTTPS push and fetch fail or hang. This repo pushes over SSH with `core.sshCommand = C:/Windows/System32/OpenSSH/ssh.exe`. Do not switch the remote back to HTTPS.
-- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-09-30, `git push -u origin thirteen-looks`) worked from PowerShell in the repo root.
+- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-09-30, `git push` on `main`) worked from PowerShell in the repo root.
 - Any clone made before 2026-09-24 has the old history. Delete it and re-clone; never push from it, or the names and source pack return.
 - The original source pack (reference planner PDF and 31 page JPGs) lives outside the repo at `..\planner-source-pack\`. Do not copy it back in; it must not be published.
 - `git-filter-repo` is installed (`python -m git_filter_repo`) if history ever needs scrubbing again.
@@ -142,7 +142,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean. Check which branch you are on: if `thirteen-looks` is not yet merged, `main` does not have the new looks.
+1. Read this file, then `git status`. It should be clean. You should be on `main`, which has the thirteen looks.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
