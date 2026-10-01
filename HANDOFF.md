@@ -1,5 +1,17 @@
 # Handoff, 2026-09-30
 
+## Later on 2026-09-30: thirteen new looks
+
+The owner rejected the old covers and asked for every style to be different. Thirteen looks were designed in `Planner Styles.dc.html` (design canvas, outside the repo), approved by the owner, then built in:
+
+- `designs.LOOKS`: `editorial` (new default), `midcentury`, `nordic`, `farmhouse`, `deco`, `swiss`, `retro`, `bauhaus`, `almanac`, `terracotta`, `cottage`, `gazette`, `coastal`. Each has a palette (applied over the theme, like the layouts), a typeface set and monthly wording. The picker shows the looks, then the layouts, then `blank`. `original` and `02`-`17` moved to `designs.LEGACY`: still valid, not offered.
+- New templates `look_cover.html` and `look_monthly.html`, included from `pages/cover.html` and `pages/monthly.html`. New stylesheet `static/looks.css`, appended after `planner.css` by `render.py`. `book.html` adds an `lk` body class for a look book, which hides the house mark, page art, sprigs and hearts on every worksheet and restyles cards, tabs, banners and footers per look.
+- `typefaces.py`: twelve new sets (Swiss reuses `grotesk-red`), display role now also downloads weight 400, and every role downloads a 400 italic when the family has one (`slug(..., italic=True)` -> `-400i.woff2`). `fonts.py` fetches italics as a non-fatal second pass. **Run `python planner.py fonts --all` once**, or the new looks fall back to system fonts.
+- Defaults: `config.py`, `ui.js` and `config.example.yaml` now default to `editorial` with the `home-edition` set. The example file leaves `fonts:` commented so the look's set applies.
+- Tests: `tests/test_looks.py` added; one line in `test_layouts.py` changed (the theme-colours check now uses `design = "original"`). **Not run here**: no Python in the design environment. Run `python -m pytest` and build a book per look before printing.
+- The run in `stages/02-customize/output/` still names `design: original`, so it rebuilds exactly as printed.
+- Locked decision about the original cover is lifted by the owner: the house cover is retired, not restyled.
+
 **Why parked:** end of three short sessions. 2026-09-28 reworked the colour theme presets so each one actually looks like its name, fixed a text-overlap bug on one unfinished cover look, and made a small copy fix permanent at the source instead of a per-run edit. 2026-09-29 and 2026-09-30 brought in the owner's design export: 34 typeface sets (two per look), `fonts --all`, and twelve planner layouts with Weekly Plan and Daily Plan sheets. The 2026-09-28 work is pushed; the export commit is local until the owner pushes it. There are no other branches. Open work: the editor audit list and the paused page-looks design, both unchanged from before (see the 2026-09-26 notes further down).
 
 ## Sessions 2026-09-29 and 2026-09-30: the design export

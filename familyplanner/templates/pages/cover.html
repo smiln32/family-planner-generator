@@ -15,6 +15,39 @@
 {% set hours_exec = ["6:00 AM","7:00 AM","8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM",
                      "1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM","8:00 PM","9:00 PM"] %}
 
+{% if look.layout %}
+{# A layout book's cover, from the layout kit: title, year, and the twelve
+   months at a glance in the layout's own boxes. #}
+{% from "layout_kit.html" import box with context %}
+<section class="page lx lx-{{ look.layout }} box-{{ look.box }} lx-cover cover-page">
+  <div class="lx-top lx-cover-top">
+    <div class="lx-name">
+      <div class="lx-title">{{ cfg.title }}</div>
+      <div class="lx-script lx-lg">{% if cfg.family_name %}The {{ cfg.family_name }} Family{% else %}{{ cfg.subtitle }}{% endif %}</div>
+    </div>
+    {% if cfg.year_on_cover != "omit" %}
+    <div class="lx-cover-year{% if cfg.year_on_cover == 'print' and cfg.cover_year_is_word %} lx-word{% endif %}" aria-label="Year">
+      {% if cfg.year_on_cover == "print" %}{{ cfg.cover_year_display }}{% else %}<span class="lx-ln"></span>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="lx-year">
+    {% for month in cfg.months %}
+    {% set n = loop.index %}
+    {% call box(month.name) %}
+    <div class="lx-mini">
+      {% for i in day_initials(cfg.sunday_first) %}<b>{{ i }}</b>{% endfor %}
+      {% for week in compact_grid(cfg.year, n, cfg.sunday_first) %}{% for day in week %}<span>{% if cfg.dated_months and day.number %}{{ day.number }}{% endif %}</span>{% endfor %}{% endfor %}
+    </div>
+    {% endcall %}
+    {% endfor %}
+  </div>
+</section>
+{% elif look.base in looks %}
+{# The thirteen looks: each draws its own cover. #}
+{% include "look_cover.html" %}
+{% else %}
+{# Retired looks (original, 02-17, blank). Kept so old plan files still build. #}
 <section class="page cover-page">
   <div class="cover-body">
     <div class="cover-side">
@@ -772,3 +805,4 @@
     {% endfor %}
   </div>
 </section>
+{% endif %}

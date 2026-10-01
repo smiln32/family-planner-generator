@@ -16,9 +16,11 @@ Three roles, filled by a named typeface set in config or a custom `display` / `s
 - Script: handwritten greeting lines
 - Body: worksheets, tables, footers
 - Masthead titles (the stacked lines in the top centre) share one display size (`type_size.title`, default 30pt) and sit at the top of the header row, not vertically centred on the house art. Cover stack uses `type_size.cover`. Banners stay their own role; sliders in the visual editor change the four `type_size` values.
-- `design: original` is the illustrated Family Success Planner (house scene, side badges, footer chips).
-- Looks `02`–`10` swap in a different **family title cover** (markup in `cover.html`). They do not show the house. Quality is unfinished; see `shared/looks-handoff.md`.
-- Looks `11`–`17` swap the cover for a **daily planner page**. Interiors stay family worksheets with that look’s chrome. Unfinished.
+- The book has thirteen looks (`designs.LOOKS`): `editorial` (default), `midcentury`, `nordic`, `farmhouse`, `deco`, `swiss`, `retro`, `bauhaus`, `almanac`, `terracotta`, `cottage`, `gazette`, `coastal`. Each brings its own cover (`templates/look_cover.html`), monthly page (`templates/look_monthly.html`), worksheet chrome and colour palette (`static/looks.css`) and typeface set. Approved by the owner on 2026-09-30 from the design canvas `Planner Styles.dc.html`.
+- Covers are type, colour and geometry only: no illustration, no family name, no year. Cover and monthly sizes are in `--k` (1/408 of the page width).
+- A look's palette goes over the theme, so the theme picker has no visible effect on a look book; a config `palette:` block still wins. A look's typeface set applies unless the config names `fonts:`.
+- Look monthly pages close with their own write-on blocks, not the footer macro.
+- Retired looks (`original`, `02`–`17`) still resolve so old plan files build, but are not offered in the picker.
 - Planner layouts `02a` to `12c` cross one of looks `02`, `06`, `11`, `12` with a page structure (`a` split, `b` stacked bands, `c` sidebar). The body carries both classes (`design-06 design-06b`), so the look's paper and chrome still apply; the layout adds its own box style (`box-06b`) to a boxed monthly page and to the `weekly` and `daily` sheets. Parts live in `templates/layout_kit.html`, `templates/layout_monthly.html`, `templates/pages/daily.html`, `templates/pages/weekly.html` and the "planner layouts" section at the end of `planner.css`. Sizes there are in `--u` (1/300 of the page width) so a sheet keeps its proportions at every page size. Added 2026-09-30 from the owner's design export; see `shared/looks-handoff.md`.
 - `blank` hides illustration.
 

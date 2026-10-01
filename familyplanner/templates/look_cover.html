@@ -1,0 +1,135 @@
+{# Covers for the thirteen looks in designs.LOOKS. One <section> per look,
+   styled by static/looks.css (.lkc-<look>). Type, colour and geometry only:
+   no illustration, no family name and no year, by design. #}
+{% set id = look.base %}
+<section class="page lk-cover lkc-{{ id }}">
+{% if id == "editorial" %}
+  <div class="ed-top"><span>The Home Edition</span><span>A Family Planner</span></div>
+  <div class="ed-name">HOME</div>
+  <div class="ed-panel">
+    <div>
+      <div class="ed-kick">Inside</div>
+      <div class="ed-title">The family<br>planner</div>
+    </div>
+    <ol class="ed-lines">
+      {% for n, t, tag in [("01", "Goals worth keeping", "Vision"), ("02", "The weekly table", "Meals"),
+                           ("03", "Money, plainly", "Budget"), ("04", "Twelve months, in order", "Calendar")] %}
+      <li><b>{{ n }}</b><span>{{ t }}</span><em>{{ tag }}</em></li>
+      {% endfor %}
+    </ol>
+  </div>
+
+{% elif id == "midcentury" %}
+  <div class="mc-head">
+    <div class="mc-kick">Household planner</div>
+    <div class="mc-title">the<br>family<br>plan</div>
+  </div>
+  <div class="mc-shapes" aria-hidden="true">
+    <i class="s1"></i><i class="s2"></i><i class="s3"></i>
+    <i class="s4"></i><i class="s5"></i><i class="s6"><b></b></i>
+  </div>
+
+{% elif id == "nordic" %}
+  <i class="nd-a" aria-hidden="true"></i><i class="nd-b" aria-hidden="true"></i>
+  <div class="nd-text">
+    <div class="nd-title">home,<br>together</div>
+    <div class="nd-label"><i></i><span>family planner</span></div>
+  </div>
+
+{% elif id == "farmhouse" %}
+  <div class="fh-main">
+    <div class="fh-kick">No. 1 &middot; Fresh from the farmhouse</div>
+    <div class="fh-home">Home</div>
+    <div class="fh-grown">GROWN</div>
+    <div class="fh-label"><i></i><span>Family Planner</span><i></i></div>
+  </div>
+  <div class="fh-sack" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="fh-tick" aria-hidden="true"></div>
+
+{% elif id == "deco" %}
+  <i class="dc-f1" aria-hidden="true"></i><i class="dc-f2" aria-hidden="true"></i>
+  <div class="dc-rays" aria-hidden="true"><i></i><i></i><i></i><i class="c"></i><i></i><i></i><i></i></div>
+  <i class="dc-gem" aria-hidden="true"></i>
+  <div class="dc-text">
+    <div class="dc-the">THE</div>
+    <div class="dc-title">Household</div>
+    <div class="dc-sub"><i></i><span>PLANNER</span><i></i></div>
+  </div>
+  <div class="dc-arch" aria-hidden="true"><i></i><i></i><i></i></div>
+
+{% elif id == "swiss" %}
+  <div class="sw-bar"><span>Family</span><span>Planner</span><span>Vol. 1</span><span>8 sections</span></div>
+  <div class="sw-title"><div>Fam-<br>ily<br>Plan-<br>ner</div><i aria-hidden="true"></i></div>
+  <ol class="sw-index">
+    {% for t in ["Goals", "Values", "Calendar", "Budget", "Chores", "Meals", "Grocery", "Health"] %}
+    <li><b>{{ "%02d"|format(loop.index) }}</b><span>{{ t }}</span></li>
+    {% endfor %}
+  </ol>
+
+{% elif id == "retro" %}
+  <div class="rt-arcs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="rt-text">
+    <div class="rt-title">Good Days<br>Ahead</div>
+    <div class="rt-sub">A FAMILY PLANNER</div>
+  </div>
+
+{% elif id == "bauhaus" %}
+  <div class="bh-grid">
+    <div class="b1"><i></i></div>
+    <div class="b2"><span>Plan.</span></div>
+    <div class="b3"><span>Make.</span></div>
+    <div class="b4"></div>
+    <div class="b5"><i></i></div>
+    <div class="b6"><span>Do.</span><small>FAMILY<br>PLANNER</small></div>
+  </div>
+
+{% elif id == "almanac" %}
+  <i class="al-f1" aria-hidden="true"></i><i class="al-f2" aria-hidden="true"></i>
+  <div class="al-plate">
+    <div class="al-the">THE</div>
+    <div class="al-title">FAMILY</div>
+    <div class="al-title">ALMANAC</div>
+    <div class="al-orn">&#10086;</div>
+    <div class="al-sub">Being a faithful record of our days, our plans &amp; our table</div>
+  </div>
+
+{% elif id == "terracotta" %}
+  <i class="tc-a1" aria-hidden="true"></i><i class="tc-a2" aria-hidden="true"></i>
+  <i class="tc-a3" aria-hidden="true"></i><i class="tc-sun" aria-hidden="true"></i>
+  <div class="tc-text">
+    <div class="tc-title">Home<br>Base</div>
+    <div class="tc-sub">FAMILY PLANNER</div>
+  </div>
+
+{% elif id == "cottage" %}
+  <div class="ct-label">
+    <i class="ct-stitch" aria-hidden="true"></i>
+    <div class="ct-kick">THE FAMILY</div>
+    <div class="ct-title">Life<br>at Home</div>
+    <i class="ct-rule" aria-hidden="true"></i>
+    <div class="ct-sub">a planner for the everyday</div>
+  </div>
+
+{% elif id == "gazette" %}
+  <div class="gz-meta"><span>VOL. I &middot; NO. 1</span><em>Printed at home</em><span>PRICELESS</span></div>
+  <div class="gz-name">The Family Gazette</div>
+  <div class="gz-motto">ALL THE NEWS THAT FITS ON THE FRIDGE</div>
+  <div class="gz-head">BIG PLANS<br>THIS YEAR</div>
+  <div class="gz-deck">Household sources confirm: goals set, meals planned, memories pending</div>
+  <div class="gz-cols">
+    <div><b>The Table</b><span>Weekly menus, grocery runs, and who is on dishes.</span></div>
+    <div><b>The Ledger</b><span>Budgets, bills and the savings jar, month by month.</span></div>
+    <div><b>Society Pages</b><span>Birthdays, games, recitals and every trip worth taking.</span></div>
+  </div>
+
+{% elif id == "coastal" %}
+  <div class="cs-stripes" aria-hidden="true"></div>
+  <div class="cs-text">
+    <div class="cs-title">Anchored</div>
+    <div class="cs-foot">
+      <div class="cs-sub">a family planner<br><span>for steady weeks &amp; open water</span></div>
+      <i aria-hidden="true"></i>
+    </div>
+  </div>
+{% endif %}
+</section>

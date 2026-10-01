@@ -10,8 +10,8 @@ const MEMBER_DOTS = ["#5F7A62", "#C4A09A", "#C9956A", "#8AA084", "#A0909C", "#7A
 const state = {
   year: 2027, family_name: "", week_starts: "sunday", dated_months: true,
   cover_year: "auto", cover_text: "",
-  page_size: "letter", members: [], pages: [], theme: "linen", fonts: "elegant",
-  design: "original", type_size: { title: 30, cover: 66, body: 9, script: 13 },
+  page_size: "letter", members: [], pages: [], theme: "linen", fonts: "home-edition",
+  design: "editorial", type_size: { title: 30, cover: 66, body: 9, script: 13 },
   palette: {}, preview: null, zoom: null,
 };
 let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [], paletteRoles: [], themePalettes: {} };
@@ -62,16 +62,26 @@ async function api(path, body) {
 }
 
 /* The ordered list of pages currently in the book, months expanded. */
+function currentLook() {
+  return meta.designs.find((d) => d.id === state.design) || null;
+}
+
 function bookPages() {
   const titles = new Map(meta.catalogue.map((p) => [p.slug, p.title]));
   const out = [];
+  // A layout book adds its weekly and daily sheets before the months unless
+  // the page list already places one of them (same rule as the renderer).
+  const adds = (currentLook()?.adds || []).some((s) => state.pages.includes(s))
+    ? [] : (currentLook()?.adds || []).map((slug) => ({ slug, title: titles.get(slug) || slug }));
   for (const slug of state.pages) {
     if (slug === "months") {
+      out.push(...adds.splice(0));
       for (const m of meta.months) out.push({ slug: m.toLowerCase(), title: `${m} Family Planner` });
     } else if (titles.has(slug)) {
       out.push({ slug, title: titles.get(slug) });
     }
   }
+  out.push(...adds);
   return out;
 }
 
@@ -313,7 +323,13 @@ function renderDesigns() {
     const input = el("input");
     Object.assign(input, { type: "radio", name: "design", value: look.id,
                            checked: state.design === look.id });
-    input.addEventListener("change", () => { state.design = look.id; renderDesigns(); refresh(); });
+    input.addEventListener("change", () => {
+      state.design = look.id;
+      // A layout book comes with its own typeface set; pick it, then let the
+      // TYPE picker change it again if wanted.
+      if (look.fonts) state.fonts = look.fonts;
+      renderDesigns(); renderTypefaces(); syncPreviewChoices(); refresh();
+    });
     const name = el("strong");
     name.textContent = look.label;
     const note = el("em");
@@ -577,8 +593,8 @@ function newBook() {
   state.pages = [...meta.defaultPages];
   state.theme = "linen";
   state.palette = {};
-  state.fonts = "elegant";
-  state.design = "original";
+  state.fonts = "home-edition";
+  state.design = "editorial";
   state.dated_months = true;
   state.cover_year = "auto";
   state.week_starts = "sunday";
@@ -673,7 +689,7 @@ async function start() {
     return;
   }
   Object.assign(state, meta.config);
-  if (!state.design) state.design = "original";
+  if (!state.design) state.design = "editorial";
   if (!(meta.pageSizes || []).some((s) => s.id === state.page_size)) state.page_size = "letter";
   state.type_size = { title: 30, cover: 66, body: 9, script: 13, ...(state.type_size || {}) };
   state.palette = state.palette || {};

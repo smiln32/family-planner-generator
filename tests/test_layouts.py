@@ -34,8 +34,38 @@ def test_layout_book_renders(cfg, design):
     assert slugs.index("weekly") < slugs.index("daily") < slugs.index("january")
     html = render.render_html(cfg, pages)
     base = design[:2]
-    assert f'<body class="design-{base} design-{design}">' in html
-    assert html.count(f"box-{design} lx-") == 14  # weekly, daily, twelve months
+    assert f'<body class="design-{base} design-{design} layout box-{design}">' in html
+    assert html.count(f"box-{design} lx-") == 15  # cover, weekly, daily, twelve months
+    assert 'class="page lx lx-' in html and "lx-cover" in html
+    assert 'class="famcover' not in html      # the parent look's cover is gone
+
+
+def test_layout_book_uses_its_look_colours_and_fonts(cfg):
+    cfg.design = "06b"
+    palette = config.effective_palette(cfg)
+    assert palette["navy"] == "#1A2744" and palette["paper"] == "#FFFDF5"
+    cfg.palette["pink"] = "#123456"          # the config's own replacement still wins
+    assert config.effective_palette(cfg)["pink"] == "#123456"
+    plain = config.load(None)
+    plain.design = "original"                # a retired look keeps the theme's colours
+    assert config.effective_palette(plain)["navy"] == config.DEFAULT_PALETTE["navy"]
+    assert designs.look_fonts("06b") == "composition-book"
+    assert designs.look_fonts("06") == "" and designs.look_palette("original") == {}
+
+
+def test_layout_fonts_default_from_file(tmp_path):
+    plan = tmp_path / "family.yaml"
+    plan.write_text("design: 11a\n", encoding="utf-8")
+    assert config.load(plan).faces.preset == "boardroom"
+    plan.write_text("design: 11a\nfonts: neat\n", encoding="utf-8")
+    assert config.load(plan).faces.preset == "neat"
+
+
+def test_worksheets_render_in_a_layout_book(cfg):
+    cfg.design = "02a"
+    cfg.pages = ["budget", "chores"]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    assert 'class="card has-tab' in html and "#111111" in html
 
 
 def test_page_list_can_place_daily_itself(cfg):

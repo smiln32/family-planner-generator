@@ -243,7 +243,10 @@ class Handler(BaseHTTPRequestHandler):
                 for name in typefaces.names()
             ],
             "designs": [
-                {"id": name, **designs.PRESETS[name]}
+                {"id": name, **designs.PRESETS[name],
+                 # A layout book brings its own sheets and typeface set.
+                 "adds": designs.LAYOUT_PAGES if designs.parts(name)["layout"] else [],
+                 "fonts": designs.look_fonts(name)}
                 for name in designs.names()
             ],
             "typeSizeRange": {

@@ -61,7 +61,20 @@ def _resolve_config(args: argparse.Namespace) -> Config:
             cfg.design = designs.resolve(args.design)
         except KeyError as exc:
             raise ConfigError(str(exc).strip("\"'")) from exc
+        # A layout book is set in its look's typefaces unless a set was named.
+        suggested = designs.look_fonts(cfg.design)
+        if suggested and not getattr(args, "fonts", None) and not _names_fonts(cfg):
+            cfg.faces = typefaces.resolve(suggested)
     return config.validate(cfg)
+
+
+def _names_fonts(cfg: Config) -> bool:
+    """True when the config file itself has a `fonts:` entry."""
+    if cfg.source is None:
+        return False
+    import yaml
+    own = yaml.safe_load(cfg.source.read_text(encoding="utf-8")) or {}
+    return isinstance(own, dict) and "fonts" in own
 
 
 def _page_label(index: int, total: int, page: render.Page) -> str:

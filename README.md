@@ -40,6 +40,23 @@ crisp at any zoom, no upscaled bitmaps):
 | 10 | Weekly Meal Planning Sheet | | |
 | 11 | Grocery Shopping List | | |
 
+## Looks
+
+Thirteen looks, each with its own cover, monthly page, worksheet chrome,
+colours and typefaces. Covers are type, colour and geometry only, with no
+name or date printed on them.
+
+`editorial` (default) `midcentury` `nordic` `farmhouse` `deco` `swiss`
+`retro` `bauhaus` `almanac` `terracotta` `cottage` `gazette` `coastal`
+
+```
+python planner.py fonts --all              # once, for every look's typefaces
+python planner.py build --design deco
+```
+
+A look's colours go over the theme; your own `palette:` block still wins.
+Its typeface set applies unless you set `fonts:`.
+
 ## The visual editor
 
 ```

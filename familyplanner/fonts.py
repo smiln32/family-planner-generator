@@ -17,7 +17,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from .typefaces import ROLE_WEIGHTS, Typefaces, slug
+from .typefaces import ROLE_ITALIC_WEIGHTS, ROLE_WEIGHTS, Typefaces, slug
 
 # A modern browser UA is what makes the API hand back woff2 rather than ttf.
 USER_AGENT = (
@@ -121,6 +121,9 @@ def fetch_fonts(dest: Path, faces: Typefaces, force: bool = False) -> int:
 
     if not pending:
         print(f"All {skipped} faces already present in {dest}")
+        italics = _fetch_italics(dest, faces, force)
+        if italics:
+            print(f"{italics} italic faces downloaded")
         return 0
 
     downloaded = failed = 0
@@ -161,7 +164,11 @@ def fetch_fonts(dest: Path, faces: Typefaces, force: bool = False) -> int:
             print(f"  ok      {target.name}  ({len(payload) / 1024:.0f} KB){note}")
             downloaded += 1
 
+    italics = _fetch_italics(dest, faces, force)
+
     print(f"\n{downloaded} downloaded, {skipped} already present, {failed} failed")
+    if italics:
+        print(f"{italics} italic faces downloaded")
     if substituted:
         print("Weight substitutions: " + "; ".join(substituted))
     if failed:
@@ -169,6 +176,55 @@ def fetch_fonts(dest: Path, faces: Typefaces, force: bool = False) -> int:
         return 1
     print(f"Fonts live in {dest}")
     return 0
+
+
+def _italic_css_for(family: str, weights: list[int]) -> str | None:
+    """The API's CSS for a family's italics, or None if it publishes none."""
+    attempts = [f"{family}:ital,wght@{';'.join(f'1,{w}' for w in sorted(set(weights)))}",
+                f"{family}:ital@1"]
+    for spec in attempts:
+        url = f"{CSS_ENDPOINT}?{urllib.parse.urlencode([('family', spec), ('display', 'block')])}"
+        try:
+            return _fetch(url).decode("utf-8", "replace")
+        except urllib.error.HTTPError as exc:
+            if exc.code != 400:
+                raise
+    return None
+
+
+def _fetch_italics(dest: Path, faces: Typefaces, force: bool) -> int:
+    """Download the italic faces a set wants. Never fails the run: a family
+    without italics just prints upright, and a network error is reported."""
+    wanted = faces.wanted_italic()
+    pending = [(f, w) for f, w in wanted
+               if force or not _is_present(dest / slug(f, w, italic=True))]
+    got = 0
+    for family in sorted({f for f, _ in pending}):
+        weights = [w for f, w in pending if f == family]
+        try:
+            css = _italic_css_for(family, weights)
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            print(f"  skipped {family} italic: {exc}")
+            continue
+        if not css:
+            print(f"  note    {family} has no italic; upright is used")
+            continue
+        available = _available(css, family)
+        for weight in weights:
+            picked = _nearest(available, weight)
+            if picked is None:
+                continue
+            target = dest / slug(family, weight, italic=True)
+            try:
+                payload = _fetch(picked[1])
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                print(f"  skipped {target.name}: {exc}")
+                continue
+            if payload:
+                target.write_bytes(payload)
+                print(f"  ok      {target.name}  ({len(payload) / 1024:.0f} KB)")
+                got += 1
+    return got
 
 
 def _weights_for(family: str, faces: Typefaces) -> list[int]:

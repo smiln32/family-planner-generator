@@ -23,9 +23,18 @@ from dataclasses import dataclass
 # Weights each role asks for. If a family does not publish one, the closest
 # available weight is substituted rather than failing the build.
 ROLE_WEIGHTS: dict[str, list[int]] = {
-    "display": [600, 700],
+    "display": [400, 600, 700],
     "script": [400],
     "body": [400, 700, 800],
+}
+
+# Italic faces each role asks for. The looks set accents in italic (Bodoni,
+# Lora, Garamond); without a real italic file the browser slants the upright
+# face, which looks cheap in print. Families with no italic simply skip it.
+ROLE_ITALIC_WEIGHTS: dict[str, list[int]] = {
+    "display": [400],
+    "script": [400],
+    "body": [400],
 }
 
 # Generic families appended to every CSS stack, so a missing download still
@@ -54,6 +63,22 @@ PRESETS: dict[str, dict[str, str]] = {
 
     # Tidy and neutral, with a relaxed handwriting accent.
     "neat": {"display": "Montserrat", "script": "Kalam", "body": "Open Sans"},
+
+    # The thirteen looks (designs.LOOKS). Each look is set in its own trio by
+    # default; Swiss grid uses grotesk-red, below. The gazette's script role is
+    # its blackletter nameplate.
+    "home-edition": {"display": "Bodoni Moda", "script": "Bodoni Moda", "body": "Archivo"},
+    "family-plan": {"display": "Jost", "script": "Jost", "body": "Jost"},
+    "hem": {"display": "DM Serif Display", "script": "DM Serif Display", "body": "DM Sans"},
+    "home-grown": {"display": "Zilla Slab", "script": "Libre Baskerville", "body": "Zilla Slab"},
+    "household": {"display": "Italiana", "script": "Italiana", "body": "Josefin Sans"},
+    "good-days": {"display": "Shrikhand", "script": "Shrikhand", "body": "Jost"},
+    "plan-make-do": {"display": "Space Grotesk", "script": "Space Grotesk", "body": "Space Grotesk"},
+    "almanac": {"display": "EB Garamond", "script": "EB Garamond", "body": "EB Garamond"},
+    "home-base": {"display": "Young Serif", "script": "Young Serif", "body": "DM Sans"},
+    "life-at-home": {"display": "Lora", "script": "Lora", "body": "DM Sans"},
+    "gazette": {"display": "Abril Fatface", "script": "UnifrakturMaguntia", "body": "Old Standard TT"},
+    "anchored": {"display": "Bricolage Grotesque", "script": "Bricolage Grotesque", "body": "Bricolage Grotesque"},
 
     # Look original (Original) pairings.
     "sunday-kitchen": {"display": "Baloo 2", "script": "Caveat", "body": "Nunito"},
@@ -160,11 +185,23 @@ class Typefaces:
                     pairs.append((family, weight))
         return pairs
 
+    def wanted_italic(self) -> list[tuple[str, int]]:
+        """(family, weight) italic pairs, de-duplicated. Missing ones are skipped."""
+        pairs: list[tuple[str, int]] = []
+        for role, family in self.roles.items():
+            for weight in ROLE_ITALIC_WEIGHTS[role]:
+                if (family, weight) not in pairs:
+                    pairs.append((family, weight))
+        return pairs
 
-def slug(family: str, weight: int) -> str:
-    """Filename for a downloaded face: 'Playfair Display' 700 -> playfair-display-700."""
+
+def slug(family: str, weight: int, italic: bool = False) -> str:
+    """Filename for a downloaded face: 'Playfair Display' 700 -> playfair-display-700.
+
+    Italics get an i suffix: playfair-display-400i.woff2.
+    """
     stem = re.sub(r"[^a-z0-9]+", "-", family.lower()).strip("-")
-    return f"{stem}-{weight}.woff2"
+    return f"{stem}-{weight}{'i' if italic else ''}.woff2"
 
 
 def names() -> list[str]:

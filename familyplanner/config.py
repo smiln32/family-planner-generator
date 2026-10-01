@@ -92,6 +92,22 @@ def palette_overrides(theme: str, palette: Any) -> dict[str, str]:
     return {key: value for key, value in cleaned.items() if value != base[key]}
 
 
+def effective_palette(cfg: "Config") -> dict[str, str]:
+    """The palette the renderer prints with.
+
+    A plain look prints `cfg.palette` as it is. A layout book puts its look's
+    colours over the theme, keeping only the tokens the config changed itself,
+    so the worksheets match the layout's month, weekly and daily sheets.
+    """
+    look = designs.look_palette(cfg.design)
+    if not look:
+        return dict(cfg.palette)
+    merged = theme_palette(cfg.theme)
+    merged.update(look)
+    merged.update(palette_overrides(cfg.theme, cfg.palette))
+    return {key: normalize_hex(value) for key, value in merged.items()}
+
+
 # Per-month personality: accent colour, seasonal motif, greeting strip and the
 # footer line. `planner.py months` prints this table so it is easy to edit.
 DEFAULT_MONTHS: list[dict[str, str]] = [
@@ -154,7 +170,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "members": ["", "", "", "", ""],
     "theme": "linen",
     "fonts": "elegant",
-    "design": "original",
+    "design": "editorial",
     "type_size": {},
     "palette": {},
     "months": [],
@@ -478,6 +494,12 @@ def load(path: Path | None) -> Config:
     palette = theme_palette(theme)
     palette.update(sanitize_palette(data.get("palette")))
 
+    # A layout book is set in its look's typefaces unless the file names a set.
+    design = check_design(data.get("design"))
+    fonts = data.get("fonts")
+    if path is None or "fonts" not in loaded:
+        fonts = designs.look_fonts(design) or fonts
+
     return Config(
         year=check_year(data["year"]),
         title=str(data["title"]),
@@ -489,9 +511,9 @@ def load(path: Path | None) -> Config:
         cover_text=str(data.get("cover_text") or ""),
         linked=bool(data.get("linked", False)),
         theme=theme,
-        design=check_design(data.get("design")),
+        design=design,
         type_size=check_type_size(data.get("type_size")),
-        faces=check_fonts(data.get("fonts")),
+        faces=check_fonts(fonts),
         members=check_str_list(data.get("members"), "members"),
         palette=palette,
         months=_merge_months(data.get("months") or []),

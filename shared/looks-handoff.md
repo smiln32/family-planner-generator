@@ -1,5 +1,9 @@
 # Page looks handoff
 
+## 2026-09-30: replaced by thirteen new looks
+
+The owner approved thirteen looks from the design canvas `Planner Styles.dc.html` and asked for the illustrated house cover and looks 02 to 17 to be replaced. They live in `designs.LOOKS`, `templates/look_cover.html`, `templates/look_monthly.html` and `static/looks.css`; see `_config/design-system.md`. The old looks still resolve (old plan files, and the 02a to 12c layouts build on 02, 06, 11 and 12) but are no longer offered. Everything below this section describes the retired looks and is kept for history.
+
 Updated 6 Sep 2026. Human stopped look design: covers are not at print quality. Do not keep drawing flora, notebook chrome, or new cover layouts in chat. Next look work needs approved reference images (or a designer), then mechanical implementation only.
 
 ## What this factory is

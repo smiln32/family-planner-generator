@@ -19,7 +19,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import escape
 
-from . import calendars, designs
+from . import calendars, config, designs
 from .config import Config
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -101,6 +101,7 @@ def build_environment() -> Environment:
     env.globals["range"] = range
     env.globals["month_days"] = lambda year, month: monthrange(year, month)[1]
     env.globals["abbr"] = lambda text, n=3: str(text)[:n]
+    env.globals["looks"] = designs.LOOKS
     return env
 
 
@@ -205,6 +206,8 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     nav = nav_pages if nav_pages is not None else pages
     env = build_environment()
     look = designs.parts(cfg.design)
+    # A layout book prints in its look's colours; see config.effective_palette.
+    cfg = replace(cfg, palette=config.effective_palette(cfg))
     shell = env.get_template("book.html")
     page_template_cache: dict[str, object] = {}
 
@@ -229,7 +232,8 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
         look=look,
         pages=pages,
         bodies=bodies,
-        css=(STATIC_DIR / "planner.css").read_text(encoding="utf-8"),
+        css=(STATIC_DIR / "planner.css").read_text(encoding="utf-8")
+        + NEWLINE + (STATIC_DIR / "looks.css").read_text(encoding="utf-8"),
         fonts_css=_fonts_css(cfg, font_base),
         font_display=cfg.faces.stack("display"),
         font_script=cfg.faces.stack("script"),
@@ -257,6 +261,16 @@ def _fonts_css(cfg: Config, font_base: str | None = None) -> str:
         uri = f"{font_base}/{path.name}" if font_base else path.resolve().as_uri()
         faces.append(
             f"@font-face{{font-family:'{family}';font-style:normal;"
+            f"font-weight:{weight};font-display:block;"
+            f"src:url('{uri}') format('woff2');}}"
+        )
+    for family, weight in cfg.faces.wanted_italic():
+        path = font_dir / slug(family, weight, italic=True)
+        if not path.is_file():
+            continue
+        uri = f"{font_base}/{path.name}" if font_base else path.resolve().as_uri()
+        faces.append(
+            f"@font-face{{font-family:'{family}';font-style:italic;"
             f"font-weight:{weight};font-display:block;"
             f"src:url('{uri}') format('woff2');}}"
         )
