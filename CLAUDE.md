@@ -61,7 +61,7 @@ Stage 03 calls `build`. Humans who skip the agent pipeline can use `ui` alone.
 | Build | `stages/03-build/CONTEXT.md` and its Inputs | `_config/voice.md`; build does not write copy |
 | Review | `stages/04-review/CONTEXT.md` and its Inputs | `familyplanner/` code unless a template bug is found |
 | Print look change | `_config/design-system.md`, then the named template/CSS | Stage outputs from earlier runs |
-| Page looks 02 to 17 | `shared/looks-handoff.md` | Chat-invented art; the design is paused |
+| Page looks | `shared/looks-handoff.md` | Chat-invented art; the thirteen looks are owner-approved, apply them as given |
 
 ## Stage handoffs
 

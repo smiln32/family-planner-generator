@@ -8,11 +8,31 @@ The owner rejected the old covers and asked for every style to be different. Thi
 - New templates `look_cover.html` and `look_monthly.html`, included from `pages/cover.html` and `pages/monthly.html`. New stylesheet `static/looks.css`, appended after `planner.css` by `render.py`. `book.html` adds an `lk` body class for a look book, which hides the house mark, page art, sprigs and hearts on every worksheet and restyles cards, tabs, banners and footers per look.
 - `typefaces.py`: twelve new sets (Swiss reuses `grotesk-red`), display role now also downloads weight 400, and every role downloads a 400 italic when the family has one (`slug(..., italic=True)` -> `-400i.woff2`). `fonts.py` fetches italics as a non-fatal second pass. **Run `python planner.py fonts --all` once**, or the new looks fall back to system fonts.
 - Defaults: `config.py`, `ui.js` and `config.example.yaml` now default to `editorial` with the `home-edition` set. The example file leaves `fonts:` commented so the look's set applies.
-- Tests: `tests/test_looks.py` added; one line in `test_layouts.py` changed (the theme-colours check now uses `design = "original"`). **Not run here**: no Python in the design environment. Run `python -m pytest` and build a book per look before printing.
+- Tests: `tests/test_looks.py` added; one line in `test_layouts.py` changed (the theme-colours check now uses `design = "original"`). The design environment had no Python, so nothing was run there; see "Applied and verified" below for what was run on this machine.
 - The run in `stages/02-customize/output/` still names `design: original`, so it rebuilds exactly as printed.
 - Locked decision about the original cover is lifted by the owner: the house cover is retired, not restyled.
 
-**Why parked:** end of three short sessions. 2026-09-28 reworked the colour theme presets so each one actually looks like its name, fixed a text-overlap bug on one unfinished cover look, and made a small copy fix permanent at the source instead of a per-run edit. 2026-09-29 and 2026-09-30 brought in the owner's design export: 34 typeface sets (two per look), `fonts --all`, and twelve planner layouts with Weekly Plan and Daily Plan sheets. The 2026-09-28 work is pushed; the export commit is local until the owner pushes it. There are no other branches. Open work: the editor audit list and the paused page-looks design, both unchanged from before (see the 2026-09-26 notes further down).
+### Applied and verified, 2026-09-30 evening
+
+The update arrived as an unzipped copy of the repo in Downloads (`family-planner-generator-updated`). The 19 files it changed were copied in byte for byte; every other tracked file already matched that copy.
+
+- **Commit:** `2163063 Add thirteen new looks with their own covers, monthly pages, colours and fonts`, on branch `thirteen-looks`, pushed to `origin/thirteen-looks`. **`main` is still at `95a032e`, here and on GitHub. The branch is not merged yet.** A fast-forward merge is enough: `git switch main`, `git merge --ff-only thirteen-looks`, `git push` (owner runs them, one at a time).
+- **`python planner.py fonts --all`:** exit 0. There are 52 typeface sets now.
+- **`python -m pytest`:** 142 passed.
+- **Builds:** all thirteen looks built `--only cover,january --png --dpi 110` with exit 0. Every cover and every January was looked at: complete, right fonts and colours, calendar starts Friday 1 January 2027, nothing cut off or blank. Not checked: the other months and the worksheets in each look, page sizes other than letter, the `--linked` edition, and whether each page matches the approved canvas.
+- **Low-resolution previews drop hairlines.** At 110 dpi the Gazette month lost two vertical grid lines and the Editorial grid looked uneven. Gazette's grid is a 0.75px gap, which falls under one pixel at that size. At 300 dpi every Gazette line is there. Judge grid lines at 300 dpi or in the PDF, not in a quick preview.
+- **Swiss cover:** the "y" of "ily" touches the "P" of "Plan-" below it. Looks like intended tight stacking; the owner has seen the looks in the editor and said they look great. Not raised as a bug.
+- **Editor:** the owner opened `planner.py ui` and saw "unknown design 'editorial'" and "unknown typeface set 'home-edition'" with a blank preview. Cause: an editor started before the update was still running the old Python code while serving the new `ui.js`. Restarting it fixed it; the owner confirmed the looks work in the picker. See Environment notes.
+
+### Stale-file check, 2026-09-30 evening
+
+No stale files. Every template is included from somewhere, every tracked file matches the update copy, and nothing untracked sits in the repo apart from the gitignored caches, fonts and run outputs. `example_gratitude` and `reading_log` are optional extras listed in `_config/page-catalog.md`, not leftovers. The CSS for looks `02` to `17` in `planner.css` and their branches in `pages/cover.html` stay on purpose: the legacy ids are still valid and the layouts build on `02`, `06`, `11` and `12`.
+
+Stale wording in files the update did not touch was fixed the same evening, with the owner's go-ahead: the note above the look picker in `static/ui/index.html`, the "paused" rows in `CLAUDE.md` and `CONTEXT.md`, `shared/decisions.md`, `shared/CONTEXT.md`, and the comment above the old covers in `pages/cover.html`. `shared/looks-handoff.md` was left alone: its top section is current and says the rest is history.
+
+Outside the repo: `Downloads\family-planner-generator-updated` is now identical to the repo and can be deleted by the owner whenever convenient.
+
+**Why parked:** end of three short sessions. 2026-09-28 reworked the colour theme presets so each one actually looks like its name, fixed a text-overlap bug on one unfinished cover look, and made a small copy fix permanent at the source instead of a per-run edit. 2026-09-29 and 2026-09-30 brought in the owner's design export: 34 typeface sets (two per look), `fonts --all`, and twelve planner layouts with Weekly Plan and Daily Plan sheets. The 2026-09-28 work and the export commits are pushed (`main` at `95a032e`). The thirteen looks sit on the pushed branch `thirteen-looks`, waiting to be merged into `main`. Open work: that merge and the editor audit list (see the 2026-09-26 notes further down).
 
 ## Sessions 2026-09-29 and 2026-09-30: the design export
 
@@ -75,11 +95,12 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Meal plan and gratitude key each day's tint/glyph by name; the others keep their decorative colour runs positional |
 | Palette colour editor | Committed, covered by unit and API tests; **still not exercised by hand in `planner.py ui`** |
 | Theme presets | Reworked 2026-09-28 so each named theme (`citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`, `forest`) actually matches its name; `slate` renamed to `blues`. See "Session 2026-09-28" above. Not hand-checked in the UI yet; do that alongside item 5 below |
-| Typeface sets | 40 since 2026-09-29: the six general sets plus two pairings per look, and `fonts --all` to download them. TYPE picker not hand-checked with 40 cards |
+| Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), and `fonts --all` to download them. TYPE picker not hand-checked end to end |
+| Thirteen looks (`editorial` to `coastal`) | In since 2026-09-30 on branch `thirteen-looks`, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor. Not merged into `main` yet |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
-| Security pass (validators, local API guard, clean CLI errors) | Done. Suite is 86 tests, all passing |
+| Security pass (validators, local API guard, clean CLI errors) | Done. The whole suite is 142 tests as of 2026-09-30, all passing |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
-| Looks 02–17 design quality | **Not done.** Human paused look design; covers are not print-quality |
+| Looks 02–17 design quality | **Retired 2026-09-30.** Replaced by the thirteen looks. `original` and `02`–`17` live in `designs.LEGACY`: still valid in a config, not offered in the picker, never finished |
 | Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
 | PDF path | Verified 2026-09-26 from the example config: exit 0, 30 pages matching the HTML, US Letter, no blank pages, fonts embedded. Chrome embeds Playfair Display as a Type 3 font; fine for home printing, but some print-shop preflight checks flag Type 3 |
 
@@ -100,8 +121,8 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 ## Locked decisions
 
 - No real family names in the repo: not in docs, examples, tests, commit messages or run outputs. Use blank or made-up names (the code uses "Ramirez"). Personalisation happens in `family.yaml` or the UI, never by committing a run.
-- Original illustrated house cover (`design: original`) stays as-is; never restyle it and present it as a new look.
-- Looks `02`–`17` are unfinished. Do not invent cover art, florals or notebook chrome in chat without a human-approved reference image or written layout (see `shared/looks-handoff.md` → "Do not").
+- The original illustrated house cover (`design: original`) is retired by the owner (2026-09-30), not restyled. It stays buildable as a legacy id so the printed run rebuilds as printed; do not restyle it and present it as a new look.
+- The thirteen looks are owner-approved designs. Apply them as given; do not redesign, restyle or "improve" them. Looks `02`–`17` are legacy and unfinished. Do not invent cover art, florals or notebook chrome in chat without a human-approved reference image or written layout (see `shared/looks-handoff.md` → "Do not").
 - Every value from YAML, CLI flags or the UI goes through the validators in `config.py`. New fields get a `check_*` helper and a test; nothing reaches a template or a file path unchecked.
 - The local server answers only its own page. Keep all UI calls on the JSON `api()` helper in `ui.js`; a plain form post or `text/plain` fetch will get a 403.
 - ICM rules from the conventions: references point one way (stages point to `_config/`, `shared/` and earlier stages' `output/`, never forward); one canonical home per fact; CONTEXT.md files route and stay under 80 lines; no em dashes; no spaces in file names.
@@ -111,20 +132,22 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 ## Environment notes
 
 - Windows Smart App Control blocks Git for Windows' unsigned `libcurl-4.dll`, so HTTPS push and fetch fail or hang. This repo pushes over SSH with `core.sshCommand = C:/Windows/System32/OpenSSH/ssh.exe`. Do not switch the remote back to HTTPS.
-- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-09-25) worked from PowerShell in the repo root.
+- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-09-30, `git push -u origin thirteen-looks`) worked from PowerShell in the repo root.
 - Any clone made before 2026-09-24 has the old history. Delete it and re-clone; never push from it, or the names and source pack return.
 - The original source pack (reference planner PDF and 31 page JPGs) lives outside the repo at `..\planner-source-pack\`. Do not copy it back in; it must not be published.
 - `git-filter-repo` is installed (`python -m git_filter_repo`) if history ever needs scrubbing again.
 - To stop a test copy of the editor, kill only the PID listening on its port (`netstat -ano`), never every `python.exe`.
+- **Restart the editor after any code change.** A running `planner.py ui` keeps the old Python in memory but serves the new `ui.js` from disk, which shows up as "unknown design" or "unknown typeface set" toasts and a blank preview. Stop the process on port 8733, start it again, then hard-refresh the browser (Ctrl+F5).
+- VS Code may show "An Invalid Python interpreter is selected". That is the editor's own setting, not the project. The terminal's Python (3.14, `AppData\Local\Programs\Python\Python314`) runs everything fine; pick it under Select Python Interpreter to clear the popup.
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean.
+1. Read this file, then `git status`. It should be clean. Check which branch you are on: if `thirteen-looks` is not yet merged, `main` does not have the new looks.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
 5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand (change a colour, preview, download the plan, open it again). While there, click through every theme in the picker (especially `citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`) to confirm the 2026-09-28 rework actually reads right on screen, not just in the hex values. Also scroll the TYPE picker, which now holds 40 sets, and pick one of the new ones; then pick a planner layout such as `06b` in the look picker and check the Weekly Plan, Daily Plan and a month at letter and at `5.5x8`.
-6. If asked to continue look design, follow `shared/looks-handoff.md` exactly: get an approved reference first, implement one look at a time, then stop.
+6. If asked to continue look design, follow `shared/looks-handoff.md` exactly: get an approved reference first, implement one look at a time, then stop. The thirteen looks are done; before printing one, build the whole book for that look and page through it, since only the cover and January were checked.
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 8. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
 

@@ -20,7 +20,7 @@ Layer 1. Given what the user wants, go to one stage. Then load only that stage's
 | Resource | Location | Contains |
 |----------|----------|----------|
 | Factory reference | `_config/CONTEXT.md` | Design system, voice, page catalog, YAML keys |
-| Cross-stage notes | `shared/CONTEXT.md` | Decisions, and the paused page-looks handoff |
+| Cross-stage notes | `shared/CONTEXT.md` | Decisions, and the page-looks handoff |
 | Local app | `planner.py` | Rendering. Run it; do not reimplement it in chat |
 
 ## Session start
