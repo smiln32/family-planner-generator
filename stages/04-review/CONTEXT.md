@@ -25,7 +25,7 @@ Read the built book against the factory rules. Do not rebuild unless the human a
 | Check | Pass Condition |
 |-------|----------------|
 | Count | Page list matches `pages` / defaults |
-| Cover | Year and family line match the YAML |
+| Cover | The look's own cover, unique to that style; no family line or year on a look cover. Retired looks: year and family line match the YAML |
 | Margin | No page visibly tighter at the trim than the others |
 | Months | Twelve unique months, dates match `year` if dated |
 | Footer | Shared footer on pages that are supposed to have it |

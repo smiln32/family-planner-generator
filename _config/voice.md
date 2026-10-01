@@ -19,4 +19,4 @@ Month taglines are one cheerful line, present tense, about being together. Foote
 
 ## Names
 
-Print "The [family name] Family" on the cover when `family_name` is set. Leave the generic title when it is blank. Tracker rows may be blank for handwriting.
+Each of the thirteen looks has its own cover, unique to that style, with no family name and no year (see `design-system.md`). Do not add a family line to a look cover. `family_name` names the file and page title; the retired looks still print "The [family name] Family" when it is set. Tracker rows may be blank for handwriting.
