@@ -85,9 +85,29 @@ def sanitize_palette(raw: Any) -> dict[str, str]:
     return out
 
 
-def palette_overrides(theme: str, palette: Any) -> dict[str, str]:
-    """Tokens that differ from the chosen theme, for saving in a plan file."""
-    base = theme_palette(theme)
+def base_palette(theme: str, design: str) -> dict[str, str]:
+    """The colours a book starts from before personal replacements.
+
+    A look or layout brings its own twelve colours, so the theme only shows
+    through on books without them (`blank` and the retired looks).
+    """
+    merged = theme_palette(theme)
+    merged.update({key: normalize_hex(value)
+                   for key, value in designs.look_palette(design).items()})
+    return merged
+
+
+def uses_theme(design: str) -> bool:
+    """True when the theme decides the book's colours; False when the look does."""
+    return not designs.look_palette(design)
+
+
+def palette_overrides(theme: str, palette: Any, design: str = "") -> dict[str, str]:
+    """Tokens that differ from the book's starting colours, for a plan file.
+
+    Without a design this compares against the theme alone, as it always did.
+    """
+    base = base_palette(theme, design) if design else theme_palette(theme)
     cleaned = sanitize_palette(palette)
     return {key: value for key, value in cleaned.items() if value != base[key]}
 
@@ -95,16 +115,16 @@ def palette_overrides(theme: str, palette: Any) -> dict[str, str]:
 def effective_palette(cfg: "Config") -> dict[str, str]:
     """The palette the renderer prints with.
 
-    A plain look prints `cfg.palette` as it is. A layout book puts its look's
-    colours over the theme, keeping only the tokens the config changed itself,
-    so the worksheets match the layout's month, weekly and daily sheets.
+    A book without its own colours prints `cfg.palette` as it is. A look or
+    layout book puts its colours over the theme, then the tokens the config
+    replaced itself, so every sheet matches the look's cover and months.
     """
-    look = designs.look_palette(cfg.design)
-    if not look:
+    if uses_theme(cfg.design):
         return dict(cfg.palette)
-    merged = theme_palette(cfg.theme)
-    merged.update(look)
+    merged = base_palette(cfg.theme, cfg.design)
     merged.update(palette_overrides(cfg.theme, cfg.palette))
+    # Tokens set on purpose win even when they happen to match the theme.
+    merged.update(sanitize_palette(cfg.palette_set))
     return {key: normalize_hex(value) for key, value in merged.items()}
 
 
@@ -411,6 +431,8 @@ class Config:
     page_size: str
     output_name: str
     source: Path | None = field(default=None)
+    # The `palette:` block as written, before the theme fills the rest in.
+    palette_set: dict[str, str] = field(default_factory=dict)
 
     @property
     def page_inches(self) -> tuple[float, float]:
@@ -491,8 +513,9 @@ def load(path: Path | None) -> Config:
     # Palette resolution, lowest precedence first: the built-in defaults, then
     # the named theme, then whatever the config's own `palette:` block sets.
     theme = check_theme(data.get("theme"))
+    palette_set = sanitize_palette(data.get("palette"))
     palette = theme_palette(theme)
-    palette.update(sanitize_palette(data.get("palette")))
+    palette.update(palette_set)
 
     # A layout book is set in its look's typefaces unless the file names a set.
     design = check_design(data.get("design"))
@@ -521,6 +544,7 @@ def load(path: Path | None) -> Config:
         page_size=normalize_page_size(data["page_size"]),
         output_name=str(data["output_name"] or ""),
         source=path,
+        palette_set=palette_set,
     )
 
 
@@ -547,6 +571,7 @@ def validate(cfg: Config) -> Config:
     palette = dict(DEFAULT_PALETTE)
     palette.update(sanitize_palette(cfg.palette))
     cfg.palette = palette
+    cfg.palette_set = sanitize_palette(cfg.palette_set)
     cfg.months = _check_months(cfg.months)
     return cfg
 

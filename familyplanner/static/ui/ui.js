@@ -14,7 +14,7 @@ const state = {
   design: "editorial", type_size: { title: 30, cover: 66, body: 9, script: 13 },
   palette: {}, preview: null, zoom: null,
 };
-let meta = { themes: [], typefaces: [], designs: [], typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [], paletteRoles: [], themePalettes: {} };
+let meta = { themes: [], typefaces: [], designs: [], currentDesign: null, typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [], paletteRoles: [], themePalettes: {} };
 let previewSeq = 0;
 
 /* --- helpers -------------------------------------------------------------- */
@@ -87,6 +87,56 @@ function bookPages() {
 
 /* --- rendering the controls ---------------------------------------------- */
 
+/* A look or layout brings its own colours; the theme only decides them for
+   books without (Blank and the retired looks). The colour panel follows that,
+   so it never offers a choice the printed page would ignore. */
+function designInfo(id = state.design) {
+  const listed = meta.designs.find((d) => d.id === id);
+  if (listed) return listed;
+  const loaded = meta.currentDesign;
+  return loaded && loaded.id === id ? loaded : null;
+}
+
+function lookColors(id = state.design) {
+  return designInfo(id)?.palette || null;
+}
+
+function upperAll(palette) {
+  return Object.fromEntries(Object.entries(palette).map(([k, v]) => [k, String(v).toUpperCase()]));
+}
+
+/* The colours the book starts from before anyone replaces one. */
+function baseColors(design = state.design, theme = state.theme) {
+  return upperAll({ ...themeColors(theme), ...(lookColors(design) || {}) });
+}
+
+function sameColors(a, b) {
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  return [...keys].every((k) => a[k] === b[k]);
+}
+
+function renderColourSource() {
+  const look = lookColors();
+  const themesHost = $("#themes");
+  themesHost.hidden = Boolean(look);
+  const note = $("#colour-note");
+  const reset = $("#reset-palette");
+  if (look) {
+    const name = designInfo()?.label || state.design;
+    note.textContent = `Colours come with the ${name} look. Replace any colour below; Download plan keeps the replacements. To use a colour theme instead, pick Blank under Page look.`;
+    reset.textContent = "Use the look's colours";
+  } else {
+    note.textContent = "Pick a theme, then replace any colour. Download plan keeps the replacements.";
+    reset.textContent = "Use theme colours";
+    renderThemes();
+  }
+}
+
+function renderColour() {
+  renderColourSource();
+  renderPalette();
+}
+
 function renderThemes() {
   const host = $("#themes");
   host.textContent = "";
@@ -105,8 +155,7 @@ function renderThemes() {
     input.addEventListener("change", () => {
       state.theme = theme.name;
       state.palette = {};
-      renderThemes();
-      renderPalette();
+      renderColour();
       refresh();
     });
     const name = el("span", "swatch-name");
@@ -132,7 +181,7 @@ function themeColors(name) {
 }
 
 function currentPalette() {
-  return { ...themeColors(state.theme), ...(state.palette || {}) };
+  return { ...baseColors(), ...upperAll(state.palette || {}) };
 }
 
 function hasPaletteOverrides() {
@@ -142,7 +191,7 @@ function hasPaletteOverrides() {
 function setPaletteToken(key, hex) {
   const next = hexForPicker(hex);
   if (!next) return false;
-  const base = (themeColors(state.theme)[key] || "").toUpperCase();
+  const base = baseColors()[key] || "";
   const palette = { ...(state.palette || {}) };
   if (next.toUpperCase() === base) delete palette[key];
   else palette[key] = next.toUpperCase();
@@ -155,7 +204,8 @@ function renderPalette() {
   if (!host) return;
   host.textContent = "";
   const resolved = currentPalette();
-  const base = themeColors(state.theme);
+  const base = baseColors();
+  const source = lookColors() ? "look's" : "theme";
   for (const role of meta.paletteRoles || []) {
     const value = hexForPicker(resolved[role.id] || "#000000") || "#000000";
     const replaced = (value.toUpperCase() !== (base[role.id] || "").toUpperCase());
@@ -201,7 +251,7 @@ function renderPalette() {
     undo.type = "button";
     undo.textContent = "Reset";
     undo.hidden = !replaced;
-    undo.setAttribute("aria-label", `Reset ${role.label} to the theme colour`);
+    undo.setAttribute("aria-label", `Reset ${role.label} to the ${source} colour`);
     undo.addEventListener("click", () => {
       const restored = hexForPicker(base[role.id]) || value;
       setPaletteToken(role.id, restored);
@@ -324,17 +374,37 @@ function renderDesigns() {
     Object.assign(input, { type: "radio", name: "design", value: look.id,
                            checked: state.design === look.id });
     input.addEventListener("change", () => {
+      const before = baseColors();
       state.design = look.id;
-      // A layout book comes with its own typeface set; pick it, then let the
-      // TYPE picker change it again if wanted.
+      // A look comes with its own typeface set; pick it, then let the
+      // Lettering picker change it again if wanted.
       if (look.fonts) state.fonts = look.fonts;
-      renderDesigns(); renderTypefaces(); syncPreviewChoices(); refresh();
+      // Replacements were chosen against the old colours. Like picking a
+      // theme, a new set of starting colours clears them.
+      if (!sameColors(before, baseColors()) && hasPaletteOverrides()) {
+        state.palette = {};
+        toast(look.palette
+          ? `Your replaced colours were cleared. The ${look.label} look brings its own.`
+          : `Your replaced colours were cleared. ${look.label} uses the theme's colours.`);
+      }
+      renderDesigns(); renderTypefaces(); renderColour(); syncPreviewChoices(); refresh();
     });
     const name = el("strong");
     name.textContent = look.label;
     const note = el("em");
     note.textContent = look.note;
     card.append(input, name, note);
+    if (look.palette) {
+      const chips = el("span", "design-chips");
+      chips.setAttribute("aria-hidden", "true");
+      const colours = { ...themeColors(state.theme), ...look.palette };
+      for (const key of ["paper", "navy", "teal", "orange", "green", "purple"]) {
+        const i = el("i");
+        i.style.background = colours[key];
+        chips.append(i);
+      }
+      card.append(chips);
+    }
     host.append(card);
   }
 }
@@ -582,7 +652,7 @@ function paintForm() {
   $("#dated").checked = state.dated_months;
   if (!state.cover_year) state.cover_year = "auto";
   syncCoverYearRow();
-  renderThemes(); renderPalette(); renderTypefaces(); renderSizes(); renderDesigns(); renderMembers();
+  renderColour(); renderTypefaces(); renderSizes(); renderDesigns(); renderMembers();
   syncPreviewChoices(); renderPages();
 }
 

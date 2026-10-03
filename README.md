@@ -54,7 +54,8 @@ python planner.py fonts --all              # once, for every look's typefaces
 python planner.py build --design deco
 ```
 
-A look's colours go over the theme; your own `palette:` block still wins.
+A look brings its own colours, so the theme does not change it; your own
+`palette:` block still wins.
 Its typeface set applies unless you set `fonts:`.
 
 ## The visual editor
@@ -70,8 +71,9 @@ On Windows, `start-planner.bat` does this without typing a command. If the
 planner is already running, it just opens the browser again.
 
 - year, family name (optional), paper size, week start, dated or blank grids
-- colour themes as pickable cards, then a colour picker to replace any of the twelve print colours
-- page looks named in plain language; paper, week start and lettering size sit under **Paper and lettering size**
+- page looks named in plain language, each with a strip of its own colours
+- a colour picker to replace any of the twelve print colours; it starts from the look's colours, and theme cards appear when the Blank look is picked
+- paper, week start and lettering size sit under **Paper and lettering size**
 - tracker rows added and named inline
 - every page toggled in or out; click a page name to jump the preview to it
 - **Make PDF** builds the book and offers to open it
@@ -96,7 +98,7 @@ python planner.py build -n Ramirez   # "The Ramirez Family" on the cover
 python planner.py build --undated    # blank month grids instead of real dates
 python planner.py build --only cover,months,year_end
 
-python planner.py build --theme berry    # recolour with a preset
+python planner.py build --design blank --theme berry   # Blank look, recoloured
 python planner.py build --fonts italics  # different typefaces
 
 python planner.py pages              # list what would be built
@@ -146,15 +148,18 @@ taupe, dusty rose and clay on ivory paper, with Playfair Display headings.
 
 ```
 python planner.py themes                       # list them with swatches
-python planner.py build --theme pastel         # whole book
-python planner.py build --theme berry --only year_goals --png   # one page
+python planner.py build --design blank --theme pastel          # whole book
+python planner.py build --design blank --theme berry --only year_goals --png   # one page
 ```
 
 `linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `blues`
 
-Set `theme: pastel` in your config to make it the default. A theme is only a
-starting point - your own `palette:` block is applied on top, so you can take
-`forest` and override just its pink.
+A theme colours the Blank look and the retired looks. The thirteen looks and
+the layouts bring their own colours, so a theme has no effect on them; the
+build prints a note if you name one. Set `design: blank` and `theme: pastel` in
+your config to make it the default. A theme is only a starting point - your
+own `palette:` block is applied on top, so you can take `forest` and override
+just its pink. A `palette:` block also replaces single colours on any look.
 
 ### Typefaces
 
@@ -220,7 +225,9 @@ The things people change most:
 - **`family_name`** - printed on the cover and used in the output filename.
 - **`members`** - one row per person on the health tracker. Add or remove
   entries to change how many rows it has; names are optional.
-- **`theme`** - a colour preset applied before `palette`.
+- **`theme`** - a colour preset applied before `palette`. Only the Blank look
+  and the retired looks use it; the thirteen looks and the layouts bring their
+  own colours.
 - **`fonts`** - a typeface set name, or a mapping of
   `display`/`script`/`body` to any Google Fonts families.
 - **`palette`** - twelve colour tokens. Change `teal` once and every teal

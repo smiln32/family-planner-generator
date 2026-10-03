@@ -15,7 +15,7 @@ Turn the intake brief into a generator config. Do not run Chrome or write a PDF.
 ## Process
 
 1. Read the brief. Copy year, name, members, week start, dated flag, paper size into YAML.
-2. Choose `theme` and `fonts` from the built-in names unless the brief asks otherwise.
+2. Choose `design` and `fonts` from the built-in names unless the brief asks otherwise. Set `theme` only with `design: blank` or a retired look; the thirteen looks bring their own colours. Use `palette:` to replace a single colour on any look.
 3. Set `pages` only if the brief drops or adds sheets. Otherwise omit `pages` so defaults apply.
 4. Override `months` entries only when the brief asks for new taglines.
 5. Pause at the checkpoint, then write YAML.

@@ -66,9 +66,13 @@ def _config_from(payload: dict, base: Config) -> Config:
         cfg.pages = config.check_str_list(payload["pages"], "pages")
 
     cfg.theme = config.check_theme(payload.get("theme"))
+    # The UI sends only the colours someone replaced; the look or theme
+    # supplies the rest at render time (config.effective_palette).
+    replaced = config.sanitize_palette(payload.get("palette"))
     palette = config.theme_palette(cfg.theme)
-    palette.update(config.sanitize_palette(payload.get("palette")))
+    palette.update(replaced)
     cfg.palette = palette
+    cfg.palette_set = replaced
 
     cfg.faces = config.check_fonts(payload.get("fonts") or typefaces.DEFAULT_SET)
     cfg.design = config.check_design(payload.get("design") or designs.DEFAULT_DESIGN)
@@ -221,7 +225,8 @@ class Handler(BaseHTTPRequestHandler):
                 },
                 "design": cfg.design,
                 "type_size": cfg.type_size,
-                "palette": config.palette_overrides(cfg.theme, cfg.palette),
+                "palette": config.palette_overrides(
+                    cfg.theme, config.effective_palette(cfg), cfg.design),
             },
             "paletteRoles": [
                 {"id": key, "label": label} for key, label in config.PALETTE_ROLES
@@ -246,9 +251,19 @@ class Handler(BaseHTTPRequestHandler):
                 {"id": name, **designs.PRESETS[name],
                  # A layout book brings its own sheets and typeface set.
                  "adds": designs.LAYOUT_PAGES if designs.parts(name)["layout"] else [],
-                 "fonts": designs.look_fonts(name)}
+                 "fonts": designs.look_fonts(name),
+                 # The look's own colours, or null when the theme decides them.
+                 "palette": designs.look_palette(name) or None}
                 for name in designs.names()
             ],
+            # The design open now may be a retired look the picker no longer
+            # lists; the colour panel still needs to know who owns its colours.
+            "currentDesign": {
+                "id": cfg.design,
+                "label": {**designs.LEGACY, **designs.PRESETS}
+                         .get(cfg.design, {}).get("label", cfg.design),
+                "palette": designs.look_palette(cfg.design) or None,
+            },
             "typeSizeRange": {
                 key: {"min": lo, "max": hi, "value": designs.DEFAULT_TYPE_SIZE[key]}
                 for key, (lo, hi) in designs.TYPE_SIZE_RANGE.items()
@@ -309,7 +324,8 @@ class Handler(BaseHTTPRequestHandler):
             "type_size": config.check_type_size(payload.get("type_size")),
             "pages": config.check_str_list(payload.get("pages"), "pages"),
         }
-        body["palette"] = config.palette_overrides(body["theme"], payload.get("palette"))
+        body["palette"] = config.palette_overrides(
+            body["theme"], payload.get("palette"), body["design"])
         return body
 
     def _export(self, payload: dict) -> None:

@@ -70,11 +70,27 @@ def _resolve_config(args: argparse.Namespace) -> Config:
 
 def _names_fonts(cfg: Config) -> bool:
     """True when the config file itself has a `fonts:` entry."""
+    return _file_names(cfg, "fonts")
+
+
+def _file_names(cfg: Config, key: str) -> bool:
+    """True when the config file itself has an entry for `key`."""
     if cfg.source is None:
         return False
     import yaml
     own = yaml.safe_load(cfg.source.read_text(encoding="utf-8")) or {}
-    return isinstance(own, dict) and "fonts" in own
+    return isinstance(own, dict) and key in own
+
+
+def _theme_notice(cfg: Config, args: argparse.Namespace) -> str:
+    """A line saying a named theme is not used, because the look brings colours."""
+    if config.uses_theme(cfg.design):
+        return ""
+    if not (getattr(args, "theme", None) or _file_names(cfg, "theme")):
+        return ""
+    return (f"note: theme '{cfg.theme}' is not used; the {cfg.design} look brings "
+            "its own colours. Use --design blank for a theme, or palette: to "
+            "replace a colour.")
 
 
 def _page_label(index: int, total: int, page: render.Page) -> str:
@@ -91,6 +107,9 @@ def cmd_build(args: argparse.Namespace) -> int:
           + (f" - {cfg.family_name}" if cfg.family_name else ""))
     if cfg.source:
         print(f"config: {cfg.source}")
+    notice = _theme_notice(cfg, args)
+    if notice:
+        print(notice)
     print(f"{len(pages)} pages:")
     for i, page in enumerate(pages, start=1):
         print(_page_label(i, len(pages), page))
@@ -183,9 +202,11 @@ def cmd_themes(args: argparse.Namespace) -> int:
         swatches = "  ".join(palette[k] for k in swatch_order)
         print(f"  {name:<9} {swatches}")
     print()
-    print("Use one with:  python planner.py build --theme pastel")
-    print("Or set `theme: pastel` in your config. Your own `palette:` block")
-    print("still overrides individual colours on top of the theme.")
+    print("The thirteen looks and the layouts bring their own colours, so a")
+    print("theme shows on the Blank look and the retired looks only:")
+    print("  python planner.py build --design blank --theme pastel")
+    print("Or set `design: blank` and `theme: pastel` in your config. Your own")
+    print("`palette:` block replaces single colours on any look.")
     return 0
 
 
