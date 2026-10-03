@@ -25,11 +25,18 @@ function toast(message, kind = "", extra = "") {
   const text = el("span");
   text.textContent = message;
   node.append(text);
-  if (extra && extra.action && extra.path) {
+  if (extra && extra.action && (extra.path || extra.onClick)) {
     const btn = el("button");
     btn.type = "button";
     btn.textContent = extra.action;
-    btn.addEventListener("click", () => openBuilt(extra.path));
+    btn.addEventListener("click", () => {
+      if (extra.onClick) {
+        node.dataset.show = "0";
+        extra.onClick();
+      } else {
+        openBuilt(extra.path);
+      }
+    });
     node.append(btn);
   } else if (typeof extra === "string" && extra) {
     const c = el("code");
@@ -382,10 +389,18 @@ function renderDesigns() {
       // Replacements were chosen against the old colours. Like picking a
       // theme, a new set of starting colours clears them.
       if (!sameColors(before, baseColors()) && hasPaletteOverrides()) {
+        const kept = { ...state.palette };
         state.palette = {};
+        // Undo keeps the new look and puts the replaced colours back on it.
+        const undo = () => {
+          if (state.design !== look.id) return;
+          state.palette = kept;
+          renderColour(); refresh();
+        };
         toast(look.palette
           ? `Your replaced colours were cleared. The ${look.label} look brings its own.`
-          : `Your replaced colours were cleared. ${look.label} uses the theme's colours.`);
+          : `Your replaced colours were cleared. ${look.label} uses the theme's colours.`,
+          "", { action: "Undo", onClick: undo });
       }
       renderDesigns(); renderTypefaces(); renderColour(); syncPreviewChoices(); refresh();
     });
