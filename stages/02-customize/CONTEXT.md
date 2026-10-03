@@ -24,7 +24,7 @@ Turn the intake brief into a generator config. Do not run Chrome or write a PDF.
 
 | After Step | Agent Presents | Human Decides |
 |------------|----------------|---------------|
-| 4 | Theme, fonts, page list summary | Approve or change |
+| 4 | Design, fonts, page list summary | Approve or change |
 
 ## Audit
 

@@ -1,4 +1,13 @@
-# Handoff, 2026-09-30
+# Handoff, 2026-10-03
+
+## Sessions 2026-10-01 to 2026-10-03: look covers and colours
+
+Three commits on `main` from the editor sessions of 1 and 2 October, plus this note; all pushed on 2026-10-03.
+
+- **Look covers carry no family line** (`387fe1f`, 2026-10-01). The thirteen looks leave "The [family name] Family" off the cover by design. `_config/voice.md` and the stage 04 audit row used to expect it; both now say a look cover is the look's own, with no family name and no year, and that the retired looks still print the line when `family_name` is set. `family_name` still names the file and the page title.
+- **Each look owns its colours in the editor** (`49fc5ca`, 2026-10-02). Before, the colour panel showed theme cards that a look book ignores and put the theme's colours in the pickers instead of what prints. Now a look or layout hides the theme cards, names the look in the colour note and starts the pickers from the look's palette; Blank and the retired looks keep the theme cards. Page look sits above Colour, and each look card shows a strip of its colours. In `config.py`: `base_palette(theme, design)`, `uses_theme(design)`, a `palette_set` field holding the `palette:` block as written, and `palette_overrides(..., design)` so replacements are saved against the look's colours; a colour set on purpose prints even when it equals the theme's value. Switching to a look with different colours clears replacements, as picking a theme already did. `build` prints a note when a config names a theme the look ignores, and `themes` says where a theme applies. README, `_config/design-system.md` and stage 02 updated. `tests/test_colour_source.py` added.
+- **Undo after a look clears colours** (`aa9f315`, 2026-10-02). When a new look clears replaced colours, the toast offers Undo, which keeps the new look and puts the replaced colours back on it. `ui.js` only.
+- **2026-10-03 (this note):** `config.example.yaml` comments, `CONTEXT.md` and the stage 01 and 02 contracts now say `design` is the choice and a theme applies only to Blank and the retired looks. `python -m pytest`: 159 passed. The colour panel has not been exercised by hand since the 2 October rework; see "What to do on resume".
 
 ## Later on 2026-09-30: thirteen new looks
 
@@ -16,7 +25,7 @@ The owner rejected the old covers and asked for every style to be different. Thi
 
 The update arrived as an unzipped copy of the repo in Downloads (`family-planner-generator-updated`). The 19 files it changed were copied in byte for byte; every other tracked file already matched that copy.
 
-- **Commit:** `2163063 Add thirteen new looks with their own covers, monthly pages, colours and fonts`, made on branch `thirteen-looks`, followed by `8d7142d Update handoff and retire stale wording about the old looks`. **Both are merged into `main` (fast-forward) and pushed: `main` and `origin/main` are at `8d7142d`.** The branch `thirteen-looks` was then deleted here and on GitHub; `main` is the only branch. Two later handoff-only commits sit on top: one pushed, and the last one (this note) left local on purpose, so `main` may show one commit ahead of `origin/main`. It goes up with the next push.
+- **Commit:** `2163063 Add thirteen new looks with their own covers, monthly pages, colours and fonts`, made on branch `thirteen-looks`, followed by `8d7142d Update handoff and retire stale wording about the old looks`. **Both are merged into `main` (fast-forward) and pushed: `main` and `origin/main` are at `8d7142d`.** The branch `thirteen-looks` was then deleted here and on GitHub; `main` is the only branch. Two later handoff-only commits sit on top; both went up with the 2026-10-03 push.
 - **`python planner.py fonts --all`:** exit 0. There are 52 typeface sets now.
 - **`python -m pytest`:** 142 passed.
 - **Builds:** all thirteen looks built `--only cover,january --png --dpi 110` with exit 0. Every cover and every January was looked at: complete, right fonts and colours, calendar starts Friday 1 January 2027, nothing cut off or blank. Not checked: the other months and the worksheets in each look, page sizes other than letter, the `--linked` edition, and whether each page matches the approved canvas.
@@ -93,12 +102,12 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | ICM deviations kept on purpose | Stage folders use `01-` (the conventions and reference repo do; the paper shows `01_`). `familyplanner/` has no hyphen (Python package). `README.md` is over 200 lines (human doc, agents do not load it). Built PDFs keep the `<year>-<family>-Family-Planner` name |
 | Editor audit (`/impeccable audit`) | Scored 12/20 before fixes. Fixed: `--muted` now `#6A655C` (4.8:1+), error toast on new `--error` `#96564E` (5.6:1), page-list names are real buttons beside the checkbox with `aria-current`, "Add a person", `.linky` and `.palette-undo` on new `--teal-deep` (5.2:1). Detector reports no low-contrast text now. Remaining items below |
 | Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Meal plan and gratitude key each day's tint/glyph by name; the others keep their decorative colour runs positional |
-| Palette colour editor | Committed, covered by unit and API tests; **still not exercised by hand in `planner.py ui`** |
+| Palette colour editor | Reworked 2026-10-02 so each look owns its colours and Undo restores cleared replacements (see the October section). Unit and API tests cover it (`tests/test_colour_source.py`); **not exercised by hand since the rework** |
 | Theme presets | Reworked 2026-09-28 so each named theme (`citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`, `forest`) actually matches its name; `slate` renamed to `blues`. See "Session 2026-09-28" above. Not hand-checked in the UI yet; do that alongside item 5 below |
 | Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), and `fonts --all` to download them. TYPE picker not hand-checked end to end |
 | Thirteen looks (`editorial` to `coastal`) | In `main` since 2026-09-30, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
-| Security pass (validators, local API guard, clean CLI errors) | Done. The whole suite is 142 tests as of 2026-09-30, all passing |
+| Security pass (validators, local API guard, clean CLI errors) | Done. The whole suite is 159 tests as of 2026-10-03, all passing |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Retired 2026-09-30.** Replaced by the thirteen looks. `original` and `02`–`17` live in `designs.LEGACY`: still valid in a config, not offered in the picker, never finished |
 | Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
@@ -132,7 +141,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 ## Environment notes
 
 - Windows Smart App Control blocks Git for Windows' unsigned `libcurl-4.dll`, so HTTPS push and fetch fail or hang. This repo pushes over SSH with `core.sshCommand = C:/Windows/System32/OpenSSH/ssh.exe`. Do not switch the remote back to HTTPS.
-- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-09-30, `git push` on `main`) worked from PowerShell in the repo root.
+- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-10-03, `git push origin main`) was run by the agent because the owner asked for it in that message; it worked over SSH from the repo root.
 - Any clone made before 2026-09-24 has the old history. Delete it and re-clone; never push from it, or the names and source pack return.
 - The original source pack (reference planner PDF and 31 page JPGs) lives outside the repo at `..\planner-source-pack\`. Do not copy it back in; it must not be published.
 - `git-filter-repo` is installed (`python -m git_filter_repo`) if history ever needs scrubbing again.
@@ -146,7 +155,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
-5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand (change a colour, preview, download the plan, open it again). While there, click through every theme in the picker (especially `citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`) to confirm the 2026-09-28 rework actually reads right on screen, not just in the hex values. Also scroll the TYPE picker, which now holds 40 sets, and pick one of the new ones; then pick a planner layout such as `06b` in the look picker and check the Weekly Plan, Daily Plan and a month at letter and at `5.5x8`.
+5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand. With a look chosen: the theme cards should be hidden, the pickers should start from the look's colours, a replaced colour should survive download and reopen, and switching to a look with different colours should clear replacements with an Undo in the toast. Then pick `blank`: the theme cards return; click through every theme (especially `citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`) to confirm the 2026-09-28 rework reads right on screen, not just in the hex values. Also scroll the TYPE picker, which now holds 40 sets, and pick one of the new ones; then pick a planner layout such as `06b` in the look picker and check the Weekly Plan, Daily Plan and a month at letter and at `5.5x8`.
 6. If asked to continue look design, follow `shared/looks-handoff.md` exactly: get an approved reference first, implement one look at a time, then stop. The thirteen looks are done; before printing one, build the whole book for that look and page through it, since only the cover and January were checked.
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 8. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
