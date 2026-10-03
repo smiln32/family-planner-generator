@@ -7,7 +7,7 @@ Three commits on `main` from the editor sessions of 1 and 2 October, plus this n
 - **Look covers carry no family line** (`387fe1f`, 2026-10-01). The thirteen looks leave "The [family name] Family" off the cover by design. `_config/voice.md` and the stage 04 audit row used to expect it; both now say a look cover is the look's own, with no family name and no year, and that the retired looks still print the line when `family_name` is set. `family_name` still names the file and the page title.
 - **Each look owns its colours in the editor** (`49fc5ca`, 2026-10-02). Before, the colour panel showed theme cards that a look book ignores and put the theme's colours in the pickers instead of what prints. Now a look or layout hides the theme cards, names the look in the colour note and starts the pickers from the look's palette; Blank and the retired looks keep the theme cards. Page look sits above Colour, and each look card shows a strip of its colours. In `config.py`: `base_palette(theme, design)`, `uses_theme(design)`, a `palette_set` field holding the `palette:` block as written, and `palette_overrides(..., design)` so replacements are saved against the look's colours; a colour set on purpose prints even when it equals the theme's value. Switching to a look with different colours clears replacements, as picking a theme already did. `build` prints a note when a config names a theme the look ignores, and `themes` says where a theme applies. README, `_config/design-system.md` and stage 02 updated. `tests/test_colour_source.py` added.
 - **Undo after a look clears colours** (`aa9f315`, 2026-10-02). When a new look clears replaced colours, the toast offers Undo, which keeps the new look and puts the replaced colours back on it. `ui.js` only.
-- **2026-10-03 (this note):** `config.example.yaml` comments, `CONTEXT.md` and the stage 01 and 02 contracts now say `design` is the choice and a theme applies only to Blank and the retired looks. `python -m pytest`: 159 passed. The colour panel has not been exercised by hand since the 2 October rework; see "What to do on resume".
+- **2026-10-03 (this note):** `config.example.yaml` comments, `CONTEXT.md` and the stage 01 and 02 contracts now say `design` is the choice and a theme applies only to Blank and the retired looks. `shared/looks-handoff.md` was folded into the "Looks" section below and deleted, so there is one handoff; `CLAUDE.md` now lists `HANDOFF.md` in its folder map and routes look work here. `python -m pytest`: 159 passed. The colour panel has not been exercised by hand since the 2 October rework; see "What to do on resume".
 
 ## Later on 2026-09-30: thirteen new looks
 
@@ -37,7 +37,7 @@ The update arrived as an unzipped copy of the repo in Downloads (`family-planner
 
 No stale files. Every template is included from somewhere, every tracked file matches the update copy, and nothing untracked sits in the repo apart from the gitignored caches, fonts and run outputs. `example_gratitude` and `reading_log` are optional extras listed in `_config/page-catalog.md`, not leftovers. The CSS for looks `02` to `17` in `planner.css` and their branches in `pages/cover.html` stay on purpose: the legacy ids are still valid and the layouts build on `02`, `06`, `11` and `12`.
 
-Stale wording in files the update did not touch was fixed the same evening, with the owner's go-ahead: the note above the look picker in `static/ui/index.html`, the "paused" rows in `CLAUDE.md` and `CONTEXT.md`, `shared/decisions.md`, `shared/CONTEXT.md`, and the comment above the old covers in `pages/cover.html`. `shared/looks-handoff.md` was left alone: its top section is current and says the rest is history.
+Stale wording in files the update did not touch was fixed the same evening, with the owner's go-ahead: the note above the look picker in `static/ui/index.html`, the "paused" rows in `CLAUDE.md` and `CONTEXT.md`, `shared/decisions.md`, `shared/CONTEXT.md`, and the comment above the old covers in `pages/cover.html`. The looks handoff (since folded into this file) was left alone: its top section was current and said the rest was history.
 
 Outside the repo: `Downloads\family-planner-generator-updated` is now identical to the repo and can be deleted by the owner whenever convenient.
 
@@ -54,7 +54,7 @@ Everything here was copied in from the owner's design export, kept outside the r
 - **Verified 2026-09-30:** the default book is unchanged at 30 pages. `--design 06b` from the example config builds a 32-page PDF; `06b`, `11a`, `12c` and `02c` were also built to PNG and the weekly, daily and January pages looked right (boxes filled the sheet, calendar dated, week order followed the config). Not checked: the other eight layouts by eye, page sizes other than letter, the `--linked` edition with a layout, and the editor's look picker with 30 cards.
 - **The editor's TYPE picker reads the same list**, so it now shows 40 cards plus Custom. Not looked at by hand yet.
 - **Tests:** 103 tests (`tests/test_layouts.py` adds 17), all passing. `test_security.py` resolves every set name; nothing covers `fonts --all`. A Windows flake was fixed on 2026-09-30: the server answered a rejected POST with 403 without reading the request body, so the socket closed with unread bytes, Windows sent a reset, and the client dropped the reply (`ConnectionAbortedError` in about half of full runs). `server.py` now drains a body up to `MAX_BODY` in `_reject()` before replying. Eight full runs passed in a row after the fix.
-- **Docs updated to match:** README (typefaces, `fonts --all`, planner layouts, and the `linen` description, which still said "sage" from before the theme rework; the `themes.py` comment too), `config.example.yaml` (font sets, layout ids), `_config/design-system.md` (sets, layouts, one em dash removed), `_config/page-catalog.md` (`weekly`, `daily`), `shared/looks-handoff.md` (a row for the layouts, files table).
+- **Docs updated to match:** README (typefaces, `fonts --all`, planner layouts, and the `linen` description, which still said "sage" from before the theme rework; the `themes.py` comment too), `config.example.yaml` (font sets, layout ids), `_config/design-system.md` (sets, layouts, one em dash removed), `_config/page-catalog.md` (`weekly`, `daily`), the looks handoff (a row for the layouts, files table).
 
 ## Session 2026-09-28: themes
 
@@ -69,7 +69,7 @@ Everything here was copied in from the owner's design export, kept outside the r
   - `slate` **renamed to `blues`** everywhere (theme file, README, config.example.yaml). Any old `family.yaml` with `theme: slate` will now fail to load; reopen it and pick `blues`.
   - All 12 named presets: `linen classic amber berry bold citrus forest meadow ocean pastel poppy blues`.
 - **January's tagline** no longer ends in "!". Fixed in the factory default (`familyplanner/config.py`), not a per-run override, so it applies automatically to every future run.
-- **Keepsake cover (look 10) overlap fixed.** The script "Family" heading's descender was colliding with "SUCCESS PLANNER" underneath it. Added line-height and bottom padding to clear it. This is a spacing bug fix only. Keepsake is still an unfinished look per `shared/looks-handoff.md`; nothing about its content or layout changed.
+- **Keepsake cover (look 10) overlap fixed.** The script "Family" heading's descender was colliding with "SUCCESS PLANNER" underneath it. Added line-height and bottom padding to clear it. This is a spacing bug fix only. Keepsake is still an unfinished look (see "Looks" below); nothing about its content or layout changed.
 - Commit: `18957da Rework theme palettes to match their names, fix Keepsake cover overlap`. Pushed.
 - **Not done / still open from this session:** the other four themes (`classic`, `berry`, `bold`, `pastel`) were not touched, only the ones flagged in conversation. If any of those also feel mismatched to their name, that's a new ask, not something already covered.
 - The real, already-printed run (local only; see `status`) was built before this session's theme changes and uses `linen`. Its cover wording is unaffected, but if it's ever rebuilt, `linen`'s look will be slightly different (warmer, less sage-green) than the PDF already printed.
@@ -87,7 +87,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 - Layer 0/1: `CLAUDE.md`, `CONTEXT.md`
 - Stage pipeline: `stages/01-intake/` → `02-customize/` → `03-build/` → `04-review/` (each has `CONTEXT.md`, `references/`, `output/`)
 - Factory reference: `_config/CONTEXT.md` routes to `design-system.md`, `voice.md`, `page-catalog.md`; `config.example.yaml` is the one source for generator keys
-- Cross-stage notes: `shared/decisions.md`, `shared/looks-handoff.md` (read before touching any cover/look work)
+- Cross-stage notes: `shared/decisions.md`. Look rules are in "Looks" below; read it before touching any cover or look work
 - Renderer/app: `familyplanner/config.py` (loading plus the shared validators), `designs.py`, `render.py`, `server.py`, `templates/`, `static/`
 - Editor UI: `familyplanner/static/ui/` (`index.html`, `ui.css`, `ui.js`); Windows launcher `start-planner.bat`
 - Tool install guide: `stages/03-build/references/tool-setup.md` (README points here)
@@ -127,11 +127,22 @@ In priority order. None block use at the normal full-screen desktop width.
 
 The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesign. Finish with `/impeccable polish`, then re-run `/impeccable audit`.
 
+## Looks
+
+The print looks and the rules around them. This section replaced `shared/looks-handoff.md` on 2026-10-03; the per-look verdicts on the retired looks are in that file's git history.
+
+- **Thirteen current looks** (`designs.LOOKS`): `editorial` (default), `midcentury`, `nordic`, `farmhouse`, `deco`, `swiss`, `retro`, `bauhaus`, `almanac`, `terracotta`, `cottage`, `gazette`, `coastal`. Owner-approved on 2026-09-30 from the design canvas `Planner Styles.dc.html` (outside the repo). Each has its own cover (`templates/look_cover.html`), monthly page (`templates/look_monthly.html`), worksheet chrome and palette (`static/looks.css`) and typeface set. Covers carry no illustration, family name or year. Apply them as given; do not redesign, restyle or improve them.
+- **Retired looks** (`designs.LEGACY`): `original` (the illustrated house cover) and `02` to `17`. They still build from old plan files but are not offered. None of `02` to `17` was ever finished; `03` Botanical and `06` School notebook were rejected outright. Their covers live in `templates/pages/cover.html` and `.design-02` to `.design-17` in `planner.css`, kept because the layouts build on `02`, `06`, `11` and `12`. Do not treat them as shippable and do not iterate on them.
+- **Planner layouts** `02a` to `12c`: owner-supplied from the design export of 2026-09-30. Looks `02`, `06`, `11`, `12` crossed with a split, stacked or sidebar page structure, each adding a boxed monthly page and Weekly Plan and Daily Plan sheets. The cover is still the parent look's unfinished cover. Do not restyle them without the owner.
+- **`blank`** hides illustration. A theme colours `blank` and the retired looks only.
+- **Do not:** invent botanical, notebook or any other decoration without a human-approved reference; restyle a retired cover and call it a new look; replace chores, budget or months with daily modules unless asked; load old look CSS as a style guide.
+- **If asked to add or change a look:** get a reference image or written layout the owner accepts; implement that one look in its own template and CSS and nothing else in the same pass; verify the cover in `python planner.py ui` at letter and at least one small size; stop.
+
 ## Locked decisions
 
 - No real family names in the repo: not in docs, examples, tests, commit messages or run outputs. Use blank or made-up names (the code uses "Ramirez"). Personalisation happens in `family.yaml` or the UI, never by committing a run.
 - The original illustrated house cover (`design: original`) is retired by the owner (2026-09-30), not restyled. It stays buildable as a legacy id so the printed run rebuilds as printed; do not restyle it and present it as a new look.
-- The thirteen looks are owner-approved designs. Apply them as given; do not redesign, restyle or "improve" them. Looks `02`–`17` are legacy and unfinished. Do not invent cover art, florals or notebook chrome in chat without a human-approved reference image or written layout (see `shared/looks-handoff.md` → "Do not").
+- The thirteen looks are owner-approved designs. Apply them as given; do not redesign, restyle or "improve" them. Looks `02`–`17` are legacy and unfinished. Do not invent cover art, florals or notebook chrome in chat without a human-approved reference image or written layout (see "Looks" above).
 - Every value from YAML, CLI flags or the UI goes through the validators in `config.py`. New fields get a `check_*` helper and a test; nothing reaches a template or a file path unchecked.
 - The local server answers only its own page. Keep all UI calls on the JSON `api()` helper in `ui.js`; a plain form post or `text/plain` fetch will get a 403.
 - ICM rules from the conventions: references point one way (stages point to `_config/`, `shared/` and earlier stages' `output/`, never forward); one canonical home per fact; CONTEXT.md files route and stay under 80 lines; no em dashes; no spaces in file names.
@@ -156,7 +167,7 @@ The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesi
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
 5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand. With a look chosen: the theme cards should be hidden, the pickers should start from the look's colours, a replaced colour should survive download and reopen, and switching to a look with different colours should clear replacements with an Undo in the toast. Then pick `blank`: the theme cards return; click through every theme (especially `citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`) to confirm the 2026-09-28 rework reads right on screen, not just in the hex values. Also scroll the TYPE picker, which now holds 40 sets, and pick one of the new ones; then pick a planner layout such as `06b` in the look picker and check the Weekly Plan, Daily Plan and a month at letter and at `5.5x8`.
-6. If asked to continue look design, follow `shared/looks-handoff.md` exactly: get an approved reference first, implement one look at a time, then stop. The thirteen looks are done; before printing one, build the whole book for that look and page through it, since only the cover and January were checked.
+6. If asked to continue look design, follow "Looks" above exactly: get an approved reference first, implement one look at a time, then stop. The thirteen looks are done; before printing one, build the whole book for that look and page through it, since only the cover and January were checked.
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 8. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
 

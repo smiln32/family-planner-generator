@@ -10,7 +10,7 @@ colours and typeface set. The planner layouts `02a`-`12c` sit beside them.
 
 The retired looks (`original`, `02`-`17`) still resolve so old plan files
 open, and their CSS stays because the layouts build on looks 02, 06, 11 and
-12. They are no longer offered in the picker. See `shared/looks-handoff.md`.
+12. They are no longer offered in the picker. See "Looks" in `HANDOFF.md`.
 """
 
 from __future__ import annotations

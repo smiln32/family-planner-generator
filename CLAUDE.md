@@ -17,6 +17,7 @@ Do not load every stage. Do not read previous run outputs to learn style. Docs i
 ```
 CLAUDE.md                 Layer 0 (this file)
 CONTEXT.md                Layer 1 routing
+HANDOFF.md                Session handoff: state, environment notes, what to do on resume
 _config/                  Layer 3 factory: design, voice, page catalog
 shared/                   Layer 3 cross-stage notes
 setup/questionnaire.md    One-time factory setup
@@ -61,7 +62,7 @@ Stage 03 calls `build`. Humans who skip the agent pipeline can use `ui` alone.
 | Build | `stages/03-build/CONTEXT.md` and its Inputs | `_config/voice.md`; build does not write copy |
 | Review | `stages/04-review/CONTEXT.md` and its Inputs | `familyplanner/` code unless a template bug is found |
 | Print look change | `_config/design-system.md`, then the named template/CSS | Stage outputs from earlier runs |
-| Page looks | `shared/looks-handoff.md` | Chat-invented art; the thirteen looks are owner-approved, apply them as given |
+| Page looks | `HANDOFF.md`, section "Looks" | Chat-invented art; the thirteen looks are owner-approved, apply them as given |
 
 ## Stage handoffs
 
