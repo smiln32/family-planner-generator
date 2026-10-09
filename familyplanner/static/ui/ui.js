@@ -432,7 +432,8 @@ function renderMembers() {
     const dot = el("span", "dot");
     dot.style.background = MEMBER_DOTS[index % MEMBER_DOTS.length];
     const input = el("input");
-    Object.assign(input, { type: "text", value, placeholder: "Maya" });
+    // Same limit as config.MEMBER_NAME_LIMIT.
+    Object.assign(input, { type: "text", value, placeholder: "Maya", maxLength: 40 });
     input.setAttribute("aria-label", `Name ${index + 1}`);
     input.addEventListener("input", () => { state.members[index] = input.value; });
     input.addEventListener("change", refresh);

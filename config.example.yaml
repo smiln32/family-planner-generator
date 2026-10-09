@@ -5,6 +5,10 @@
 #   python planner.py build -c mine.yaml
 #
 # Every setting below is optional; delete anything you don't want to change.
+#
+# Text limits: family_name 60 characters, title 80, subtitle 120, cover_text
+# 80, output_name 120, each member name 40, month tagline and footer 120.
+# Line breaks and tabs in text become spaces.
 # ---------------------------------------------------------------------------
 
 # The planner year. Monthly grids and the year-at-a-glance page are dated from
