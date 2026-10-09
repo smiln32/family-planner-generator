@@ -44,8 +44,9 @@
       </div>
       <table>
         <thead><tr>
+          {% set weekend = weekend_flags(cfg.sunday_first) %}
           {% for initial in day_initials(cfg.sunday_first) %}
-          <th{% if loop.index0 in (0, 6) %} class="we"{% endif %}>{{ initial }}</th>
+          <th{% if weekend[loop.index0] %} class="we"{% endif %}>{{ initial }}</th>
           {% endfor %}
         </tr></thead>
         <tbody>

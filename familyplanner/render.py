@@ -98,6 +98,7 @@ def build_environment() -> Environment:
     env.globals["compact_grid"] = calendars.compact_grid
     env.globals["day_names"] = calendars.day_names
     env.globals["day_initials"] = calendars.day_initials
+    env.globals["weekend_flags"] = calendars.weekend_flags
     env.globals["range"] = range
     env.globals["month_days"] = lambda year, month: monthrange(year, month)[1]
     env.globals["abbr"] = lambda text, n=3: str(text)[:n]

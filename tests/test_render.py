@@ -155,3 +155,16 @@ def test_same_config_renders_identical_html(cfg):
     first = render.render_html(cfg, render.plan_pages(cfg))
     second = render.render_html(config.load(None), render.plan_pages(config.load(None)))
     assert first == second
+
+
+@pytest.mark.parametrize("week_starts", ["sunday", "monday"])
+def test_annual_calendar_shades_saturday_and_sunday_headers(cfg, week_starts):
+    cfg.week_starts = week_starts
+    cfg.pages = ["annual_calendar"]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    head = re.search(r"<thead><tr>(.*?)</tr></thead>", html, re.S).group(1)
+    cells = re.findall(r'<th( class="we")?>(\w)</th>', head)
+    names = WEEK_NAMES[week_starts]
+    shaded = {names[i] for i, (we, _) in enumerate(cells) if we}
+    assert len(cells) == 7
+    assert shaded == {"Saturday", "Sunday"}
