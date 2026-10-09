@@ -168,3 +168,45 @@ def test_annual_calendar_shades_saturday_and_sunday_headers(cfg, week_starts):
     shaded = {names[i] for i, (we, _) in enumerate(cells) if we}
     assert len(cells) == 7
     assert shaded == {"Saturday", "Sunday"}
+
+
+# --- pages that name the family members ---------------------------------------
+
+def _page(cfg, slug):
+    cfg.pages = [slug]
+    return render.render_html(cfg, render.plan_pages(cfg))
+
+
+def test_year_end_uses_member_names(cfg):
+    cfg.members = ["Ana", "Ben", "<b>Cy</b>"]
+    html = _page(cfg, "year_end")
+    names = re.findall(r'<span class="loved-name">(.*?)</span>', html, re.S)
+    assert [n.strip() for n in names] == ["Ana", "Ben", "&lt;b&gt;Cy&lt;/b&gt;"]
+    for old in ("Mom", "Dad", "Child 1"):
+        assert f">{old}<" not in html
+
+
+@pytest.mark.parametrize("members", [[], ["", "", "", "", ""]])
+def test_year_end_without_names_leaves_blank_lines(cfg, members):
+    cfg.members = members
+    html = _page(cfg, "year_end")
+    cols = re.findall(r'<div class="loved-col">', html)
+    assert len(cols) == 5
+    assert "Mom" not in html and "Dad" not in html
+    assert len(re.findall(r'<span class="loved-name"><span class="solid-line">', html)) == 5
+
+
+def test_belongs_to_has_a_row_per_member(cfg):
+    cfg.members = [f"P{i}" for i in range(8)]
+    html = _page(cfg, "belongs_to")
+    assert html.count('class="belongs-member"') == 8
+    assert ">P7<" in html
+
+
+@pytest.mark.parametrize("members", [[], ["Ana", "Ben"]])
+def test_belongs_to_keeps_five_rows_at_least(cfg, members):
+    cfg.members = members
+    html = _page(cfg, "belongs_to")
+    assert html.count('class="belongs-member"') == 5
+    for name in members:
+        assert f">{name}<" in html
