@@ -210,3 +210,12 @@ def test_belongs_to_keeps_five_rows_at_least(cfg, members):
     assert html.count('class="belongs-member"') == 5
     for name in members:
         assert f">{name}<" in html
+
+
+def test_start_over_gives_the_default_member_rows():
+    """The editor's "Start over" matches the config's default member rows."""
+    from pathlib import Path
+    js = (Path(render.__file__).parent / "static" / "ui" / "ui.js").read_text(encoding="utf-8")
+    body = re.search(r"function newBook\(\) \{(.*?)\n\}", js, re.S).group(1)
+    rows = re.search(r"state\.members = \[(.*?)\];", body).group(1)
+    assert len(re.findall(r'""', rows)) == len(config.DEFAULT_CONFIG["members"])

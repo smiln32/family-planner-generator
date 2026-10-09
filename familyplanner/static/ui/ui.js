@@ -674,7 +674,7 @@ function paintForm() {
 function newBook() {
   state.family_name = "";
   state.cover_text = "";
-  state.members = ["", ""];
+  state.members = ["", "", "", "", ""];
   state.pages = [...meta.defaultPages];
   state.theme = "linen";
   state.palette = {};
