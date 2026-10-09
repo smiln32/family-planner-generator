@@ -159,3 +159,32 @@ def test_build_notes_an_unused_theme_flag(capsys, tmp_path):
     assert cli.main(["build", "--html-only", "--theme", "berry", "-o", str(tmp_path)]) == 0
     assert "theme 'berry' is not used" in capsys.readouterr().out
     assert themes.DEFAULT_THEME == "linen"
+
+
+def _flag_config(tmp_path, text, *flags):
+    plan = tmp_path / "family.yaml"
+    plan.write_text(text, encoding="utf-8")
+    args = cli.build_parser().parse_args(["build", "-c", str(plan), *flags])
+    return cli._resolve_config(args)
+
+
+@pytest.mark.parametrize("old", ["linen", "ocean", "berry"])
+def test_theme_flag_on_a_look_book_keeps_the_look_paper(tmp_path, old):
+    """`--theme` must not leave the old theme's colours behind as replacements."""
+    cfg = _flag_config(tmp_path, f"design: editorial\ntheme: {old}\n", "--theme", "blues")
+    printed = config.effective_palette(cfg)
+    assert printed["paper"] == designs.LOOKS["editorial"]["palette"]["paper"]
+    assert printed == config.base_palette("blues", "editorial")
+
+
+def test_theme_flag_on_a_blank_book_uses_the_new_theme(tmp_path):
+    cfg = _flag_config(tmp_path, "design: blank\ntheme: ocean\n", "--theme", "bold")
+    assert config.effective_palette(cfg) == config.theme_palette("bold")
+
+
+def test_theme_flag_keeps_colours_the_file_sets(tmp_path):
+    cfg = _flag_config(tmp_path, "design: editorial\ntheme: ocean\npalette:\n  navy: '#123456'\n",
+                       "--theme", "blues")
+    printed = config.effective_palette(cfg)
+    assert printed["navy"] == "#123456"
+    assert printed["paper"] == designs.LOOKS["editorial"]["palette"]["paper"]
