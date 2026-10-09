@@ -281,6 +281,12 @@ def _fonts_css(cfg: Config, font_base: str | None = None) -> str:
 def _run_browser(browser: Path, args: list[str], what: str) -> None:
     """Invoke headless Chromium with a scratch profile and surface failures."""
     with tempfile.TemporaryDirectory(prefix="planner-profile-") as profile:
+        # Two flags look risky but stay on purpose. --no-sandbox: Chromium
+        # will not start as root or inside many Linux and CI containers
+        # without it, and it only ever opens the HTML this app just wrote.
+        # --allow-file-access-from-files: the book loads its fonts from
+        # file:// URLs next to the HTML (see _fonts_css); without it those
+        # fonts can be blocked and the PDF falls back to system fonts.
         cmd = [
             str(browser),
             "--headless=new",
