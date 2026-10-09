@@ -263,9 +263,18 @@ Keep this file.
 """
 
 
+# A plan names its PDF from the year and family name. output_name is not
+# shown in the editor, so a saved one would quietly keep last year's file
+# name (or a friend's) after the year or name changed. It stays in family.yaml.
+PLAN_OUTPUT_NAME_NOTE = (
+    "# output_name is not saved in a plan. The PDF is named from the year and\n"
+    "# the family name. Set output_name in family.yaml if you need a fixed name.\n"
+)
+
+
 def render_plan_markdown(data: dict[str, Any]) -> str:
     dumped = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
-    return f"---\n{dumped}---\n\n{PLAN_NOTE}"
+    return f"---\n{dumped}{PLAN_OUTPUT_NAME_NOTE}---\n\n{PLAN_NOTE}"
 
 
 def parse_plan_text(text: str) -> dict[str, Any]:
@@ -539,7 +548,7 @@ def load(path: Path | None) -> Config:
         faces=check_fonts(fonts),
         members=check_str_list(data.get("members"), "members"),
         palette=palette,
-        months=_merge_months(data.get("months") or []),
+        months=merge_months(data.get("months") or []),
         pages=check_str_list(data.get("pages"), "pages") or list(DEFAULT_PAGES),
         page_size=normalize_page_size(data["page_size"]),
         output_name=str(data["output_name"] or ""),
@@ -576,11 +585,13 @@ def validate(cfg: Config) -> Config:
     return cfg
 
 
-def _merge_months(overrides: list[Any]) -> list[dict[str, str]]:
+def merge_months(overrides: Any) -> list[dict[str, str]]:
     """Overlay a partial months list onto the twelve defaults, by position."""
     months = copy.deepcopy(DEFAULT_MONTHS)
     if not overrides:
         return months
+    if not isinstance(overrides, (list, tuple)):
+        raise ConfigError("months must be a list")
     if len(overrides) > 12:
         raise ConfigError("months may not have more than 12 entries")
     for i, override in enumerate(overrides):

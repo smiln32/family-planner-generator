@@ -104,16 +104,16 @@ def test_real_font_names_accepted():
 
 def test_month_name_injection_rejected():
     with pytest.raises(ConfigError):
-        config._merge_months([{"name": 'Jan"><script>alert(1)</script>'}])
+        config.merge_months([{"name": 'Jan"><script>alert(1)</script>'}])
 
 
 def test_month_accent_must_be_palette_token():
     with pytest.raises(ConfigError):
-        config._merge_months([{"accent": "navy;background:url(x)"}])
+        config.merge_months([{"accent": "navy;background:url(x)"}])
 
 
 def test_accented_month_names_allowed():
-    months = config._merge_months([{"name": "Janvier"}, {"name": "Février"},
+    months = config.merge_months([{"name": "Janvier"}, {"name": "Février"},
                                    {"name": "Março"}])
     assert months[1]["name"] == "Février"
 

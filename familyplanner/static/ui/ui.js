@@ -685,6 +685,10 @@ function newBook() {
   state.week_starts = "sunday";
   state.page_size = "letter";
   state.type_size = { title: 30, cover: 66, body: 9, script: 13 };
+  state.title = meta.factory?.title ?? state.title;
+  state.subtitle = meta.factory?.subtitle ?? state.subtitle;
+  state.linked = false;
+  state.months = [];
   state.preview = "cover";
   paintForm();
   refresh();
