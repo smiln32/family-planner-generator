@@ -42,6 +42,15 @@ MAX_BODY = 1 << 20  # 1 MB is far more than any config payload needs.
 LOCAL_HOSTS = ("127.0.0.1", "localhost")
 
 
+class RequestError(Exception):
+    """A request the server cannot read. Answered with `status` and a plain message."""
+
+    def __init__(self, status: int, message: str) -> None:
+        super().__init__(message)
+        self.status = status
+        self.message = message
+
+
 def _config_from(payload: dict, base: Config) -> Config:
     """Build a Config from the UI's form state, on top of the loaded defaults."""
     cfg = replace(base)
@@ -113,21 +122,41 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, payload: dict, status: int = 200) -> None:
         self._send(status, json.dumps(payload).encode("utf-8"), "application/json")
 
+    def _content_length(self) -> int | None:
+        """The Content-Length header as a whole number, or None if it is not one."""
+        raw = (self.headers.get("Content-Length") or "0").strip()
+        if not raw.isdigit():
+            return None
+        return int(raw)
+
     def _read_json(self) -> dict:
-        length = int(self.headers.get("Content-Length") or 0)
-        if length <= 0 or length > MAX_BODY:
+        """The request body as a JSON object. Raises RequestError otherwise."""
+        length = self._content_length()
+        if length is None:
+            raise RequestError(400, "The request was not sent properly. Please try again.")
+        if length > MAX_BODY:
+            # Not read: a body this big is not from the planner's own page.
+            raise RequestError(413, "That request is too large.")
+        if length == 0:
             return {}
-        return json.loads(self.rfile.read(length) or b"{}")
+        try:
+            payload = json.loads(self.rfile.read(length))
+        except ValueError as exc:  # bad JSON, or bytes that are not text
+            raise RequestError(400, "The request was not valid JSON.") from exc
+        if not isinstance(payload, dict):
+            raise RequestError(400, "The request must be a set of settings, not a list or a value.")
+        return payload
 
     def _reject(self) -> None:
         """Answer 403, reading the body first so the reply gets through.
 
         Closing a socket with unread bytes makes Windows send a reset, and a
         client that sees the reset drops the reply it was about to read. An
-        oversized body is left alone; that sender gets the reset on purpose.
+        oversized body, or one with a length that is not a number, is left
+        alone; that sender gets the reset on purpose.
         """
-        length = int(self.headers.get("Content-Length") or 0)
-        if 0 < length <= MAX_BODY:
+        length = self._content_length()
+        if length is not None and 0 < length <= MAX_BODY:
             self.rfile.read(length)
         self._send(403, b"forbidden", "text/plain; charset=utf-8")
 
@@ -184,6 +213,10 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         try:
             payload = self._read_json()
+        except RequestError as exc:
+            self._json({"error": exc.message}, status=exc.status)
+            return
+        try:
             if path == "/api/preview":
                 self._preview(payload)
             elif path == "/api/build":

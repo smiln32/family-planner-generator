@@ -274,3 +274,59 @@ def test_own_page_allowed(api, host):
                                              "Host": f"{host}:{port}",
                                              "Origin": f"http://{host}:{port}"})
     assert status == 200
+
+
+# --- bad request bodies get a clear answer, not a crash ---------------------
+
+def _headers_only(api: str, path: str, length: str) -> tuple[int, bytes]:
+    """POST with a Content-Length header but no body, so nothing goes unread."""
+    import http.client
+    host, port = api.rsplit("//", 1)[1].split(":")
+    conn = http.client.HTTPConnection(host, int(port), timeout=10)
+    try:
+        conn.putrequest("POST", path, skip_accept_encoding=True)
+        conn.putheader("Content-Type", "application/json")
+        conn.putheader("Content-Length", length)
+        conn.endheaders()
+        resp = conn.getresponse()
+        return resp.status, resp.read()
+    finally:
+        conn.close()
+
+
+def test_oversized_body_gets_413(api):
+    status, body = _headers_only(api, "/api/export", str(server.MAX_BODY + 1))
+    assert status == 413
+    assert b"too large" in body
+
+
+@pytest.mark.parametrize("length", ["abc", "-5", "1.5"])
+def test_bad_content_length_gets_400(api, length):
+    status, body = _headers_only(api, "/api/export", length)
+    assert status == 400
+    assert b"error" in body
+
+
+@pytest.mark.parametrize("length", ["abc", "-5"])
+def test_rejected_request_with_bad_length_still_gets_403(api, length):
+    import http.client
+    port = int(api.rsplit(":", 1)[1])
+    conn = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+    try:
+        conn.putrequest("POST", "/api/export", skip_accept_encoding=True)
+        conn.putheader("Content-Type", "text/plain")
+        conn.putheader("Content-Length", length)
+        conn.endheaders()
+        assert conn.getresponse().status == 403
+    finally:
+        conn.close()
+
+
+@pytest.mark.parametrize("raw", [b"{not json", b"[1, 2, 3]", b'"text"', b"\xff\xfe"])
+def test_bad_json_gets_400(api, raw):
+    req = urllib.request.Request(f"{api}/api/export", data=raw,
+                                 headers={"Content-Type": "application/json"})
+    with pytest.raises(urllib.error.HTTPError) as exc:
+        urllib.request.urlopen(req, timeout=10)
+    assert exc.value.code == 400
+    assert "error" in json.loads(exc.value.read())
