@@ -1,4 +1,18 @@
-# Handoff, 2026-10-03
+# Handoff, 2026-10-09
+
+## Batch A fixes, 2026-10-09 (branch `batch-a-fixes`, not pushed)
+
+Small bug fixes, one commit each, every fix with a test. `python -m pytest`: 204 passed (159 before).
+
+- **Annual calendar:** the weekday header now shades Saturday and Sunday for both week starts (it shaded Monday and Sunday with `week_starts: monday`). No other template shaded weekends by position.
+- **`--theme`** rebuilds the palette from the new theme and keeps only the config file's own `palette:` block. Before, a theme without a paper colour (`bold`, `blues`) kept the old paper.
+- **Editor server:** a body over 1 MB gets 413; a bad Content-Length, JSON that does not parse, or JSON that is not an object gets 400 with a plain message (was 500 or a silent empty request). The 403 drain for Windows is kept.
+- **Plan files** now keep `months` (as changes from the built-in twelve), `title`, `subtitle` and `linked`. `output_name` is left out on purpose: it is not on the form, so a saved one would keep an old file name after the year or family name changed; the plan file says so in a comment. A bad typeface set name fails on export, and a plan with no `fonts:` opens in its look's own set instead of `elegant`.
+- **Pages:** the year-end page names the family members (five to a row, blank lines when there are none) instead of Mom/Dad/Child; Belongs To has one row per member, never fewer than five (two columns on the small sizes when more than five). Start over gives five member rows.
+- **Retired and Blank covers** render only the chosen variant; checked pixel for pixel against the old output.
+- **Typeface set `terracotta` renamed to `boho-brush`** (Tenor Sans, Caveat Brush, Mulish), so it is not mixed up with the Terracotta look, which uses `home-base`. `terracotta` still works as an alias in YAML, `--fonts`, plan files and the editor.
+- Not checked by hand in the editor yet; restart it before trying (see Environment notes).
+
 
 ## Sessions 2026-10-01 to 2026-10-03: look covers and colours
 
@@ -82,7 +96,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 
 ## Where everything lives
 
-- Repo root: `C:\Users\smiln\apps from Kingston\Apps just for me\family-planner-generator`
+- Repo root: the `family-planner-generator` folder on the owner's computer (the only clone; see Environment notes)
 - Remote: `git@github.com:smiln32/family-planner-generator.git` (SSH; see Environment notes)
 - Layer 0/1: `CLAUDE.md`, `CONTEXT.md`
 - Stage pipeline: `stages/01-intake/` → `02-customize/` → `03-build/` → `04-review/` (each has `CONTEXT.md`, `references/`, `output/`)
@@ -104,10 +118,10 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Meal plan and gratitude key each day's tint/glyph by name; the others keep their decorative colour runs positional |
 | Palette colour editor | Reworked 2026-10-02 so each look owns its colours and Undo restores cleared replacements (see the October section). Unit and API tests cover it (`tests/test_colour_source.py`); **not exercised by hand since the rework** |
 | Theme presets | Reworked 2026-09-28 so each named theme (`citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`, `forest`) actually matches its name; `slate` renamed to `blues`. See "Session 2026-09-28" above. Not hand-checked in the UI yet; do that alongside item 5 below |
-| Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), and `fonts --all` to download them. TYPE picker not hand-checked end to end |
+| Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), and `fonts --all` to download them. `terracotta` renamed `boho-brush` on 2026-10-09 (old name still accepted). TYPE picker not hand-checked end to end |
 | Thirteen looks (`editorial` to `coastal`) | In `main` since 2026-09-30, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
-| Security pass (validators, local API guard, clean CLI errors) | Done. The whole suite is 159 tests as of 2026-10-03, all passing |
+| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09. The whole suite is 204 tests as of 2026-10-09, all passing |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Retired 2026-09-30.** Replaced by the thirteen looks. `original` and `02`–`17` live in `designs.LEGACY`: still valid in a config, not offered in the picker, never finished |
 | Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
@@ -162,7 +176,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean. You should be on `main`, which has the thirteen looks.
+1. Read this file, then `git status`. It should be clean. The batch A fixes sit on the local branch `batch-a-fixes` until the owner pushes and merges them; `main` has everything before that.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
