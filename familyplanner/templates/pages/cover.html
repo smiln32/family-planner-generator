@@ -48,7 +48,12 @@
 {% include "look_cover.html" %}
 {% else %}
 {# Retired looks (original, 02-17, blank). Kept so old plan files still build. #}
+{# Only the chosen design's cover goes into the page. The CSS that hides the
+   other variants stays, so the printed cover looks exactly as before. #}
+{% set own_cover = look.base not in ["02", "03", "04", "05", "06", "07", "08", "09", "10",
+                                     "11", "12", "13", "14", "15", "16", "17"] %}
 <section class="page cover-page">
+  {% if own_cover %}
   <div class="cover-body">
     <div class="cover-side">
       {% for icon, colour, label in side_left %}
@@ -85,8 +90,10 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   {# Looks 02–10: family title pages. Retired and unfinished; kept for old plans and the layouts. See "Looks" in HANDOFF.md. #}
+  {% if look.base == "02" %}
   <article class="famcover famcover-02">
     <p class="fc02-meta">Household record · Keep this book</p>
     <div class="fc-box">
@@ -102,7 +109,9 @@
     </ol>
     {{ year_mark("fc-year") }}
   </article>
+  {% endif %}
 
+  {% if look.base == "03" %}
   <article class="famcover famcover-03">
     {# Look 03 flora. Quality not accepted. Do not iterate without a reference. #}
     <svg class="fc03-flora fc03-tl" viewBox="0 0 220 230" aria-hidden="true">
@@ -211,7 +220,9 @@
     {% if cfg.family_name %}<p class="fc-fam">The {{ cfg.family_name }} Family</p>{% endif %}
     {{ year_mark("fc-year") }}
   </article>
+  {% endif %}
 
+  {% if look.base == "04" %}
   <article class="famcover famcover-04">
     <div class="fc-dashes"><i></i><i></i><i></i><i></i></div>
     {{ year_mark("fc-year") }}
@@ -228,7 +239,9 @@
       <path d="M12 24c4 6 12 6 16 0" fill="none" stroke="#111" stroke-width="2"/>
     </svg>
   </article>
+  {% endif %}
 
+  {% if look.base == "05" %}
   <article class="famcover famcover-05">
     <p class="fc05-kicker">for this season</p>
     <h1>our year</h1>
@@ -242,7 +255,9 @@
       <section><h2>Gather</h2><i></i><i></i></section>
     </div>
   </article>
+  {% endif %}
 
+  {% if look.base == "06" %}
   <article class="famcover famcover-06">
     <div class="fc06-holes" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="fc06-field">
@@ -279,7 +294,9 @@
     </div>
     <p class="fc-motto">{{ cfg.subtitle }}</p>
   </article>
+  {% endif %}
 
+  {% if look.base == "07" %}
   <article class="famcover famcover-07">
     <p class="fc07-issue">Issue {{ cfg.year }}</p>
     <h1>Family</h1>
@@ -291,7 +308,9 @@
       {% endfor %}
     </ol>
   </article>
+  {% endif %}
 
+  {% if look.base == "08" %}
   <article class="famcover famcover-08">
     <div class="fc-stamp">
       <p class="fc08-post">Domestic mail</p>
@@ -307,7 +326,9 @@
       <path d="M18 40h84M18 80h84" stroke="currentColor" stroke-width="2"/>
     </svg>
   </article>
+  {% endif %}
 
+  {% if look.base == "09" %}
   <article class="famcover famcover-09">
     <p class="fc09-kicker">Planner</p>
     <h1>Family</h1>
@@ -319,7 +340,9 @@
       <li></li><li></li><li></li><li class="on"></li>
     </ul>
   </article>
+  {% endif %}
 
+  {% if look.base == "10" %}
   <article class="famcover famcover-10">
     <div class="fc10-frame">
       <p class="fc-orn">❀ · ❀ · ❀</p>
@@ -334,9 +357,11 @@
       <p class="fc-orn">❀</p>
     </div>
   </article>
+  {% endif %}
 
   {# Looks 11–17: the cover *is* that daily page. Original stack is hidden. #}
 
+  {% if look.base == "11" %}
   <article class="daily daily-11">
     <header class="d11-head">
       <div>
@@ -381,7 +406,9 @@
     </div>
     <footer class="d11-foot"><span></span>///<span></span></footer>
   </article>
+  {% endif %}
 
+  {% if look.base == "12" %}
   <article class="daily daily-12">
     <svg class="d12-flora d12-flora-tl" viewBox="0 0 120 120" aria-hidden="true">
       <ellipse cx="18" cy="70" rx="16" ry="28" fill="#C9D4B8" transform="rotate(-30 18 70)"/>
@@ -445,7 +472,9 @@
       </div>
     </div>
   </article>
+  {% endif %}
 
+  {% if look.base == "13" %}
   <article class="daily daily-13">
     <svg class="d13-sun" viewBox="0 0 64 40" aria-hidden="true">
       <path d="M8 32h48" stroke="#C4785A" stroke-width="2" fill="none"/>
@@ -504,7 +533,9 @@
       <path d="M28 48c0-10 8-18 20-18s20 8 20 18" fill="none" stroke="#8A9E7E" stroke-width="7"/>
     </svg>
   </article>
+  {% endif %}
 
+  {% if look.base == "14" %}
   <article class="daily daily-14">
     <div class="d14-tape d14-tape-a"></div>
     <div class="d14-tape d14-tape-b"></div>
@@ -557,7 +588,9 @@
       <path d="M0 40 V18 Q 25 0 50 18 T 100 18 T 150 18 T 200 18 T 250 18 T 300 18 T 350 18 T 400 18 T 450 18 T 500 18 T 550 18 T 600 18 T 650 18 T 700 18 T 750 18 T 800 18 V40 Z" fill="#7AB8C8"/>
     </svg>
   </article>
+  {% endif %}
 
+  {% if look.base == "15" %}
   <article class="daily daily-15">
     <svg class="d15-bolt" viewBox="0 0 28 44" aria-hidden="true"><path d="M16 0 2 24h12L8 44l20-28H16z" fill="#111"/></svg>
     <svg class="d15-face" viewBox="0 0 36 36" aria-hidden="true">
@@ -606,7 +639,9 @@
       </div>
     </div>
   </article>
+  {% endif %}
 
+  {% if look.base == "16" %}
   <article class="daily daily-16">
     <svg class="d16-blob d16-blob-tl" viewBox="0 0 160 120" aria-hidden="true">
       <path d="M0 80c20-50 70-90 120-70 10 40-20 70-70 90C20 110 0 100 0 80z" fill="#C5D4B8"/>
@@ -670,7 +705,9 @@
       <span>{{ ico("leaf") }}</span>
     </footer>
   </article>
+  {% endif %}
 
+  {% if look.base == "17" %}
   <article class="daily daily-17">
     <header class="d17-head">
       {{ ico("sun") }}
@@ -711,7 +748,9 @@
     </section>
     <footer class="d17-foot">Slow down. You're doing better than you think. ♡</footer>
   </article>
+  {% endif %}
 
+  {% if own_cover %}
   <svg class="cover-scene" viewBox="0 0 620 452" preserveAspectRatio="xMidYMid meet"
        role="img" aria-label="A family planning together at a table">
     <rect x="0" y="0" width="620" height="330" fill="#F4FBFF"/>
@@ -804,5 +843,6 @@
     </div>
     {% endfor %}
   </div>
+  {% endif %}
 </section>
 {% endif %}
