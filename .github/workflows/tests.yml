@@ -41,5 +41,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt "pytest>=8"
 
+      # The cover-fit test prints each look in its own typefaces. The font
+      # files are not in the repo (see .gitignore), so fetch them from Google
+      # Fonts with the app's own downloader. A failed download fails here,
+      # rather than letting those tests skip without anyone noticing.
+      - name: Download the looks' typefaces
+        run: python planner.py fonts --looks
+
       - name: Run tests
         run: python -m pytest -rs
