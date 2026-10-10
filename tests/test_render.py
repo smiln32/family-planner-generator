@@ -155,3 +155,67 @@ def test_same_config_renders_identical_html(cfg):
     first = render.render_html(cfg, render.plan_pages(cfg))
     second = render.render_html(config.load(None), render.plan_pages(config.load(None)))
     assert first == second
+
+
+@pytest.mark.parametrize("week_starts", ["sunday", "monday"])
+def test_annual_calendar_shades_saturday_and_sunday_headers(cfg, week_starts):
+    cfg.week_starts = week_starts
+    cfg.pages = ["annual_calendar"]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    head = re.search(r"<thead><tr>(.*?)</tr></thead>", html, re.S).group(1)
+    cells = re.findall(r'<th( class="we")?>(\w)</th>', head)
+    names = WEEK_NAMES[week_starts]
+    shaded = {names[i] for i, (we, _) in enumerate(cells) if we}
+    assert len(cells) == 7
+    assert shaded == {"Saturday", "Sunday"}
+
+
+# --- pages that name the family members ---------------------------------------
+
+def _page(cfg, slug):
+    cfg.pages = [slug]
+    return render.render_html(cfg, render.plan_pages(cfg))
+
+
+def test_year_end_uses_member_names(cfg):
+    cfg.members = ["Ana", "Ben", "<b>Cy</b>"]
+    html = _page(cfg, "year_end")
+    names = re.findall(r'<span class="loved-name">(.*?)</span>', html, re.S)
+    assert [n.strip() for n in names] == ["Ana", "Ben", "&lt;b&gt;Cy&lt;/b&gt;"]
+    for old in ("Mom", "Dad", "Child 1"):
+        assert f">{old}<" not in html
+
+
+@pytest.mark.parametrize("members", [[], ["", "", "", "", ""]])
+def test_year_end_without_names_leaves_blank_lines(cfg, members):
+    cfg.members = members
+    html = _page(cfg, "year_end")
+    cols = re.findall(r'<div class="loved-col">', html)
+    assert len(cols) == 5
+    assert "Mom" not in html and "Dad" not in html
+    assert len(re.findall(r'<span class="loved-name"><span class="solid-line">', html)) == 5
+
+
+def test_belongs_to_has_a_row_per_member(cfg):
+    cfg.members = [f"P{i}" for i in range(8)]
+    html = _page(cfg, "belongs_to")
+    assert html.count('class="belongs-member"') == 8
+    assert ">P7<" in html
+
+
+@pytest.mark.parametrize("members", [[], ["Ana", "Ben"]])
+def test_belongs_to_keeps_five_rows_at_least(cfg, members):
+    cfg.members = members
+    html = _page(cfg, "belongs_to")
+    assert html.count('class="belongs-member"') == 5
+    for name in members:
+        assert f">{name}<" in html
+
+
+def test_start_over_gives_the_default_member_rows():
+    """The editor's "Start over" matches the config's default member rows."""
+    from pathlib import Path
+    js = (Path(render.__file__).parent / "static" / "ui" / "ui.js").read_text(encoding="utf-8")
+    body = re.search(r"function newBook\(\) \{(.*?)\n\}", js, re.S).group(1)
+    rows = re.search(r"state\.members = \[(.*?)\];", body).group(1)
+    assert len(re.findall(r'""', rows)) == len(config.DEFAULT_CONFIG["members"])

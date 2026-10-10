@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -263,9 +264,18 @@ Keep this file.
 """
 
 
+# A plan names its PDF from the year and family name. output_name is not
+# shown in the editor, so a saved one would quietly keep last year's file
+# name (or a friend's) after the year or name changed. It stays in family.yaml.
+PLAN_OUTPUT_NAME_NOTE = (
+    "# output_name is not saved in a plan. The PDF is named from the year and\n"
+    "# the family name. Set output_name in family.yaml if you need a fixed name.\n"
+)
+
+
 def render_plan_markdown(data: dict[str, Any]) -> str:
     dumped = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
-    return f"---\n{dumped}---\n\n{PLAN_NOTE}"
+    return f"---\n{dumped}{PLAN_OUTPUT_NAME_NOTE}---\n\n{PLAN_NOTE}"
 
 
 def parse_plan_text(text: str) -> dict[str, Any]:
@@ -409,6 +419,74 @@ def check_str_list(raw: Any, name: str) -> list[str]:
     return [str(item) for item in raw]
 
 
+# Longest text each typed field may hold. Generous on purpose: a real family
+# never gets near them, but a pasted paragraph would spill off the page.
+#   family_name  60  "The ___ Family" on covers, file names, page titles
+#   title        80  one cover headline; the default is 22 characters
+#   subtitle    120  one motto line; the default is 48 characters
+#   cover_text   80  printed in the year's place on the cover
+#   output_name 120  same as the cap safe_stem already puts on file names
+TEXT_LIMITS: dict[str, int] = {
+    "family_name": 60,
+    "title": 80,
+    "subtitle": 120,
+    "cover_text": 80,
+    "output_name": 120,
+}
+TEXT_LABELS: dict[str, str] = {
+    "family_name": "Family name",
+    "title": "Title",
+    "subtitle": "Subtitle",
+    "cover_text": "Extra cover line",
+    "output_name": "Output name",
+}
+# One name on a tracker row or a Belongs To line.
+MEMBER_NAME_LIMIT = 40
+# Month name matches _MONTH_NAME_RE (30); tagline and footer are one line each.
+MONTH_TEXT_LIMITS: dict[str, int] = {
+    "name": 30, "accent": 20, "motif": 40, "tagline": 120, "footer": 120,
+}
+
+# Tabs, line breaks and the Unicode line and paragraph separators become a
+# space; every other control character is dropped. Text prints on one line.
+_SPACE_LIKE = {"\t", "\n", "\r", "\v", "\f", " ", " ", "\x85"}
+
+
+def clean_text(raw: Any) -> str:
+    """`raw` as one line of printable text (None becomes an empty string)."""
+    if raw is None:
+        return ""
+    out = []
+    for ch in str(raw):
+        if ch in _SPACE_LIKE:
+            out.append(" ")
+        elif unicodedata.category(ch) != "Cc":
+            out.append(ch)
+    return "".join(out)
+
+
+def check_text(raw: Any, label: str, limit: int) -> str:
+    """Clean `raw` and refuse it when it is longer than `limit` characters."""
+    text = clean_text(raw)
+    if len(text) > limit:
+        raise ConfigError(
+            f"{label} is too long ({len(text)} characters). "
+            f"Please keep it to {limit} or fewer."
+        )
+    return text
+
+
+def check_field_text(name: str, raw: Any) -> str:
+    """check_text for one of the TEXT_LIMITS fields, by its config key."""
+    return check_text(raw, TEXT_LABELS[name], TEXT_LIMITS[name])
+
+
+def check_members(raw: Any) -> list[str]:
+    """The members list, each name cleaned and within MEMBER_NAME_LIMIT."""
+    return [check_text(name, f"Name {i} under People", MEMBER_NAME_LIMIT)
+            for i, name in enumerate(check_str_list(raw, "members"), start=1)]
+
+
 @dataclass
 class Config:
     year: int
@@ -525,24 +603,24 @@ def load(path: Path | None) -> Config:
 
     return Config(
         year=check_year(data["year"]),
-        title=str(data["title"]),
-        subtitle=str(data["subtitle"]),
-        family_name=str(data["family_name"] or ""),
+        title=check_field_text("title", data["title"]),
+        subtitle=check_field_text("subtitle", data["subtitle"]),
+        family_name=check_field_text("family_name", data["family_name"]),
         week_starts=check_week_starts(data["week_starts"]),
         dated_months=bool(data["dated_months"]),
         cover_year=check_cover_year(data.get("cover_year")),
-        cover_text=str(data.get("cover_text") or ""),
+        cover_text=check_field_text("cover_text", data.get("cover_text")),
         linked=bool(data.get("linked", False)),
         theme=theme,
         design=design,
         type_size=check_type_size(data.get("type_size")),
         faces=check_fonts(fonts),
-        members=check_str_list(data.get("members"), "members"),
+        members=check_members(data.get("members")),
         palette=palette,
-        months=_merge_months(data.get("months") or []),
+        months=merge_months(data.get("months") or []),
         pages=check_str_list(data.get("pages"), "pages") or list(DEFAULT_PAGES),
         page_size=normalize_page_size(data["page_size"]),
-        output_name=str(data["output_name"] or ""),
+        output_name=check_field_text("output_name", data["output_name"]),
         source=path,
         palette_set=palette_set,
     )
@@ -562,11 +640,10 @@ def validate(cfg: Config) -> Config:
     cfg.type_size = check_type_size(cfg.type_size)
     cfg.faces = check_fonts(cfg.faces.preset or cfg.faces.roles)
     cfg.page_size = normalize_page_size(cfg.page_size)
-    cfg.members = check_str_list(cfg.members, "members")
+    cfg.members = check_members(cfg.members)
     cfg.pages = check_str_list(cfg.pages, "pages") or list(DEFAULT_PAGES)
-    cfg.family_name = str(cfg.family_name or "")
-    cfg.cover_text = str(cfg.cover_text or "")
-    cfg.output_name = str(cfg.output_name or "")
+    for name in TEXT_LIMITS:
+        setattr(cfg, name, check_field_text(name, getattr(cfg, name)))
 
     palette = dict(DEFAULT_PALETTE)
     palette.update(sanitize_palette(cfg.palette))
@@ -576,11 +653,13 @@ def validate(cfg: Config) -> Config:
     return cfg
 
 
-def _merge_months(overrides: list[Any]) -> list[dict[str, str]]:
+def merge_months(overrides: Any) -> list[dict[str, str]]:
     """Overlay a partial months list onto the twelve defaults, by position."""
     months = copy.deepcopy(DEFAULT_MONTHS)
     if not overrides:
         return months
+    if not isinstance(overrides, (list, tuple)):
+        raise ConfigError("months must be a list")
     if len(overrides) > 12:
         raise ConfigError("months may not have more than 12 entries")
     for i, override in enumerate(overrides):
@@ -601,6 +680,11 @@ def _check_months(months: list[dict[str, str]]) -> list[dict[str, str]]:
         raise ConfigError("months must describe exactly twelve months")
     seen: set[str] = set()
     for i, month in enumerate(months):
+        # Labelled by position, since the name itself may be what is wrong.
+        where = DEFAULT_MONTHS[i]["name"]
+        for key, limit in MONTH_TEXT_LIMITS.items():
+            if key in month:
+                month[key] = check_text(month[key], f"The {where} {key}", limit)
         name = str(month.get("name", "")).strip()
         if not _MONTH_NAME_RE.fullmatch(name):
             raise ConfigError(

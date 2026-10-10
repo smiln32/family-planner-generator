@@ -80,13 +80,17 @@
         <span style="color:{{ p.green }}">What We Loved Most About Each Other</span>
         <svg class="ico" style="fill:{{ p.green }}"><use href="#i-heart"/></svg>
       </div>
-      <div class="loved-cols">
-        {% for label, colour in [("Mom", "pink"), ("Dad", "blue"), ("Child 1", "green"),
-                                 ("Child 2", "purple"), ("Other", "orange")] %}
-        <div class="loved-col">
+      {# One column per family member, five to a row; a blank line to write a
+         name on when none is set. A second row of people gets shorter lines. #}
+      {% set people = cfg.members or ["", "", "", "", ""] %}
+      {% set per_row = [people|length, 5]|min %}
+      <div class="loved-cols"{% if per_row != 5 %} style="grid-template-columns:repeat({{ per_row }}, 1fr)"{% endif %}>
+        {% for name in people %}
+        {% set colour = ["pink", "blue", "green", "purple", "orange"][loop.index0 % 5] %}
+        <div class="loved-col"{% if loop.index0 >= 5 and loop.index0 % 5 == 0 %} style="border-left:0;padding-left:0"{% endif %}>
           <svg class="ico" style="fill:{{ p[colour] }}"><use href="#i-heart"/></svg>
-          <span class="loved-name">{{ label }}</span>
-          {{ lines(4, solid=true) }}
+          <span class="loved-name">{% if name %}{{ name }}{% else %}<span class="solid-line"></span>{% endif %}</span>
+          {{ lines(4 if people|length <= 5 else 2, solid=true) }}
         </div>
         {% endfor %}
       </div>

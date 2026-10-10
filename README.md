@@ -166,7 +166,9 @@ just its pink. A `palette:` block also replaces single colours on any look.
 Forty typeface sets ship with the generator: six general ones, in the table
 below, and two suggested pairings for each page look. Each fills three roles:
 `display` (chunky headings), `script` (handwritten lines) and `body`
-(everything else).
+(everything else). The set once called `terracotta` is now `boho-brush`, so
+it is not mixed up with the Terracotta look; old files that say
+`fonts: terracotta` still work.
 
 ```
 python planner.py typefaces                    # see the sets

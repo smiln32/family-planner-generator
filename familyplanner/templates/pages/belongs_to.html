@@ -43,12 +43,19 @@
   <div class="grid cols-2 belongs-mid">
     <div class="card has-tab" style="--c:{{ p.teal }}">
       <div class="card-tab">{{ ico("users") }} Family Members</div>
-      {% for _ in range(5) %}
-      <div class="belongs-member">
-        {{ chip("heart", ["teal", "pink", "orange", "green", "purple"][loop.index0], "", ".22in") }}
+      {# One row per family member, and never fewer than five to write on. #}
+      {% set people = cfg.members + [""] * (5 - cfg.members|length) %}
+      {# More than five rows only fit a smaller page in two columns. #}
+      {% set two_cols = people|length > 5 and cfg.page_size != "letter" %}
+      {% if two_cols %}<div style="flex:1 1 auto;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat({{ (people|length + 1) // 2 }}, 1fr);column-gap:0.12in">{% endif %}
+      {% for name in people %}
+      <div class="belongs-member"{% if two_cols %} style="min-width:0"{% endif %}>
+        {{ chip("heart", ["teal", "pink", "orange", "green", "purple"][loop.index0 % 5], "", ".22in") }}
+        {% if name %}<span class="member-name">{{ name }}</span>{% endif %}
         <span class="dot-line"></span>
       </div>
       {% endfor %}
+      {% if two_cols %}</div>{% endif %}
     </div>
     <div class="card has-tab" style="--c:{{ p.pink }}">
       <div class="card-tab">{{ ico("calendar") }} About This Book</div>

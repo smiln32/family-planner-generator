@@ -76,3 +76,61 @@ def test_look_fonts_default_from_file(tmp_path):
 def test_italic_slug():
     assert typefaces.slug("Bodoni Moda", 400, italic=True) == "bodoni-moda-400i.woff2"
     assert typefaces.slug("Bodoni Moda", 400) == "bodoni-moda-400.woff2"
+
+
+COVER_PARTS = ["cover-body", "cover-scene", "cover-feet",
+               *[f"famcover-{n:02d}" for n in range(2, 11)],
+               *[f"daily-{n}" for n in range(11, 18)]]
+
+
+@pytest.mark.parametrize("design, wanted", [
+    ("original", {"cover-body", "cover-scene", "cover-feet"}),
+    ("blank", {"cover-body", "cover-scene", "cover-feet"}),
+    ("02", {"famcover-02"}),
+    ("07", {"famcover-07"}),
+    ("10", {"famcover-10"}),
+    ("11", {"daily-11"}),
+    ("17", {"daily-17"}),
+])
+def test_retired_and_blank_covers_render_only_their_own_variant(cfg, design, wanted):
+    import re
+    cfg.design = design
+    cfg.pages = ["cover"]
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    body = html.split("<body", 1)[1]
+    found = {part for part in COVER_PARTS
+             if re.search(rf'class="[^"]*\b{part}\b', body)}
+    assert found == wanted
+
+
+# --- the typeface set once called "terracotta" ---------------------------------
+
+def test_renamed_set_is_listed_under_its_new_name():
+    assert "boho-brush" in typefaces.names()
+    assert "terracotta" not in typefaces.names()
+    assert "terracotta" not in typefaces.PRESETS
+
+
+def test_old_set_name_still_resolves(tmp_path):
+    faces = typefaces.resolve("terracotta")
+    assert faces.preset == "boho-brush"
+    assert faces.roles == {"display": "Tenor Sans", "script": "Caveat Brush", "body": "Mulish"}
+    plan = tmp_path / "family.yaml"
+    plan.write_text("fonts: terracotta\n", encoding="utf-8")
+    assert config.load(plan).faces.preset == "boho-brush"
+
+
+def test_old_set_name_works_on_the_command_line(tmp_path):
+    from familyplanner import cli
+    args = cli.build_parser().parse_args(["build", "--fonts", "Terracotta"])
+    assert cli._resolve_config(args).faces.preset == "boho-brush"
+
+
+def test_old_plan_file_with_old_set_name_still_opens():
+    from familyplanner import server
+    handler = type("H", (server.Handler,), {"base_config": config.load(None), "out_dir": "."})
+    out = handler.__new__(handler)
+    plan = "---\ndesign: editorial\nfonts: terracotta\n---\n\n# Family Success Planner\n"
+    config_out = out._plan_fields({**config.parse_plan_text(plan)})
+    assert config_out["fonts"] == "boho-brush"
+    assert server._config_from({"fonts": "terracotta"}, config.load(None)).faces.preset == "boho-brush"

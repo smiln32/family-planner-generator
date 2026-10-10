@@ -432,7 +432,8 @@ function renderMembers() {
     const dot = el("span", "dot");
     dot.style.background = MEMBER_DOTS[index % MEMBER_DOTS.length];
     const input = el("input");
-    Object.assign(input, { type: "text", value, placeholder: "Maya" });
+    // Same limit as config.MEMBER_NAME_LIMIT.
+    Object.assign(input, { type: "text", value, placeholder: "Maya", maxLength: 40 });
     input.setAttribute("aria-label", `Name ${index + 1}`);
     input.addEventListener("input", () => { state.members[index] = input.value; });
     input.addEventListener("change", refresh);
@@ -674,7 +675,7 @@ function paintForm() {
 function newBook() {
   state.family_name = "";
   state.cover_text = "";
-  state.members = ["", ""];
+  state.members = ["", "", "", "", ""];
   state.pages = [...meta.defaultPages];
   state.theme = "linen";
   state.palette = {};
@@ -685,6 +686,10 @@ function newBook() {
   state.week_starts = "sunday";
   state.page_size = "letter";
   state.type_size = { title: 30, cover: 66, body: 9, script: 13 };
+  state.title = meta.factory?.title ?? state.title;
+  state.subtitle = meta.factory?.subtitle ?? state.subtitle;
+  state.linked = false;
+  state.months = [];
   state.preview = "cover";
   paintForm();
   refresh();

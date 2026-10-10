@@ -46,16 +46,16 @@ def _resolve_config(args: argparse.Namespace) -> Config:
             raise ConfigError(str(exc).strip("\"'")) from exc
     if getattr(args, "theme", None):
         try:
-            preset = themes.resolve(args.theme)
+            themes.resolve(args.theme)
         except KeyError as exc:
             raise ConfigError(str(exc).strip("\"'")) from exc
         cfg.theme = args.theme.lower()
-        cfg.palette.update(preset)
-        # A palette block in the config file still outranks the flag.
-        if cfg.source is not None:
-            import yaml
-            own = (yaml.safe_load(cfg.source.read_text(encoding="utf-8")) or {})
-            cfg.palette.update(config.sanitize_palette(own.get("palette")))
+        # Start again from the new theme, so a colour the old theme set and
+        # the new one leaves out (bold and blues have no paper) does not stay
+        # behind looking like a colour someone chose. Only the config file's
+        # own `palette:` block (cfg.palette_set) outranks the flag.
+        cfg.palette = config.theme_palette(cfg.theme)
+        cfg.palette.update(cfg.palette_set)
     if getattr(args, "design", None):
         try:
             cfg.design = designs.resolve(args.design)

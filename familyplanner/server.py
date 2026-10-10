@@ -42,6 +42,15 @@ MAX_BODY = 1 << 20  # 1 MB is far more than any config payload needs.
 LOCAL_HOSTS = ("127.0.0.1", "localhost")
 
 
+class RequestError(Exception):
+    """A request the server cannot read. Answered with `status` and a plain message."""
+
+    def __init__(self, status: int, message: str) -> None:
+        super().__init__(message)
+        self.status = status
+        self.message = message
+
+
 def _config_from(payload: dict, base: Config) -> Config:
     """Build a Config from the UI's form state, on top of the loaded defaults."""
     cfg = replace(base)
@@ -64,6 +73,15 @@ def _config_from(payload: dict, base: Config) -> Config:
         cfg.members = config.check_str_list(payload["members"], "members")
     if "pages" in payload and payload["pages"]:
         cfg.pages = config.check_str_list(payload["pages"], "pages")
+    # Not on the form, but carried in plan files; the editor passes them back.
+    if "title" in payload:
+        cfg.title = str(payload["title"] or "")
+    if "subtitle" in payload:
+        cfg.subtitle = str(payload["subtitle"] or "")
+    if "linked" in payload:
+        cfg.linked = bool(payload["linked"])
+    if "months" in payload:
+        cfg.months = config.merge_months(payload["months"])
 
     cfg.theme = config.check_theme(payload.get("theme"))
     # The UI sends only the colours someone replaced; the look or theme
@@ -83,11 +101,30 @@ def _config_from(payload: dict, base: Config) -> Config:
 
 
 def _fonts_for_save(value) -> str | dict:
-    """Preserve a custom {display, script, body} trio; otherwise a preset name."""
+    """Preserve a custom {display, script, body} trio; otherwise a preset name.
+
+    Both go through the same check as everywhere else, so a bad set name
+    fails on export instead of writing a plan that will not open.
+    """
+    faces = config.check_fonts(value or typefaces.DEFAULT_SET)
     if isinstance(value, dict):
-        faces = config.check_fonts(value)
         return {"display": faces.display, "script": faces.script, "body": faces.body}
-    return str(value or typefaces.DEFAULT_SET)
+    return faces.preset
+
+
+def _months_for_save(value) -> list[dict]:
+    """Only what differs from the built-in months, so a plan stays short.
+
+    An empty mapping keeps a month as it is; trailing ones are dropped.
+    """
+    months = config.merge_months(value)
+    changes = [
+        {key: text for key, text in month.items() if default.get(key) != text}
+        for month, default in zip(months, config.DEFAULT_MONTHS)
+    ]
+    while changes and not changes[-1]:
+        changes.pop()
+    return changes
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -113,21 +150,41 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, payload: dict, status: int = 200) -> None:
         self._send(status, json.dumps(payload).encode("utf-8"), "application/json")
 
+    def _content_length(self) -> int | None:
+        """The Content-Length header as a whole number, or None if it is not one."""
+        raw = (self.headers.get("Content-Length") or "0").strip()
+        if not raw.isdigit():
+            return None
+        return int(raw)
+
     def _read_json(self) -> dict:
-        length = int(self.headers.get("Content-Length") or 0)
-        if length <= 0 or length > MAX_BODY:
+        """The request body as a JSON object. Raises RequestError otherwise."""
+        length = self._content_length()
+        if length is None:
+            raise RequestError(400, "The request was not sent properly. Please try again.")
+        if length > MAX_BODY:
+            # Not read: a body this big is not from the planner's own page.
+            raise RequestError(413, "That request is too large.")
+        if length == 0:
             return {}
-        return json.loads(self.rfile.read(length) or b"{}")
+        try:
+            payload = json.loads(self.rfile.read(length))
+        except ValueError as exc:  # bad JSON, or bytes that are not text
+            raise RequestError(400, "The request was not valid JSON.") from exc
+        if not isinstance(payload, dict):
+            raise RequestError(400, "The request must be a set of settings, not a list or a value.")
+        return payload
 
     def _reject(self) -> None:
         """Answer 403, reading the body first so the reply gets through.
 
         Closing a socket with unread bytes makes Windows send a reset, and a
         client that sees the reset drops the reply it was about to read. An
-        oversized body is left alone; that sender gets the reset on purpose.
+        oversized body, or one with a length that is not a number, is left
+        alone; that sender gets the reset on purpose.
         """
-        length = int(self.headers.get("Content-Length") or 0)
-        if 0 < length <= MAX_BODY:
+        length = self._content_length()
+        if length is not None and 0 < length <= MAX_BODY:
             self.rfile.read(length)
         self._send(403, b"forbidden", "text/plain; charset=utf-8")
 
@@ -184,6 +241,10 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         try:
             payload = self._read_json()
+        except RequestError as exc:
+            self._json({"error": exc.message}, status=exc.status)
+            return
+        try:
             if path == "/api/preview":
                 self._preview(payload)
             elif path == "/api/build":
@@ -225,6 +286,10 @@ class Handler(BaseHTTPRequestHandler):
                 },
                 "design": cfg.design,
                 "type_size": cfg.type_size,
+                "title": cfg.title,
+                "subtitle": cfg.subtitle,
+                "linked": cfg.linked,
+                "months": _months_for_save(cfg.months),
                 "palette": config.palette_overrides(
                     cfg.theme, config.effective_palette(cfg), cfg.design),
             },
@@ -272,6 +337,9 @@ class Handler(BaseHTTPRequestHandler):
                           for slug, title in catalogue.items()],
             "months": [m["name"] for m in cfg.months],
             "defaultPages": config.DEFAULT_PAGES,
+            # What "Start over" puts back for the settings that are not on the form.
+            "factory": {"title": config.DEFAULT_CONFIG["title"],
+                        "subtitle": config.DEFAULT_CONFIG["subtitle"]},
             "pageSizes": [
                 {"id": name, "label": config.PAGE_SIZE_LABELS[name],
                  "width": size[0], "height": size[1]}
@@ -309,23 +377,29 @@ class Handler(BaseHTTPRequestHandler):
         })
 
     def _plan_fields(self, payload: dict) -> dict:
+        base = self.base_config
         body = {
-            "year": config.check_year(payload.get("year", self.base_config.year)),
-            "family_name": str(payload.get("family_name") or ""),
+            "year": config.check_year(payload.get("year", base.year)),
+            "family_name": config.check_field_text("family_name", payload.get("family_name")),
             "week_starts": config.check_week_starts(payload.get("week_starts")),
             "dated_months": bool(payload.get("dated_months", True)),
             "cover_year": config.check_cover_year(payload.get("cover_year")),
-            "cover_text": str(payload.get("cover_text") or ""),
+            "cover_text": config.check_field_text("cover_text", payload.get("cover_text")),
             "page_size": config.normalize_page_size(payload.get("page_size", "letter")),
-            "members": config.check_str_list(payload.get("members"), "members"),
+            "members": config.check_members(payload.get("members")),
             "theme": config.check_theme(payload.get("theme")),
             "fonts": _fonts_for_save(payload.get("fonts")),
             "design": config.check_design(payload.get("design") or designs.DEFAULT_DESIGN),
             "type_size": config.check_type_size(payload.get("type_size")),
             "pages": config.check_str_list(payload.get("pages"), "pages"),
+            "title": config.check_field_text("title", payload.get("title", base.title)),
+            "subtitle": config.check_field_text("subtitle", payload.get("subtitle", base.subtitle)),
+            "linked": bool(payload.get("linked", base.linked)),
+            "months": _months_for_save(payload.get("months", base.months)),
         }
         body["palette"] = config.palette_overrides(
             body["theme"], payload.get("palette"), body["design"])
+        # output_name is left out on purpose (see config.PLAN_OUTPUT_NAME_NOTE).
         return body
 
     def _export(self, payload: dict) -> None:
@@ -347,13 +421,21 @@ class Handler(BaseHTTPRequestHandler):
             "page_size": "letter",
             "members": [],
             "theme": themes.DEFAULT_THEME,
-            "fonts": typefaces.DEFAULT_SET,
             "design": designs.DEFAULT_DESIGN,
             "type_size": {},
             "pages": list(config.DEFAULT_PAGES),
             "palette": {},
+            "title": config.DEFAULT_CONFIG["title"],
+            "subtitle": config.DEFAULT_CONFIG["subtitle"],
+            "linked": False,
+            "months": [],
         }
-        self._json({"config": self._plan_fields({**seed, **loaded})})
+        merged = {**seed, **loaded}
+        # A plan that names no lettering is set in its look's own typefaces.
+        if not merged.get("fonts"):
+            design = config.check_design(merged.get("design") or designs.DEFAULT_DESIGN)
+            merged["fonts"] = designs.look_fonts(design) or typefaces.DEFAULT_SET
+        self._json({"config": self._plan_fields(merged)})
 
     def _open(self, payload: dict) -> None:
         """Open a PDF this session wrote, in the computer's usual reader."""

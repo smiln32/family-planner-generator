@@ -128,8 +128,9 @@ PRESETS: dict[str, dict[str, str]] = {
     "garden-party": {"display": "Lora", "script": "Dancing Script", "body": "Quicksand"},
     "wildflower": {"display": "Amatic SC", "script": "Caveat", "body": "Nunito"},
 
-    # Look 13 (Boho earth) pairings.
-    "terracotta": {"display": "Tenor Sans", "script": "Caveat Brush", "body": "Mulish"},
+    # Look 13 (Boho earth) pairings. boho-brush was called "terracotta",
+    # which read as the terracotta look's set (that look uses home-base).
+    "boho-brush": {"display": "Tenor Sans", "script": "Caveat Brush", "body": "Mulish"},
     "desert-sun": {"display": "Yeseva One", "script": "Reenie Beanie", "body": "Karla"},
 
     # Look 14 (Scrapbook) pairings.
@@ -149,8 +150,8 @@ PRESETS: dict[str, dict[str, str]] = {
     "blush-and-stone": {"display": "Jost", "script": "Allura", "body": "Jost"},
 }
 
-# Old config files that still name retired sets.
-_ALIASES = {"rounded": "italics", "bubbly": "playful"}
+# Old config files and plans that still name retired or renamed sets.
+_ALIASES = {"rounded": "italics", "bubbly": "playful", "terracotta": "boho-brush"}
 
 DEFAULT_SET = "elegant"
 
