@@ -138,3 +138,27 @@ def test_zoom_label_matches_the_script():
     match = re.search(r'id="zoom-level"[^>]*>\s*([^<]+?)\s*<', HTML)
     assert match, "no starting text in #zoom-level"
     assert f'"{match.group(1)}"' in JS
+
+
+# --- the year on the cover row ----------------------------------------------------
+
+def _row_classes(field_id: str) -> str:
+    """The class list of the .field-row that holds the field's label."""
+    match = re.search(rf'<div class="([^"]*)"[^>]*>\s*<label for="{field_id}"', HTML)
+    assert match, f"no field row for #{field_id}"
+    return match.group(1)
+
+
+def test_year_on_the_cover_select_gets_the_whole_panel_width():
+    """At full desktop width the label column squeezed this select and cut off
+    its longest choice ("Blank lines to writ"). Its label now sits above it."""
+    assert "stack" in _row_classes("cover-year").split()
+    body = rule(".field-row.stack")
+    assert re.search(r"grid-template-columns:\s*1fr\s*;", body)
+
+
+def test_hidden_field_rows_stay_hidden():
+    """`.field-row { display: grid }` beat the [hidden] attribute, so the
+    "Year on the cover" row showed even for dated books."""
+    assert 'class="field-row stack" id="cover-year-row" hidden' in HTML
+    assert re.search(r"\.field-row\[hidden\]\s*\{\s*display:\s*none", CSS)
