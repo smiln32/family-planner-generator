@@ -21,10 +21,12 @@ let previewSeq = 0;
 
 /* How long a message stays. One with a button (Undo, Open PDF) stays at
    least 15 seconds, and while the pointer or keyboard focus is on it. */
-const TOAST_MS = { plain: 8000, error: 8000, action: 15000 };
+const TOAST_MS = { plain: 8000, action: 15000 };
+let toastMs = TOAST_MS.plain;
+let toastTimer = 0;
 
 function hideToast() {
-  clearTimeout(toast.timer);
+  clearTimeout(toastTimer);
   $("#toast").dataset.show = "0";
 }
 
@@ -61,19 +63,19 @@ function toast(message, kind = "", extra = "") {
   node.dataset.kind = kind;
   node.dataset.show = "1";
   const hasAction = Boolean(extra && extra.action);
-  toast.ms = hasAction ? TOAST_MS.action : (kind === "error" ? TOAST_MS.error : TOAST_MS.plain);
+  toastMs = hasAction ? TOAST_MS.action : TOAST_MS.plain;
   startToastTimer();
 }
 
 function startToastTimer() {
-  clearTimeout(toast.timer);
-  toast.timer = setTimeout(hideToast, toast.ms || TOAST_MS.plain);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, toastMs);
 }
 
 function bindToast() {
   const node = $("#toast");
   // Do not hide a message while someone is reading it or reaching for Undo.
-  const hold = () => clearTimeout(toast.timer);
+  const hold = () => clearTimeout(toastTimer);
   const resume = () => { if (node.dataset.show === "1" && !node.contains(document.activeElement)) startToastTimer(); };
   node.addEventListener("mouseenter", hold);
   node.addEventListener("focusin", hold);
