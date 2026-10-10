@@ -1,5 +1,14 @@
 # Handoff, 2026-10-09
 
+## Batch B editor work, 2026-10-09 (branch `batch-b-editor`, made from `batch-a-fixes`, not pushed)
+
+`python -m pytest`: 270 passed (204 before batch A's text limits).
+
+- **Text limits** (commit on `batch-a-fixes`): family name 60 characters, title 80, subtitle 120, extra cover line 80, output name 120, each member name 40, month tagline and footer 120, motif 40. One check in `config.py` (`check_text`, `TEXT_LIMITS`), run by `config.load`, `config.validate` and the plan export and import, so YAML, the CLI, the editor and plan files all follow it. Too-long text gives a plain message naming the field. Line breaks and tabs become spaces; other control characters are dropped. The editor's text boxes carry the same `maxlength`. `tests/test_text_limits.py`.
+- **Pickers keep keyboard focus:** looks, lettering and themes build their cards once and then only move the checked state, so arrow keys no longer drop focus. Each card shows a navy focus ring.
+- **Editor polish:** control outlines 3:1 or better (`--control-line`), placeholder 5.1:1 in italic, no text under 12px, 32px targets, Undo and Open PDF messages stay 15 seconds with a close button, reduced motion fades the spinner, blue-grey colours and the favicon moved to the editor palette, "Fit page" from the start, a two-column layout between 700px and 1100px. `tests/test_editor_ui.py` (static checks on the files).
+- **Checked by hand in Chrome:** arrow keys in all three pickers (focus stays, ring shows), 800px wide (no overlap or sideways scroll), Download plan then Open plan (title, subtitle and months come back), Start over (five member rows), a plan with a too-long family name (plain error), the Undo message (still there at 9 seconds, gone after 15). Not checked by hand: reduced motion, a real phone.
+
 ## Batch A fixes, 2026-10-09 (branch `batch-a-fixes`, not pushed)
 
 Small bug fixes, one commit each, every fix with a test. `python -m pytest`: 204 passed (159 before).
@@ -11,7 +20,7 @@ Small bug fixes, one commit each, every fix with a test. `python -m pytest`: 204
 - **Pages:** the year-end page names the family members (five to a row, blank lines when there are none) instead of Mom/Dad/Child; Belongs To has one row per member, never fewer than five (two columns on the small sizes when more than five). Start over gives five member rows.
 - **Retired and Blank covers** render only the chosen variant; checked pixel for pixel against the old output.
 - **Typeface set `terracotta` renamed to `boho-brush`** (Tenor Sans, Caveat Brush, Mulish), so it is not mixed up with the Terracotta look, which uses `home-base`. `terracotta` still works as an alias in YAML, `--fonts`, plan files and the editor.
-- Not checked by hand in the editor yet; restart it before trying (see Environment notes).
+- Plan files and Start over were checked by hand in the editor on 2026-10-09 (see Batch B above). Restart the editor after pulling code changes (see Environment notes).
 
 
 ## Sessions 2026-10-01 to 2026-10-03: look covers and colours
@@ -121,7 +130,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), and `fonts --all` to download them. `terracotta` renamed `boho-brush` on 2026-10-09 (old name still accepted). TYPE picker not hand-checked end to end |
 | Thirteen looks (`editorial` to `coastal`) | In `main` since 2026-09-30, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
-| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09. The whole suite is 204 tests as of 2026-10-09, all passing |
+| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09; typed text has length limits since 2026-10-09. The whole suite is 270 tests as of 2026-10-09, all passing |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Retired 2026-09-30.** Replaced by the thirteen looks. `original` and `02`–`17` live in `designs.LEGACY`: still valid in a config, not offered in the picker, never finished |
 | Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
@@ -129,15 +138,11 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 
 ## Editor audit: still open
 
-In priority order. None block use at the normal full-screen desktop width.
+Items 1 to 7 of the old list were closed on 2026-10-09 (branch `batch-b-editor`): narrow windows (two columns from 700px to 1100px, stacked below), text 12px or larger, leftover blue-grey colours, control outlines, 32px targets, reduced-motion spinner, favicon. Still open:
 
-1. **Narrow windows (P2):** below 900px the layout stacks and the preview sits under the whole settings panel; at phone width the page overflows sideways and the preview shrinks to a strip. `ui.css` responsive block. Suggested: `/impeccable adapt`.
-2. **Small, flat type (P2):** section heads 12px, labels 11px, body 10.5–11.5px. Suggested: `/impeccable typeset`.
-3. **Leftover blue-grey colours (P2):** about 20 hard-coded values outside `:root`, many from an older navy/bright-teal scheme (`#B8C4D4` hover borders, `rgba(20,160,165,.16)` selection ring, `rgba(22,50,95,…)` sheet shadow, `#A6B2C2` placeholder, `#CBD5E1` switch-off track). Map them to tokens.
-4. **Faint control outlines (P2):** input borders 1.4:1, page checkboxes 1.8:1, switch-off track 1.3:1; controls need 3:1.
-5. **Small targets (P2):** member remove buttons 24px, zoom buttons 26px.
-6. **Reduced motion (P3):** the global `.01ms` rule freezes the loading spinner; keep a gentle pulse instead.
-7. **Favicon (P3):** `index.html` still uses the old navy and bright teal.
+1. **Phone width (P3):** below 700px the editor stacks into one column. It no longer scrolls sideways, but it was not tried on a real phone.
+2. **Year on the cover select (P3):** at full desktop width its longest choice is cut off ("Blank lines to writ"). Labels go above fields only below 1100px.
+3. **Members count (P3):** the editor stops at 10 people, but YAML and the API accept any number of names. Each name is limited to 40 characters.
 
 The project has no `PRODUCT.md`; `/impeccable init` writes one before any redesign. Finish with `/impeccable polish`, then re-run `/impeccable audit`.
 
@@ -176,7 +181,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean. The batch A fixes sit on the local branch `batch-a-fixes` until the owner pushes and merges them; `main` has everything before that.
+1. Read this file, then `git status`. It should be clean. The batch A fixes sit on the local branch `batch-a-fixes`, and the batch B editor work on `batch-b-editor` (made from it), until the owner pushes and merges them; `main` has everything before that.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
