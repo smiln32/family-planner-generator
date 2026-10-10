@@ -449,7 +449,7 @@ MONTH_TEXT_LIMITS: dict[str, int] = {
 
 # Tabs, line breaks and the Unicode line and paragraph separators become a
 # space; every other control character is dropped. Text prints on one line.
-_SPACE_LIKE = {"\t", "\n", "\r", "\v", "\f", " ", " ", "\x85"}
+_SPACE_LIKE = {"\t", "\n", "\r", "\v", "\f", "\u2028", "\u2029", "\x85"}
 
 
 def clean_text(raw: Any) -> str:
