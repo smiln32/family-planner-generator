@@ -6,7 +6,7 @@
     python planner.py build --png     # ...and one 300 dpi PNG per page
     python planner.py pages           # list the pages that would be built
     python planner.py months          # show per-month colours and taglines
-    python planner.py fonts           # download the display fonts (optional)
+    python planner.py fonts           # fetch custom typefaces (built-in sets ship in the repo)
 """
 
 import sys

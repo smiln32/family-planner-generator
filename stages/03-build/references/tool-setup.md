@@ -20,7 +20,7 @@ The PDF step prints the HTML with a browser. Google Chrome, Microsoft Edge, Chro
 
 ## Fonts
 
-Optional. `python planner.py fonts` downloads your book's typefaces once (`fonts --all` downloads every set). Without them pages fall back to system fonts and still build.
+Nothing to install. The typefaces for every look and every built-in typeface set are in the repo, in `familyplanner/static/fonts/`, with their licences. Only a config that names its own Google Fonts families needs `python planner.py fonts -c <yaml>` once to download those. `fonts --all` refreshes or re-downloads the built-in sets. A missing font never stops a build: pages fall back to system fonts.
 
 ## Tests
 

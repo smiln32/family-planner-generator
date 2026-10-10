@@ -251,6 +251,7 @@ def cmd_typefaces(args: argparse.Namespace) -> int:
     print("      script: Courgette")
     print("      body: Oxygen")
     print("Then run `python planner.py fonts` to download them.")
+    print("The built-in sets need no download: their files ship in the repo.")
     return 0
 
 
@@ -351,13 +352,14 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--force", action="store_true")
     i.set_defaults(func=cmd_init)
 
-    f = sub.add_parser("fonts", help="download the typefaces for best fidelity")
+    f = sub.add_parser("fonts", help="download custom typefaces, or refresh the built-in "
+                                     "ones (those ship in the repo)")
     shared(f)
-    f.add_argument("--force", action="store_true", help="re-download existing fonts")
+    f.add_argument("--force", action="store_true", help="re-download files that are already there")
     which = f.add_mutually_exclusive_group()
-    which.add_argument("--all", action="store_true", help="download every built-in typeface set")
+    which.add_argument("--all", action="store_true", help="refresh or re-download every built-in typeface set")
     which.add_argument("--looks", action="store_true",
-                       help="download the typeface sets the thirteen looks use")
+                       help="refresh or re-download the typeface sets the thirteen looks use")
     f.set_defaults(func=cmd_fonts)
 
     return parser

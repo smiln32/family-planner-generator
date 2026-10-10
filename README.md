@@ -12,15 +12,15 @@ window open. Your browser is the app. Click **Make PDF** when the pages look
 right.
 
 ```
-python planner.py fonts     # once - downloads your book's typefaces
 python planner.py ui        # visual editor + live preview
 python planner.py build     # or straight to out/2027-Family-Planner.pdf
 ```
 
 That's it. No config file needed to get the default 30-page planner: the
-Editorial look, set in Bodoni Moda and Archivo. `python planner.py fonts`
-downloads the typefaces your book uses (from `./family.yaml` if there is one,
-otherwise the default look's); `fonts --all` downloads every built-in set.
+Editorial look, set in Bodoni Moda and Archivo. The typefaces for every look
+and every built-in typeface set are already in the repo, in
+`familyplanner/static/fonts/`, with each family's licence (see the README
+there). There is no download step.
 
 ## Workspace layout
 
@@ -58,7 +58,6 @@ options below).
 `retro` `bauhaus` `almanac` `terracotta` `cottage` `gazette` `coastal`
 
 ```
-python planner.py fonts --all              # once, for every look's typefaces
 python planner.py build --design deco
 ```
 
@@ -146,9 +145,9 @@ python planner.py themes             # list the colour presets
 python planner.py typefaces          # list the typeface sets
 python planner.py months             # per-month colours, motifs and taglines
 python planner.py init               # write a starter family.yaml
-python planner.py fonts              # download your book's typefaces
-python planner.py fonts --all        # download every typeface set
-python planner.py fonts --looks      # download the thirteen looks' sets
+python planner.py fonts              # fetch your own custom typefaces (built-in ones ship in the repo)
+python planner.py fonts --all        # refresh or re-download every built-in set
+python planner.py fonts --looks      # refresh or re-download the thirteen looks' sets
 ```
 
 `build` picks up `./family.yaml` automatically if it exists; `-c other.yaml`
@@ -217,10 +216,12 @@ Terracotta look, which uses `home-base`; old files that say
 
 ```
 python planner.py typefaces                    # see the sets
-python planner.py fonts --fonts italics        # download that set
-python planner.py fonts --all                  # download every set
 python planner.py build --fonts italics        # build with it
 ```
+
+The font files for all fifty-two sets are in the repo, so any set builds
+straight away. `python planner.py fonts --all` refreshes or re-downloads them
+from Google Fonts if you ever need to (`--force` fetches every file again).
 
 | set | display | script | body |
 |---|---|---|---|
@@ -246,7 +247,8 @@ fonts:
   body: Rubik
 ```
 
-Then `python planner.py fonts` downloads them. The visual editor picks a
+Families outside the built-in sets are not in the repo, so run
+`python planner.py fonts` once to download them. The visual editor picks a
 custom trio up too: it appears in TYPE as a **Custom** card, selected, above
 the presets. If a family does not publish a
 weight the planner asks for, the closest available weight is substituted and
@@ -370,9 +372,11 @@ Python 3.10+ and a Chromium-family browser (Chrome, Edge, Chromium or Brave).
 Install and check steps, including tests, are in
 [`stages/03-build/references/tool-setup.md`](stages/03-build/references/tool-setup.md).
 
-The display fonts are optional. Without them the pages fall back to system
-fonts and still build; with them they look right. They are SIL Open Font
-License, so the PDFs you make are yours to print, give away or sell.
+The typefaces ship in the repo, so there is nothing to download. They are
+under the SIL Open Font License 1.1 (77 families) or the Apache License 2.0
+(6 families); each family's licence is in `familyplanner/static/fonts/licenses/`.
+Both licences let you print, give away or sell the PDFs you make. If a font
+file is missing, the pages fall back to system fonts and still build.
 
 ## Differences from the original printable
 

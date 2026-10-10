@@ -86,8 +86,8 @@ output_name: ""
 #     display: Chewy
 #     script: Gloria Hallelujah
 #     body: Rubik
-# Run `python planner.py typefaces` to see the sets, then
-# `python planner.py fonts` to download whichever you picked.
+# Run `python planner.py typefaces` to see the sets. Their font files ship
+# in the repo; for families of your own, run `python planner.py fonts` once.
 # Leave fonts unset to use the look's own set (each look and layout below
 # has one). Blank and the retired looks use elegant when fonts is unset.
 # fonts: elegant
