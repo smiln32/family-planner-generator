@@ -69,3 +69,79 @@ def test_picker_cards_show_keyboard_focus(card):
     assert "outline: 3px solid var(--navy)" in match.group(1)
     assert contrast(token("navy"), token("paper")) >= 3
     assert contrast(token("navy"), "#FFFFFF") >= 3
+
+
+# --- contrast -----------------------------------------------------------------
+
+def test_control_outlines_reach_three_to_one():
+    line = token("control-line")
+    for background in ("#FFFFFF", token("paper"), token("wash")):
+        assert contrast(line, background) >= 3, background
+    assert "var(--control-line)" in rule('input[type="text"], input[type="number"], select')
+    assert "var(--control-line)" in rule(".page-row .box")
+    assert "var(--control-line)" in rule(".switch .track")
+
+
+def test_switch_knob_stands_out_from_the_off_track():
+    assert contrast("#FFFFFF", token("control-line")) >= 3
+
+
+def test_placeholder_reaches_four_and_a_half_to_one():
+    assert "color: var(--placeholder)" in CSS
+    assert contrast(token("placeholder"), "#FFFFFF") >= 4.5
+
+
+def test_muted_text_reaches_four_and_a_half_to_one():
+    for background in ("#FFFFFF", token("paper"), token("wash")):
+        assert contrast(token("muted"), background) >= 4.5
+
+
+# --- text size, targets, motion -----------------------------------------------
+
+def test_no_text_under_twelve_pixels():
+    sizes = [float(px) for px in re.findall(r"font-size:\s*([\d.]+)px", CSS)]
+    assert sizes and min(sizes) >= 12
+
+
+@pytest.mark.parametrize("selector", [".icon-btn", ".member button"])
+def test_small_buttons_are_at_least_32px(selector):
+    body = rule(selector)
+    assert "width: 32px" in body and "height: 32px" in body
+
+
+def test_reduced_motion_keeps_a_gentle_spinner():
+    block = CSS[CSS.index("@media (prefers-reduced-motion: reduce)"):]
+    assert ".spinner span" in block
+    assert "animation: pulse" in block
+    assert "@keyframes pulse" in CSS
+
+
+def test_action_messages_stay_at_least_fifteen_seconds():
+    match = re.search(r"action:\s*(\d+)", JS[JS.index("const TOAST_MS"):])
+    assert match and int(match.group(1)) >= 15000
+    assert "toast-close" in JS
+
+
+# --- leftover colours, labels -------------------------------------------------
+
+@pytest.mark.parametrize("old", [
+    "#B8C4D4", "#A6B2C2", "#CBD5E1", "#D6DEE9", "#DDE4EE", "#46556A", "#12776F",
+    "rgba(20,160,165", "rgba(22,50,95", "rgba(244, 246, 250",
+])
+def test_old_blue_grey_colours_are_gone(old):
+    assert old.lower() not in CSS.lower()
+
+
+def test_favicon_uses_the_editor_palette():
+    assert "%2316325F" not in HTML and "%2314A0A5" not in HTML
+    assert f"%23{token('navy')[1:]}" in HTML
+    assert f"%23{token('teal')[1:]}" in HTML
+
+
+def test_zoom_label_matches_the_script():
+    assert '<span id="zoom-level">Fit page</span>' in HTML
+    assert '"Fit page"' in JS
+
+
+def test_header_does_not_start_with_a_made_up_page_count():
+    assert "30 pages" not in HTML

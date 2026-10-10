@@ -19,6 +19,15 @@ let previewSeq = 0;
 
 /* --- helpers -------------------------------------------------------------- */
 
+/* How long a message stays. One with a button (Undo, Open PDF) stays at
+   least 15 seconds, and while the pointer or keyboard focus is on it. */
+const TOAST_MS = { plain: 8000, error: 8000, action: 15000 };
+
+function hideToast() {
+  clearTimeout(toast.timer);
+  $("#toast").dataset.show = "0";
+}
+
 function toast(message, kind = "", extra = "") {
   const node = $("#toast");
   node.textContent = "";
@@ -31,13 +40,19 @@ function toast(message, kind = "", extra = "") {
     btn.textContent = extra.action;
     btn.addEventListener("click", () => {
       if (extra.onClick) {
-        node.dataset.show = "0";
+        hideToast();
         extra.onClick();
       } else {
         openBuilt(extra.path);
       }
     });
     node.append(btn);
+    const close = el("button", "toast-close");
+    close.type = "button";
+    close.textContent = "×";
+    close.setAttribute("aria-label", "Close this message");
+    close.addEventListener("click", hideToast);
+    node.append(close);
   } else if (typeof extra === "string" && extra) {
     const c = el("code");
     c.textContent = extra;
@@ -45,8 +60,25 @@ function toast(message, kind = "", extra = "") {
   }
   node.dataset.kind = kind;
   node.dataset.show = "1";
+  const hasAction = Boolean(extra && extra.action);
+  toast.ms = hasAction ? TOAST_MS.action : (kind === "error" ? TOAST_MS.error : TOAST_MS.plain);
+  startToastTimer();
+}
+
+function startToastTimer() {
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => { node.dataset.show = "0"; }, kind === "error" ? 7000 : 8000);
+  toast.timer = setTimeout(hideToast, toast.ms || TOAST_MS.plain);
+}
+
+function bindToast() {
+  const node = $("#toast");
+  // Do not hide a message while someone is reading it or reaching for Undo.
+  const hold = () => clearTimeout(toast.timer);
+  const resume = () => { if (node.dataset.show === "1" && !node.contains(document.activeElement)) startToastTimer(); };
+  node.addEventListener("mouseenter", hold);
+  node.addEventListener("focusin", hold);
+  node.addEventListener("mouseleave", resume);
+  node.addEventListener("focusout", () => setTimeout(resume, 0));
 }
 
 function friendlyError(error, recovery) {
@@ -812,11 +844,13 @@ function bind() {
   });
   $("#fresh").addEventListener("click", newBook);
 
+  bindToast();
   window.addEventListener("resize", () => { if (!state.zoom) applyZoom(); });
   new ResizeObserver(() => { if (!state.zoom) applyZoom(); }).observe($("#canvas"));
   window.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") { e.preventDefault(); build($("#build")); }
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); downloadPlan(); }
+    if (e.key === "Escape" && $("#toast").dataset.show === "1") hideToast();
   });
 }
 
