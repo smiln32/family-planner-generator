@@ -83,14 +83,21 @@ COVER_PARTS = ["cover-body", "cover-scene", "cover-feet",
                *[f"daily-{n}" for n in range(11, 18)]]
 
 
+SHARED_COVER = {"cover-body", "cover-scene", "cover-feet"}
+
+
+def test_every_retired_cover_has_one_block_in_the_template():
+    import re
+    source = (render.TEMPLATE_DIR / "pages" / "cover.html").read_text(encoding="utf-8")
+    blocks = re.findall(r'\{% if look\.base == "(\d\d)" %\}', source)
+    assert sorted(blocks) == sorted(designs.RETIRED_COVERS)
+
+
 @pytest.mark.parametrize("design, wanted", [
-    ("original", {"cover-body", "cover-scene", "cover-feet"}),
-    ("blank", {"cover-body", "cover-scene", "cover-feet"}),
-    ("02", {"famcover-02"}),
-    ("07", {"famcover-07"}),
-    ("10", {"famcover-10"}),
-    ("11", {"daily-11"}),
-    ("17", {"daily-17"}),
+    ("original", SHARED_COVER),
+    ("blank", SHARED_COVER),
+    *[(n, {f"famcover-{n}" if int(n) <= 10 else f"daily-{n}"})
+      for n in designs.RETIRED_COVERS],
 ])
 def test_retired_and_blank_covers_render_only_their_own_variant(cfg, design, wanted):
     import re

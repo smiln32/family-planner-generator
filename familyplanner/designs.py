@@ -168,6 +168,10 @@ LEGACY: dict[str, dict[str, str]] = {
     "17": {"label": "Intention", "note": "Plan with intention"},
 }
 
+# Retired looks that draw their own cover: pages/cover.html has one
+# `{% if look.base == "NN" %}` block for each. "original" uses the shared one.
+RETIRED_COVERS: tuple[str, ...] = tuple(key for key in LEGACY if key != "original")
+
 PRESETS: dict[str, dict[str, str]] = {
     key: {"label": look["label"], "note": look["note"]} for key, look in LOOKS.items()
 }

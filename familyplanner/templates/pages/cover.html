@@ -50,8 +50,7 @@
 {# Retired looks (original, 02-17, blank). Kept so old plan files still build. #}
 {# Only the chosen design's cover goes into the page. The CSS that hides the
    other variants stays, so the printed cover looks exactly as before. #}
-{% set own_cover = look.base not in ["02", "03", "04", "05", "06", "07", "08", "09", "10",
-                                     "11", "12", "13", "14", "15", "16", "17"] %}
+{% set own_cover = look.base not in retired_covers %}
 <section class="page cover-page">
   {% if own_cover %}
   <div class="cover-body">

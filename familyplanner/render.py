@@ -103,6 +103,7 @@ def build_environment() -> Environment:
     env.globals["month_days"] = lambda year, month: monthrange(year, month)[1]
     env.globals["abbr"] = lambda text, n=3: str(text)[:n]
     env.globals["looks"] = designs.LOOKS
+    env.globals["retired_covers"] = designs.RETIRED_COVERS
     return env
 
 
