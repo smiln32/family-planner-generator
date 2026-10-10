@@ -1,5 +1,9 @@
 # Family Success Planner generator
 
+[![tests](https://github.com/smiln32/family-planner-generator/actions/workflows/tests.yml/badge.svg)](https://github.com/smiln32/family-planner-generator/actions/workflows/tests.yml)
+
+Tests run on Windows and Linux for each push and pull request, and the PDF tests skip when no browser is installed.
+
 Generates the adorable printable planner pages as a print-ready PDF, for any
 year, any family, any colours.
 
