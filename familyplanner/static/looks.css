@@ -120,6 +120,25 @@
 .ed-lines span { font-family: var(--font-display); font-size: calc(13 * var(--k)); color: var(--ink); }
 .ed-lines em { font-family: var(--font-body); font-size: calc(7 * var(--k)); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); }
 
+/* Optional cover lines (cfg.cover_extras), under the panel title. Kept short
+   enough to fit the space above the contents list, which stays where it was. */
+.lko-editorial { margin-top: calc(12 * var(--k)); }
+.lko-editorial::before {
+  content: ""; display: block; width: calc(26 * var(--k)); height: 1.5px;
+  background: var(--red); margin-bottom: calc(7 * var(--k));
+}
+.lko-editorial .lko-family {
+  font-family: var(--font-display); font-size: calc(15 * var(--k)); line-height: 1.15; color: var(--ink);
+}
+.lko-editorial .lko-year {
+  margin-top: calc(4 * var(--k)); font-family: var(--font-body); font-size: calc(8 * var(--k));
+  font-weight: 700; line-height: 1.2; letter-spacing: 0.24em; text-transform: uppercase; color: var(--red);
+}
+.lko-editorial .lko-line {
+  margin-top: calc(3 * var(--k)); font-family: var(--font-display); font-style: italic;
+  font-size: calc(11 * var(--k)); line-height: 1.2; color: var(--ink);
+}
+
 .lkm-editorial { --pt: calc(22 * var(--k)); }
 .lkm-editorial .lkm-head { padding-top: calc(24 * var(--k)); }
 .lkm-editorial .lkm-kicker {
@@ -478,6 +497,21 @@
 .bh-grid .b6 span { color: var(--teal); }
 .bh-grid small { font-family: var(--font-body); font-weight: 500; font-size: calc(9 * var(--k)); letter-spacing: 0.2em; color: var(--ink); }
 
+/* Optional cover lines (cfg.cover_extras), between "Do." and the label. */
+.lko-bauhaus {
+  display: flex; flex-direction: column; gap: calc(4 * var(--k));
+  padding-left: calc(10 * var(--k)); border-left: calc(4 * var(--k)) solid var(--pink);
+}
+.lko-bauhaus .lko-family, .lko-bauhaus .lko-year {
+  font-family: var(--font-display); font-weight: 700; font-size: calc(15 * var(--k));
+  line-height: 1.05; letter-spacing: -0.02em; color: var(--ink);
+}
+.lko-bauhaus .lko-year { color: var(--teal); }
+.lko-bauhaus .lko-line {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k));
+  line-height: 1.3; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink);
+}
+
 .lkm-bauhaus .lkm-head { justify-content: flex-start; align-items: center; gap: calc(12 * var(--k)); }
 .lkm-bauhaus .lkm-orn { display: flex; gap: calc(12 * var(--k)); order: -1; }
 .lkm-bauhaus .lkm-orn i { width: calc(44 * var(--k)); height: calc(44 * var(--k)); background: var(--teal); }
@@ -600,6 +634,21 @@
 .ct-title { font-family: var(--font-display); font-style: italic; font-size: calc(50 * var(--k)); line-height: 0.95; color: var(--navy); }
 .ct-rule { width: calc(30 * var(--k)); height: 1px; background: var(--navy); margin: calc(6 * var(--k)) 0; }
 .ct-sub { font-family: var(--font-display); font-size: calc(13 * var(--k)); color: var(--navy); }
+
+/* Optional cover lines (cfg.cover_extras), low in the oval. Placed on top of
+   the label, so the title and sub line stay exactly where they were. */
+.lko-cottage {
+  position: absolute; left: calc(46 * var(--k)); right: calc(46 * var(--k)); bottom: calc(32 * var(--k));
+  display: flex; flex-direction: column; align-items: center; gap: calc(3 * var(--k));
+}
+.lko-cottage .lko-family {
+  font-family: var(--font-display); font-style: italic; font-size: calc(15 * var(--k)); line-height: 1.1; color: var(--navy);
+}
+.lko-cottage .lko-year {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(7.5 * var(--k));
+  letter-spacing: 0.34em; padding-left: 0.34em; color: var(--navy);
+}
+.lko-cottage .lko-line { font-family: var(--font-display); font-size: calc(10 * var(--k)); line-height: 1.2; color: var(--navy); }
 
 .lkm-cottage { --pt: 0; }
 .lkm-cottage .lkm-band { display: block; flex: none; height: calc(70 * var(--k)); margin: 0 calc(-1 * var(--px)); background-size: calc(20 * var(--k)) calc(20 * var(--k)); }

@@ -104,7 +104,8 @@ def test_state_for_a_retired_look_offers_the_theme(tmp_path):
     plan.write_text("design: original\ntheme: ocean\n", encoding="utf-8")
     handler = type("H", (server.Handler,), {"base_config": config.load(plan), "out_dir": tmp_path})
     state = handler._state(handler.__new__(handler))
-    assert state["currentDesign"] == {"id": "original", "label": "Original", "palette": None}
+    assert state["currentDesign"] == {"id": "original", "label": "Original", "palette": None,
+                                      "cover": "own"}
     assert state["config"]["palette"] == {}
 
 

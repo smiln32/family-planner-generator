@@ -185,6 +185,15 @@ DEFAULT_CONFIG: dict[str, Any] = {
     # Printed on the cover and year mastheads instead of the numeric year.
     # Empty means use `year`. "Our" or "2027-2028" are typical overrides.
     "cover_text": "",
+    # Optional lines on the cover of one of the thirteen looks. All off by
+    # default, so a look cover stays as designed. Blank, the retired looks and
+    # the layouts ignore them (they use family_name, cover_year and cover_text).
+    #   cover_show_year    off, year (the planner year) or custom (cover_text)
+    #   cover_show_family  true prints "The <family_name> Family"
+    #   cover_line         one short extra line of your own
+    "cover_show_year": "off",
+    "cover_show_family": False,
+    "cover_line": "",
     # Adds tab-rail navigation and an index, for reading on a tablet.
     "linked": False,
     # Rows on the shared trackers, so a family of three is not stuck with five.
@@ -348,6 +357,8 @@ def output_path(out_dir: Path, stem: str, suffix: str) -> Path:
 
 WEEK_STARTS = ("sunday", "monday")
 COVER_YEAR_MODES = ("auto", "print", "blank", "omit")
+# Year on a look cover: none, the planner year, or the cover_text line.
+COVER_SHOW_YEAR_MODES = ("off", "year", "custom")
 YEAR_RANGE = (1900, 2999)
 
 # Month names become page ids and tab labels, so keep them to plain words.
@@ -377,6 +388,40 @@ def check_cover_year(raw: Any) -> str:
     if value not in COVER_YEAR_MODES:
         raise ConfigError("cover_year must be auto, print, blank, or omit")
     return value
+
+
+def check_cover_show_year(raw: Any) -> str:
+    # YAML reads a bare `off` as False and `on`/`yes` as True.
+    if raw is None or raw is False:
+        return "off"
+    if raw is True:
+        return "year"
+    value = str(raw).strip().lower() or "off"
+    if value not in COVER_SHOW_YEAR_MODES:
+        raise ConfigError("cover_show_year must be off, year, or custom")
+    return value
+
+
+_TRUE_WORDS = {"true", "yes", "on", "1"}
+_FALSE_WORDS = {"false", "no", "off", "0", ""}
+
+
+def check_flag(raw: Any, name: str) -> bool:
+    """A yes/no setting. Refuses anything that is not clearly one or the other,
+    so the text "false" can never switch a setting on."""
+    if raw is None:
+        return False
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, int) and raw in (0, 1):
+        return bool(raw)
+    if isinstance(raw, str):
+        word = raw.strip().lower()
+        if word in _TRUE_WORDS:
+            return True
+        if word in _FALSE_WORDS:
+            return False
+    raise ConfigError(f"{name} must be true or false")
 
 
 def check_theme(raw: Any) -> str:
@@ -425,19 +470,22 @@ def check_str_list(raw: Any, name: str) -> list[str]:
 #   title        80  one cover headline; the default is 22 characters
 #   subtitle    120  one motto line; the default is 48 characters
 #   cover_text   80  printed in the year's place on the cover
+#   cover_line   80  one extra line on a look cover
 #   output_name 120  same as the cap safe_stem already puts on file names
 TEXT_LIMITS: dict[str, int] = {
     "family_name": 60,
     "title": 80,
     "subtitle": 120,
     "cover_text": 80,
+    "cover_line": 80,
     "output_name": 120,
 }
 TEXT_LABELS: dict[str, str] = {
     "family_name": "Family name",
     "title": "Title",
     "subtitle": "Subtitle",
-    "cover_text": "Extra cover line",
+    "cover_text": "Text in place of the year",
+    "cover_line": "Extra cover line",
     "output_name": "Output name",
 }
 # One name on a tracker row or a Belongs To line.
@@ -511,6 +559,10 @@ class Config:
     source: Path | None = field(default=None)
     # The `palette:` block as written, before the theme fills the rest in.
     palette_set: dict[str, str] = field(default_factory=dict)
+    # Opt-in lines on a look cover (see DEFAULT_CONFIG). Off by default.
+    cover_show_year: str = "off"
+    cover_show_family: bool = False
+    cover_line: str = ""
 
     @property
     def page_inches(self) -> tuple[float, float]:
@@ -550,6 +602,26 @@ class Config:
         if mode == "print":
             return "print"
         return "blank"
+
+    @property
+    def cover_extras(self) -> list[tuple[str, str]]:
+        """The opt-in lines for a look cover, as (kind, text), in print order.
+
+        Empty unless something was turned on, so a look cover with nothing
+        chosen renders exactly as designed. Kinds: family, year, line.
+        """
+        out: list[tuple[str, str]] = []
+        name = (self.family_name or "").strip()
+        if self.cover_show_family and name:
+            out.append(("family", f"The {name} Family"))
+        if self.cover_show_year == "year":
+            out.append(("year", str(self.year)))
+        elif self.cover_show_year == "custom" and (self.cover_text or "").strip():
+            out.append(("year", self.cover_text.strip()))
+        line = (self.cover_line or "").strip()
+        if line:
+            out.append(("line", line))
+        return out
 
     @property
     def stem(self) -> str:
@@ -623,6 +695,9 @@ def load(path: Path | None) -> Config:
         output_name=check_field_text("output_name", data["output_name"]),
         source=path,
         palette_set=palette_set,
+        cover_show_year=check_cover_show_year(data.get("cover_show_year")),
+        cover_show_family=check_flag(data.get("cover_show_family"), "cover_show_family"),
+        cover_line=check_field_text("cover_line", data.get("cover_line")),
     )
 
 
@@ -635,6 +710,8 @@ def validate(cfg: Config) -> Config:
     cfg.year = check_year(cfg.year)
     cfg.week_starts = check_week_starts(cfg.week_starts)
     cfg.cover_year = check_cover_year(cfg.cover_year)
+    cfg.cover_show_year = check_cover_show_year(cfg.cover_show_year)
+    cfg.cover_show_family = check_flag(cfg.cover_show_family, "cover_show_family")
     cfg.theme = check_theme(cfg.theme)
     cfg.design = check_design(cfg.design)
     cfg.type_size = check_type_size(cfg.type_size)

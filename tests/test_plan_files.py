@@ -62,6 +62,7 @@ def test_round_trip_keeps_the_whole_config(api, cfg, book):
         **BOOKS[book],
         "year": 2029, "family_name": "Ramirez", "week_starts": "monday",
         "dated_months": False, "cover_year": "blank", "cover_text": "Our Year",
+        "cover_show_year": "custom", "cover_show_family": True, "cover_line": "Our year together",
         "page_size": "6x9", "members": ["Ana", "Ben", "Cy"],
         "type_size": {"title": 40},
         "pages": ["cover", "index", "months", "year_end"],

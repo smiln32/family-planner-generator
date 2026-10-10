@@ -36,7 +36,8 @@ TYPE_SIZE_RANGE: dict[str, tuple[float, float]] = {
 # twelve palette tokens and a typeface set from typefaces.PRESETS. "month"
 # holds the monthly page's wording: a kicker over the month name, a sub line
 # under it, and the labels of the write-on blocks at the foot of the page.
-# No look prints a family name or a year on its cover.
+# No look prints a family name or a year on its cover unless the config
+# turns the cover lines on (see COVER_LINE_LOOKS).
 LOOKS: dict[str, dict] = {
     "editorial": {
         "label": "Editorial", "note": "Red nameplate, Bodoni, cover lines",
@@ -145,6 +146,11 @@ LOOKS: dict[str, dict] = {
         "month": {"kicker": "Anchored", "sub": "", "notes": ["Tide's coming in"]},
     },
 }
+
+# Looks whose cover has the small spot for the optional cover lines
+# (config.Config.cover_extras: family name, year, extra line). The editor
+# explains that the others do not print them yet.
+COVER_LINE_LOOKS: tuple[str, ...] = ("editorial", "cottage", "bauhaus")
 
 # Retired looks. They still resolve (old plan files, and the layouts build on
 # 02, 06, 11 and 12) but the picker no longer offers them.

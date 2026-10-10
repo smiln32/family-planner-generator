@@ -1,7 +1,16 @@
 {# Covers for the thirteen looks in designs.LOOKS. One <section> per look,
    styled by static/looks.css (.lkc-<look>). Type, colour and geometry only:
-   no illustration, no family name and no year, by design. #}
+   no illustration. A look cover prints no family name, year or extra line
+   unless the config turns one on (cfg.cover_extras); then they go in one
+   small spot styled in the look's own fonts and colours (.lko-<look>). #}
 {% set id = look.base %}
+{% macro own_lines() %}
+<div class="lk-own lko-{{ look.base }}">
+{% for kind, text in cfg.cover_extras %}
+  <div class="lko-{{ kind }}">{{ text }}</div>
+{% endfor %}
+</div>
+{% endmacro %}
 <section class="page lk-cover lkc-{{ id }}">
 {% if id == "editorial" %}
   <div class="ed-top"><span>The Home Edition</span><span>A Family Planner</span></div>
@@ -10,6 +19,9 @@
     <div>
       <div class="ed-kick">Inside</div>
       <div class="ed-title">The family<br>planner</div>
+      {% if cfg.cover_extras %}
+      {{ own_lines() }}
+      {% endif %}
     </div>
     <ol class="ed-lines">
       {% for n, t, tag in [("01", "Goals worth keeping", "Vision"), ("02", "The weekly table", "Meals"),
@@ -80,7 +92,7 @@
     <div class="b3"><span>Make.</span></div>
     <div class="b4"></div>
     <div class="b5"><i></i></div>
-    <div class="b6"><span>Do.</span><small>FAMILY<br>PLANNER</small></div>
+    <div class="b6"><span>Do.</span>{% if cfg.cover_extras %}{{ own_lines() }}{% endif %}<small>FAMILY<br>PLANNER</small></div>
   </div>
 
 {% elif id == "almanac" %}
@@ -108,6 +120,9 @@
     <div class="ct-title">Life<br>at Home</div>
     <i class="ct-rule" aria-hidden="true"></i>
     <div class="ct-sub">a planner for the everyday</div>
+    {% if cfg.cover_extras %}
+    {{ own_lines() }}
+    {% endif %}
   </div>
 
 {% elif id == "gazette" %}

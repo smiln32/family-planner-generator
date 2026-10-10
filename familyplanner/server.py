@@ -67,6 +67,13 @@ def _config_from(payload: dict, base: Config) -> Config:
         cfg.cover_year = str(payload["cover_year"])
     if "cover_text" in payload:
         cfg.cover_text = str(payload["cover_text"])
+    # Opt-in lines on a look cover; config.validate checks all three.
+    if "cover_show_year" in payload:
+        cfg.cover_show_year = payload["cover_show_year"]
+    if "cover_show_family" in payload:
+        cfg.cover_show_family = payload["cover_show_family"]
+    if "cover_line" in payload:
+        cfg.cover_line = str(payload["cover_line"])
     if "page_size" in payload:
         cfg.page_size = config.normalize_page_size(payload["page_size"])
     if "members" in payload:
@@ -98,6 +105,20 @@ def _config_from(payload: dict, base: Config) -> Config:
     # Same rules as `planner.py build`, so the UI cannot reach the renderer
     # with a value the command line would have refused.
     return config.validate(cfg)
+
+
+def _cover_kind(design: str) -> str:
+    """How a design's cover treats the cover settings, for the editor.
+
+    "lines": a look cover with the spot for the opt-in lines. "soon": a look
+    cover without that spot yet. "own": Blank, the retired looks and the
+    layouts, which print the family name and year by themselves.
+    """
+    if design in designs.COVER_LINE_LOOKS:
+        return "lines"
+    if design in designs.LOOKS:
+        return "soon"
+    return "own"
 
 
 def _fonts_for_save(value) -> str | dict:
@@ -275,6 +296,9 @@ class Handler(BaseHTTPRequestHandler):
                 "dated_months": cfg.dated_months,
                 "cover_year": cfg.cover_year,
                 "cover_text": cfg.cover_text,
+                "cover_show_year": cfg.cover_show_year,
+                "cover_show_family": cfg.cover_show_family,
+                "cover_line": cfg.cover_line,
                 "page_size": cfg.page_size,
                 "members": cfg.members,
                 "pages": cfg.pages,
@@ -318,7 +342,9 @@ class Handler(BaseHTTPRequestHandler):
                  "adds": designs.LAYOUT_PAGES if designs.parts(name)["layout"] else [],
                  "fonts": designs.look_fonts(name),
                  # The look's own colours, or null when the theme decides them.
-                 "palette": designs.look_palette(name) or None}
+                 "palette": designs.look_palette(name) or None,
+                 # How this cover treats the cover settings (see _cover_kind).
+                 "cover": _cover_kind(name)}
                 for name in designs.names()
             ],
             # The design open now may be a retired look the picker no longer
@@ -328,6 +354,7 @@ class Handler(BaseHTTPRequestHandler):
                 "label": {**designs.LEGACY, **designs.PRESETS}
                          .get(cfg.design, {}).get("label", cfg.design),
                 "palette": designs.look_palette(cfg.design) or None,
+                "cover": _cover_kind(cfg.design),
             },
             "typeSizeRange": {
                 key: {"min": lo, "max": hi, "value": designs.DEFAULT_TYPE_SIZE[key]}
@@ -385,6 +412,10 @@ class Handler(BaseHTTPRequestHandler):
             "dated_months": bool(payload.get("dated_months", True)),
             "cover_year": config.check_cover_year(payload.get("cover_year")),
             "cover_text": config.check_field_text("cover_text", payload.get("cover_text")),
+            "cover_show_year": config.check_cover_show_year(payload.get("cover_show_year")),
+            "cover_show_family": config.check_flag(payload.get("cover_show_family"),
+                                                   "cover_show_family"),
+            "cover_line": config.check_field_text("cover_line", payload.get("cover_line")),
             "page_size": config.normalize_page_size(payload.get("page_size", "letter")),
             "members": config.check_members(payload.get("members")),
             "theme": config.check_theme(payload.get("theme")),
@@ -418,6 +449,10 @@ class Handler(BaseHTTPRequestHandler):
             "dated_months": True,
             "cover_year": "auto",
             "cover_text": "",
+            # A plan saved before these existed opens with a clean look cover.
+            "cover_show_year": "off",
+            "cover_show_family": False,
+            "cover_line": "",
             "page_size": "letter",
             "members": [],
             "theme": themes.DEFAULT_THEME,

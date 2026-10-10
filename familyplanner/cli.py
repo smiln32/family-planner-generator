@@ -30,6 +30,15 @@ def _resolve_config(args: argparse.Namespace) -> Config:
         cfg.year = args.year
     if getattr(args, "family_name", None):
         cfg.family_name = args.family_name
+    # Cover lines. config.validate below checks each one like the file's own.
+    if getattr(args, "cover_text", None) is not None:
+        cfg.cover_text = args.cover_text
+    if getattr(args, "cover_show_year", None) is not None:
+        cfg.cover_show_year = args.cover_show_year
+    if getattr(args, "cover_show_family", None) is not None:
+        cfg.cover_show_family = args.cover_show_family
+    if getattr(args, "cover_line", None) is not None:
+        cfg.cover_line = args.cover_line
     if getattr(args, "undated", False):
         cfg.dated_months = False
     if getattr(args, "linked", False):
@@ -272,6 +281,17 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("-y", "--year", type=int, help="override the planner year")
         p.add_argument("-n", "--family-name", metavar="NAME",
                        help="family name for the cover and filename")
+        p.add_argument("--cover-show-year", metavar="MODE",
+                       choices=config.COVER_SHOW_YEAR_MODES,
+                       help="year on a look cover: off, year (the planner year) "
+                            "or custom (the --cover-text line)")
+        p.add_argument("--cover-text", metavar="TEXT",
+                       help="text in place of the year, such as 2026-27")
+        p.add_argument("--cover-show-family", action=argparse.BooleanOptionalAction,
+                       default=None,
+                       help='print "The <name> Family" on a look cover')
+        p.add_argument("--cover-line", metavar="TEXT",
+                       help="one extra line on a look cover")
         p.add_argument("--undated", action="store_true",
                        help="print blank month grids instead of real dates")
         p.add_argument("--linked", action="store_true",
