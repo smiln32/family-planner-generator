@@ -118,14 +118,20 @@ def test_the_spot_has_its_own_styles(look):
         assert re.search(rf"\.lko-{look} \.lko-{kind}\b", css), kind
 
 
-def test_retro_cover_text_is_level():
-    # The owner asked for every line on the Retro sunset cover to be level
-    # (2026-10-10): no rotate or skew on the title, sub line or cover spot.
-    css = (render.STATIC_DIR / "looks.css").read_text(encoding="utf-8")
-    rules = re.findall(r"(\.(?:rt-text|rt-title|rt-sub|lko-retro)[^{]*)\{([^}]*)\}", css)
-    assert rules
+def test_retro_text_is_level():
+    # The owner asked for every line of the Retro sunset look to be level
+    # (2026-10-10): no rotate or skew on the cover (title, sub line, cover
+    # spot) or on the inside pages (monthly page, worksheet mastheads).
+    css = "".join((render.STATIC_DIR / name).read_text(encoding="utf-8")
+                  for name in ("planner.css", "looks.css"))
+    retro = r"rt-text|rt-title|rt-sub|lko-retro|lkc-retro|lkm-retro|design-retro"
+    rules = re.findall(
+        rf"([^{{}}]*\.(?:{retro})(?![\w-])[^{{]*)\{{([^}}]*)\}}", css)
+    selectors = " ".join(selector for selector, _ in rules)
+    for name in ("rt-title", "lko-retro", "lkm-retro .lkm-name", "design-retro"):
+        assert name in selectors, name
     for selector, body in rules:
-        assert not re.search(r"rotate|skew|matrix", body), selector
+        assert not re.search(r"rotate|skew|matrix", body), selector.strip()
 
 
 def test_cottage_label_spreads_without_the_options():

@@ -538,7 +538,7 @@
 }
 .lko-retro .lko-line { font-family: var(--font-display); font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.15; color: var(--orange); }
 
-.lkm-retro .lkm-name { font-size: calc(44 * var(--k)); color: var(--teal); transform: rotate(-3deg); transform-origin: left bottom; }
+.lkm-retro .lkm-name { font-size: calc(44 * var(--k)); color: var(--teal); }
 .lkm-retro .lkm-cal::before {
   content: ""; flex: none; height: calc(29 * var(--k)); margin: calc(4 * var(--k)) calc(-1 * var(--px)) calc(6 * var(--k));
   background: linear-gradient(to bottom, var(--brown) 0 calc(5 * var(--k)), transparent calc(5 * var(--k)) calc(8 * var(--k)), var(--teal) calc(8 * var(--k)) calc(13 * var(--k)),
@@ -558,7 +558,6 @@
 .lkm-retro .lkm-lines i { height: calc(14 * var(--k)); border-bottom: 1.5px solid var(--rule); }
 
 .design-retro .display { text-transform: none; letter-spacing: 0; }
-.design-retro .masthead h1.display { transform: rotate(-2deg); }
 .design-retro .banner { border-radius: 999px; background: var(--orange); color: var(--brown); }
 .design-retro .card { border-width: 1.6px; border-radius: 0.14in; }
 .design-retro .page-footer .txt { color: var(--teal); }
