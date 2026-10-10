@@ -84,10 +84,10 @@
          name on when none is set. A second row of people gets shorter lines. #}
       {% set people = cfg.members or ["", "", "", "", ""] %}
       {% set per_row = [people|length, 5]|min %}
-      <div class="loved-cols"{% if per_row != 5 %} style="grid-template-columns:repeat({{ per_row }}, 1fr)"{% endif %}>
+      <div class="loved-cols" style="--cols:{{ per_row }}">
         {% for name in people %}
         {% set colour = ["pink", "blue", "green", "purple", "orange"][loop.index0 % 5] %}
-        <div class="loved-col"{% if loop.index0 >= 5 and loop.index0 % 5 == 0 %} style="border-left:0;padding-left:0"{% endif %}>
+        <div class="loved-col">
           <svg class="ico" style="fill:{{ p[colour] }}"><use href="#i-heart"/></svg>
           <span class="loved-name">{% if name %}{{ name }}{% else %}<span class="solid-line"></span>{% endif %}</span>
           {{ lines(4 if people|length <= 5 else 2, solid=true) }}
