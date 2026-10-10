@@ -20,7 +20,7 @@ The PDF step prints the HTML with a browser. Google Chrome, Microsoft Edge, Chro
 
 ## Fonts
 
-Optional. `python planner.py fonts` downloads the display fonts once. Without them pages fall back to system fonts and still build.
+Optional. `python planner.py fonts` downloads your book's typefaces once (`fonts --all` downloads every set). Without them pages fall back to system fonts and still build.
 
 ## Tests
 

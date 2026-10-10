@@ -6,21 +6,24 @@
 #
 # Every setting below is optional; delete anything you don't want to change.
 #
-# Text limits: family_name 60 characters, title 80, subtitle 120, cover_text
-# 80, output_name 120, each member name 40, month tagline and footer 120.
-# Line breaks and tabs in text become spaces.
+# Text limits, in characters: family_name 60, title 80, subtitle 120,
+# cover_text 80, cover_line 80, output_name 120, each member name 40, month
+# name 30, accent 20, motif 40, tagline and footer 120. Longer text is refused
+# with a message naming the field. Line breaks and tabs in text become spaces.
 # ---------------------------------------------------------------------------
 
 # The planner year. Monthly grids and the year-at-a-glance page are dated from
 # this, so 2028 or 2031 works exactly as well as 2027.
 year: 2027
 
-# Shown on the cover.
+# Shown on the cover of Blank, the retired looks and the layouts. The
+# thirteen looks have their own cover wording and do not print these.
 title: Family Success Planner
 subtitle: Plan Together. Grow Together. Succeed Together.
 
-# Printed on the cover as "The <name> Family" and used in the output filename.
-# Leave blank for a generic planner.
+# Used in the output filename. Blank, the retired looks and the layouts print
+# "The <name> Family" on the cover; a look cover prints it only when
+# cover_show_family (below) is true. Leave blank for a generic planner.
 family_name: ""
 
 # "sunday" matches the reference planner. "monday" gives ISO weeks.
@@ -30,15 +33,28 @@ week_starts: sunday
 # false -> blank grids you fill in yourself (good for gifting or reprinting)
 dated_months: true
 
-# Dated books print `cover_text` if set, otherwise `year`. When dated_months
-# is false, the cover (and Family Goals / annual calendar mastheads) default
-# to fill-in blanks unless you set:
+# The year on the Family Goals and annual calendar mastheads, and on the
+# cover of Blank, the retired looks and the layouts. Dated books print
+# `cover_text` if set, otherwise `year`. When dated_months is false, those
+# places default to fill-in blanks unless you set:
 #   cover_text  print this line instead (e.g. Our, 2027-2028)
 #   auto/blank  four write-on slots
 #   omit        no year on those pages
 #   print       still print cover_text or the configured year
 cover_year: auto
 cover_text: ""
+
+# Your own words on the cover of one of the thirteen looks. All three are off
+# by default, so the cover prints exactly as designed. What you turn on
+# prints in one small spot, in the look's own fonts and colours; long lines
+# print smaller so they stay in that spot. Blank, the retired looks and the
+# layouts ignore these three.
+#   cover_show_family  true prints "The <family_name> Family" (needs a name)
+#   cover_show_year    off, year (the planner year) or custom (cover_text)
+#   cover_line         one extra line of your own, up to 80 characters
+cover_show_family: false
+cover_show_year: "off"
+cover_line: ""
 
 # One row per person on the health tracker. Names are optional - an empty
 # string prints a blank line to write on. Add or remove entries to change how
@@ -60,9 +76,11 @@ output_name: ""
 # (31 pages). Same as `build --linked`.
 # linked: false
 
-# Typefaces. Either a set name:
+# Typefaces. There are 52 sets. Either a set name:
 #   classic  playful  modern  elegant  italics  neat
-# (or one of the two pairings made for each page look, such as `ledger`),
+# or one of the others: each look's own set (editorial uses home-edition,
+# Bodoni Moda and Archivo), the layout sets such as `ledger`, or pairings
+# such as `boho-brush` (once called `terracotta`; that name still works),
 # or any three Google Fonts families of your own:
 #   fonts:
 #     display: Chewy
@@ -70,7 +88,8 @@ output_name: ""
 #     body: Rubik
 # Run `python planner.py typefaces` to see the sets, then
 # `python planner.py fonts` to download whichever you picked.
-# Leave fonts unset to use the look's own set (each look below has one).
+# Leave fonts unset to use the look's own set (each look and layout below
+# has one). Blank and the retired looks use elegant when fonts is unset.
 # fonts: elegant
 
 # How the book looks. Each look has its own cover, monthly page, worksheet
@@ -89,8 +108,9 @@ output_name: ""
 # Planner layouts cross a look with a page structure: `02a` `02b` `02c`,
 # `06a` `06b` `06c`, `11a` `11b` `11c`, `12a` `12b` `12c` (a split, b stacked,
 # c sidebar). They keep the look's colours, use a boxed monthly page and add
-# `weekly` and `daily` sheets before the months. `python planner.py build --help`
-# lists every id. Suggested fonts: 02 ledger, 06 composition-book,
+# `weekly` and `daily` sheets before the months (32 pages). Each layout has
+# its own cover. `python planner.py build --help` lists every id. Their
+# typeface sets apply unless you set fonts: 02 ledger, 06 composition-book,
 # 11 boardroom, 12 garden-party.
 design: editorial
 
@@ -103,7 +123,7 @@ design: editorial
 
 # A colour preset applied before `palette:` below. One of:
 #   linen  classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  blues
-# `linen` is the default (warm beige, ivory). `classic` is the original
+# `linen` is the default (warm taupe, dusty rose and clay on ivory). `classic` is the original
 # bright jewel-tone printable.
 # Run `python planner.py themes` to see them. A theme colours the Blank look
 # and the retired looks only; the thirteen looks and the layouts bring their
@@ -122,16 +142,16 @@ theme: linen
 # pin every colour and make the theme setting do nothing.
 # ---------------------------------------------------------------------------
 # palette:
-#   navy:   "#3E5344"
-#   teal:   "#5F7A62"
-#   pink:   "#C4A09A"
+#   navy:   "#5C4A3A"
+#   teal:   "#9C8768"
+#   pink:   "#CBA89C"
 #   orange: "#C9956A"
-#   green:  "#8AA084"
-#   purple: "#A0909C"
-#   blue:   "#7A8B88"
+#   green:  "#A6A283"
+#   purple: "#A69088"
+#   blue:   "#8C8577"
 #   red:    "#B56858"
 #   brown:  "#8A6B52"
-#   ink:    "#3A3F3A"
+#   ink:    "#3D362C"
 #   paper:  "#F6F1E8"
 #   rule:   "#DDD6CC"
 
@@ -165,6 +185,8 @@ pages:
 # Per-month styling. Positional - the first entry is January. You may supply
 # fewer than twelve; the rest keep their defaults. Any key you leave out keeps
 # its default too. Run `python planner.py months` to see the current table.
+# Only Blank and the retired looks print these. The thirteen looks and the
+# layouts have their own month pages, which use the month names only.
 #
 #   accent: a palette colour name
 #   motif:  snowman | hearts | sprout | tulips | flowers | sun | beach
