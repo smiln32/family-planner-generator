@@ -515,7 +515,6 @@ input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow
   /* Still show that the preview is loading: a slow fade instead of a spin. */
   .spinner span {
     animation: pulse 1.6s ease-in-out infinite !important;
-    animation-duration: 1.6s !important;
     border-color: var(--teal);
   }
 }
