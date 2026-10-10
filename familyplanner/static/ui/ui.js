@@ -94,6 +94,29 @@ function bookPages() {
 
 /* --- rendering the controls ---------------------------------------------- */
 
+/* Picker cards (looks, lettering, themes) are radio groups. Arrow keys move
+   the checked radio, so rebuilding a group on every change would throw away
+   the focused input. Each picker builds its cards once per list and after
+   that only moves the checked state. */
+function syncCards(host, isOn) {
+  for (const input of host.querySelectorAll('input[type="radio"]')) {
+    const on = isOn(input.value);
+    input.checked = on;
+    input.closest("label").dataset.on = on ? "1" : "0";
+  }
+}
+
+/* True when the group was already built for `key`: nothing to rebuild. */
+function sameCards(host, key) {
+  return host.dataset.key === key && host.childElementCount > 0;
+}
+
+/* After a rebuild, put focus back on the checked card if it was inside. */
+function finishCards(host, key, hadFocus) {
+  host.dataset.key = key;
+  if (hadFocus) host.querySelector("input:checked")?.focus();
+}
+
 /* A look or layout brings its own colours; the theme only decides them for
    books without (Blank and the retired looks). The colour panel follows that,
    so it never offers a choice the printed page would ignore. */
@@ -146,6 +169,12 @@ function renderColour() {
 
 function renderThemes() {
   const host = $("#themes");
+  const key = JSON.stringify(meta.themes.map((t) => [t.name, t.swatches]));
+  if (sameCards(host, key)) {
+    syncCards(host, (value) => value === state.theme);
+    return;
+  }
+  const hadFocus = host.contains(document.activeElement);
   host.textContent = "";
   for (const theme of meta.themes) {
     const label = el("label", "swatch");
@@ -170,6 +199,7 @@ function renderThemes() {
     label.append(input, chips, name);
     host.append(label);
   }
+  finishCards(host, key, hadFocus);
 }
 
 function hexForPicker(value) {
@@ -293,11 +323,21 @@ function fontsEqual(a, b) {
   return a && b && a.display === b.display && a.script === b.script && a.body === b.body;
 }
 
+/* The radio value for the lettering picker: a set name, or "custom". */
+function fontsValue() {
+  return customFonts() ? "custom" : state.fonts;
+}
+
 function renderTypefaces() {
   const host = $("#typefaces");
-  host.textContent = "";
-
   const custom = customFonts();
+  const key = JSON.stringify([custom, meta.typefaces.map((t) => t.name)]);
+  if (sameCards(host, key)) {
+    syncCards(host, (value) => value === fontsValue());
+    return;
+  }
+  const hadFocus = host.contains(document.activeElement);
+  host.textContent = "";
   const sets = custom
     ? [{ name: "custom", ...custom }, ...meta.typefaces]
     : meta.typefaces;
@@ -311,7 +351,7 @@ function renderTypefaces() {
     label.dataset.on = selected ? "1" : "0";
     if (isCustom) label.title = "From your config file";
     const input = el("input");
-    Object.assign(input, { type: "radio", name: "fonts", checked: selected });
+    Object.assign(input, { type: "radio", name: "fonts", value: set.name, checked: selected });
     input.addEventListener("change", () => { state.fonts = value; renderTypefaces(); refresh(); });
     const name = el("span", "type-name");
     name.textContent = set.name;
@@ -322,6 +362,7 @@ function renderTypefaces() {
     label.append(input, name, spec);
     host.append(label);
   }
+  finishCards(host, key, hadFocus);
 }
 
 const SIZE_ROLES = [
@@ -373,6 +414,13 @@ function renderSizes() {
 
 function renderDesigns() {
   const host = $("#designs");
+  // The colour strips mix in the theme, so a new theme rebuilds the cards.
+  const key = JSON.stringify([meta.designs.map((d) => d.id), state.theme]);
+  if (sameCards(host, key)) {
+    syncCards(host, (value) => value === state.design);
+    return;
+  }
+  const hadFocus = host.contains(document.activeElement);
   host.textContent = "";
   for (const look of meta.designs) {
     const card = el("label", "design-card");
@@ -422,6 +470,7 @@ function renderDesigns() {
     }
     host.append(card);
   }
+  finishCards(host, key, hadFocus);
 }
 
 function renderMembers() {
