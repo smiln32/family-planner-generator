@@ -524,7 +524,7 @@
 .rt-arcs i:nth-child(4) { width: calc(280 * var(--k)); height: calc(140 * var(--k)); border-radius: calc(140 * var(--k)) calc(140 * var(--k)) 0 0; background: var(--pink); }
 .rt-arcs i:nth-child(5) { width: calc(200 * var(--k)); height: calc(100 * var(--k)); border-radius: calc(100 * var(--k)) calc(100 * var(--k)) 0 0; background: var(--paper); }
 .rt-text { position: absolute; left: 0; right: 0; top: calc(60 * var(--k)); display: flex; flex-direction: column; align-items: center; gap: calc(14 * var(--k)); text-align: center; }
-.rt-title { font-family: var(--font-display); font-size: calc(56 * var(--k)); line-height: 0.92; color: var(--brown); transform: rotate(-4deg); }
+.rt-title { font-family: var(--font-display); font-size: calc(56 * var(--k)); line-height: 0.92; color: var(--brown); }
 .rt-sub { white-space: nowrap; margin-top: calc(6 * var(--k)); font-family: var(--font-body); font-weight: 500; font-size: calc(10 * var(--k)); letter-spacing: 0.36em; color: var(--teal); }
 
 /* Optional cover lines: under "A family planner", above the arcs. */
@@ -742,18 +742,22 @@
 .ct-label {
   position: relative; width: calc(270 * var(--k)); height: calc(330 * var(--k)); border-radius: 50%; background: var(--paper);
   box-shadow: 0 0 0 calc(8 * var(--k)) color-mix(in srgb, var(--pink) 45%, var(--paper));
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(8 * var(--k)); text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; text-align: center;
+  padding: calc(40 * var(--k)) 0;
 }
 .ct-stitch { position: absolute; inset: calc(10 * var(--k)); border-radius: 50%; border: 1px dashed var(--navy); }
 .ct-kick { font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k)); letter-spacing: 0.34em; padding-left: 0.34em; color: var(--navy); }
 .ct-title { font-family: var(--font-display); font-style: italic; font-size: calc(50 * var(--k)); line-height: 0.95; color: var(--navy); }
-.ct-rule { width: calc(30 * var(--k)); height: 1px; background: var(--navy); margin: calc(6 * var(--k)) 0; }
+.ct-rule { flex: none; width: calc(30 * var(--k)); height: 1px; background: var(--navy); }
 .ct-sub { font-family: var(--font-display); font-size: calc(13 * var(--k)); color: var(--navy); }
 
-/* Optional cover lines (cfg.cover_extras), low in the oval. Placed on top of
-   the label, so the title and sub line stay exactly where they were. */
+/* Optional cover lines (cfg.cover_extras): the last of the evenly spread
+   lines in the oval. .ct-own keeps a fixed height and the lines sit centred
+   in it, so the rest of the label does not move with their length. */
+.ct-with-own { padding: calc(26 * var(--k)) 0; }
+.ct-own { flex: none; align-self: stretch; position: relative; height: calc(46 * var(--k)); }
 .lko-cottage {
-  position: absolute; left: calc(46 * var(--k)); right: calc(46 * var(--k)); bottom: calc(32 * var(--k));
+  position: absolute; left: calc(46 * var(--k)); right: calc(46 * var(--k)); top: 50%; transform: translateY(-50%);
   display: flex; flex-direction: column; align-items: center; gap: calc(3 * var(--k));
 }
 .lko-cottage .lko-family {
@@ -764,8 +768,8 @@
   letter-spacing: 0.34em; padding-left: 0.34em; color: var(--navy);
 }
 .lko-cottage .lko-line { font-family: var(--font-display); font-size: calc(10 * var(--k) * var(--fit)); line-height: 1.2; color: var(--navy); }
-.lko-cottage.lko-fit2 { --fit: 0.7; left: calc(60 * var(--k)); right: calc(60 * var(--k)); bottom: calc(40 * var(--k)); }
-.lko-cottage.lko-fit3 { --fit: 0.5; gap: calc(2 * var(--k)); left: calc(62 * var(--k)); right: calc(62 * var(--k)); bottom: calc(40 * var(--k)); }
+.lko-cottage.lko-fit2 { --fit: 0.7; left: calc(60 * var(--k)); right: calc(60 * var(--k)); }
+.lko-cottage.lko-fit3 { --fit: 0.5; gap: calc(2 * var(--k)); left: calc(62 * var(--k)); right: calc(62 * var(--k)); }
 
 .lkm-cottage { --pt: 0; }
 .lkm-cottage .lkm-band { display: block; flex: none; height: calc(70 * var(--k)); margin: 0 calc(-1 * var(--px)); background-size: calc(20 * var(--k)) calc(20 * var(--k)); }

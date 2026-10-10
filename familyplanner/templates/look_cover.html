@@ -121,14 +121,14 @@
   {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
 
 {% elif id == "cottage" %}
-  <div class="ct-label">
+  <div class="ct-label{% if cfg.cover_extras %} ct-with-own{% endif %}">
     <i class="ct-stitch" aria-hidden="true"></i>
     <div class="ct-kick">THE FAMILY</div>
-    <div class="ct-title">Life<br>at Home</div>
+    <div class="ct-title">Life<br>at<br>Home</div>
     <i class="ct-rule" aria-hidden="true"></i>
     <div class="ct-sub">a planner for the everyday</div>
     {% if cfg.cover_extras %}
-    {{ own_lines() }}
+    <div class="ct-own">{{ own_lines() }}</div>
     {% endif %}
   </div>
 

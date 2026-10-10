@@ -118,6 +118,24 @@ def test_the_spot_has_its_own_styles(look):
         assert re.search(rf"\.lko-{look} \.lko-{kind}\b", css), kind
 
 
+def test_retro_cover_text_is_level():
+    # The owner asked for every line on the Retro sunset cover to be level
+    # (2026-10-10): no rotate or skew on the title, sub line or cover spot.
+    css = (render.STATIC_DIR / "looks.css").read_text(encoding="utf-8")
+    rules = re.findall(r"(\.(?:rt-text|rt-title|rt-sub|lko-retro)[^{]*)\{([^}]*)\}", css)
+    assert rules
+    for selector, body in rules:
+        assert not re.search(r"rotate|skew|matrix", body), selector
+
+
+@pytest.mark.parametrize("extras", [{}, ALL_ON])
+def test_cottage_title_is_three_lines(extras):
+    # Owner change of 2026-10-10: "Life", "at" and "Home" each on a line.
+    cover = _cover(_cfg("cottage", **extras))
+    assert '<div class="ct-title">Life<br>at<br>Home</div>' in cover
+    assert ("ct-with-own" in cover) == bool(extras)
+
+
 def test_all_three_print_in_order():
     cfg = _cfg(**ALL_ON)
     assert [kind for kind, _ in cfg.cover_extras] == ["family", "year", "line"]
