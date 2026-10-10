@@ -9,6 +9,10 @@ year text and extra line 80, and long single words). In each case:
 - nothing else on the cover moves: each other element has the same box with
   the spot as without it.
 
+The check is only fair in the look's own typefaces: fallback fonts have other
+widths, so the lines wrap differently. A look whose font files are not
+downloaded (`python planner.py fonts --looks`) is skipped, not failed.
+
 What this cannot see is a line drawn over another part of the cover (a
 title, a rule, the edge of a shape). That was checked by eye and by a pixel
 script on 2026-10-10; see HANDOFF.md, "Cover options".
@@ -26,7 +30,7 @@ from pathlib import Path
 
 import pytest
 
-from familyplanner import config, designs, render
+from familyplanner import config, designs, render, typefaces
 
 SETS = {
     "usual": {"family_name": "Sample", "cover_show_family": True, "cover_show_year": "custom",
@@ -97,6 +101,20 @@ window.addEventListener('load', () => { document.fonts.ready.then(() => {
 """
 
 
+FONT_DIR = render.STATIC_DIR / "fonts"
+
+
+def _missing_fonts(look: str) -> list[str]:
+    """Upright font files this look's typeface set needs that are not downloaded.
+
+    Italics are left out: a family may publish none, and then the browser
+    slants the upright face on every machine alike.
+    """
+    faces = typefaces.resolve(designs.look_fonts(look))
+    return [name for name in (typefaces.slug(f, w) for f, w in faces.wanted())
+            if not (FONT_DIR / name).is_file()]
+
+
 def _cover_section(cfg, name: str) -> str:
     body = render.render_html(cfg, render.plan_pages(cfg), standalone=True).split("<body", 1)[1]
     start = body.index('<section class="page')
@@ -110,6 +128,8 @@ def _document(look: str, size: str) -> str:
     for name, fields in SETS.items():
         cfg = config.load(None)
         cfg.design, cfg.page_size, cfg.pages = look, size, ["cover"]
+        # Each look is printed in its own typeface set, as a real book is.
+        cfg.faces = typefaces.resolve(designs.look_fonts(look))
         for key, value in fields.items():
             setattr(cfg, key, value)
         cfgs[name] = config.validate(cfg)
@@ -139,7 +159,8 @@ def _measure(browser: Path, look: str, size: str) -> list[dict]:
 @pytest.fixture(scope="module")
 def measured(browser) -> dict[tuple[str, str], list[dict]]:
     """Needs the shared `browser` fixture (tests/conftest.py): skips without one."""
-    jobs = [(look, size) for look in designs.LOOKS for size in config.PAGE_SIZES]
+    jobs = [(look, size) for look in designs.LOOKS if not _missing_fonts(look)
+            for size in config.PAGE_SIZES]
     with ThreadPoolExecutor(max_workers=6) as pool:
         results = pool.map(lambda job: _measure(browser, *job), jobs)
         return dict(zip(jobs, results))
@@ -147,7 +168,12 @@ def measured(browser) -> dict[tuple[str, str], list[dict]]:
 
 @pytest.mark.parametrize("size", list(config.PAGE_SIZES))
 @pytest.mark.parametrize("look", list(designs.LOOKS))
-def test_cover_spot_stays_in_place(measured, look, size):
+def test_cover_spot_stays_in_place(look, size, request):
+    missing = _missing_fonts(look)
+    if missing:
+        pytest.skip(f"{look} fonts not downloaded ({len(missing)} files, such as {missing[0]}); "
+                    "run `python planner.py fonts --looks`")
+    measured = request.getfixturevalue("measured")
     results = measured[(look, size)]
     assert [r["set"] for r in results] == list(SETS)
     problems = [f"{r['set']}: {p}" for r in results for p in r["problems"]]
