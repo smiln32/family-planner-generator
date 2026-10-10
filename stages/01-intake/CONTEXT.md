@@ -12,7 +12,7 @@ Collect this run's family facts. Do not pick colours, fonts, or render a PDF.
 
 ## Process
 
-1. Ask only what this run needs: year, family name (or generic), members, week start, dated or blank months, paper size if not the factory default.
+1. Ask only what this run needs: year, family name (or generic), members, week start, dated or blank months, paper size if not the factory default, and whether the cover should print the family name, the year (or text such as "2026–27") or one short line. Cover words are off unless the family asks.
 2. Derive a topic slug from the family name and year (`ramirez-2027`, or `family-2027` if unnamed).
 3. Fill the brief template. Leave design, fonts, and page toggles to stage 02.
 4. Pause at the checkpoint before writing.

@@ -15,16 +15,16 @@ Turn the intake brief into a generator config. Do not run Chrome or write a PDF.
 ## Process
 
 1. Read the brief. Copy year, name, members, week start, dated flag, paper size into YAML.
-2. Choose `design` and `fonts` from the built-in names unless the brief asks otherwise. Set `theme` only with `design: blank` or a retired look; the thirteen looks bring their own colours. Use `palette:` to replace a single colour on any look.
+2. Choose `design` from the built-in names unless the brief asks otherwise. A look or layout sets its own `fonts`; set `fonts` only to use a different set. Set `theme` only with `design: blank` or a retired look; the thirteen looks bring their own colours. Use `palette:` to replace a single colour on any look.
 3. Set `pages` only if the brief drops or adds sheets. Otherwise omit `pages` so defaults apply.
-4. Override `months` entries only when the brief asks for new taglines.
+4. Cover words, from the brief's "cover words" line. On one of the thirteen looks all three are off unless asked: `cover_show_family: true` (needs `family_name`), `cover_show_year: year` or `custom` with `cover_text` (such as "2026–27"), and `cover_line` (one short line). Limits: family name 60 characters, `cover_text` and `cover_line` 80. On Blank, a retired look or a layout these three do nothing; the cover prints `family_name` and the year by itself (`cover_year`, `cover_text`). Override `months` taglines only when the brief asks, and only on Blank or a retired look; look and layout month pages do not print them.
 5. Pause at the checkpoint, then write YAML.
 
 ## Checkpoints
 
 | After Step | Agent Presents | Human Decides |
 |------------|----------------|---------------|
-| 4 | Design, fonts, page list summary | Approve or change |
+| 4 | Design, fonts, cover words, page list summary | Approve or change |
 
 ## Audit
 

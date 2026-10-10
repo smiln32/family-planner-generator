@@ -19,4 +19,4 @@ Month taglines are one cheerful line, present tense, about being together. Foote
 
 ## Names
 
-Each of the thirteen looks has its own cover, unique to that style, with no family name and no year (see `design-system.md`). Do not add a family line to a look cover. `family_name` names the file and page title; the retired looks still print "The [family name] Family" when it is set. Tracker rows may be blank for handwriting.
+Each of the thirteen looks has its own cover, unique to that style. As designed it prints no family name and no year (see `design-system.md`). Add them only when the family asks: `cover_show_family: true` prints "The [family name] Family", `cover_show_year` prints the year or a `cover_text` line such as "2026–27", and `cover_line` adds one short line of their own ("Our year together"). Keep that line short, warm and in the family's words. `family_name` also names the file and page title; Blank, the retired looks and the layouts print "The [family name] Family" on the cover whenever it is set. Tracker rows may be blank for handwriting.
