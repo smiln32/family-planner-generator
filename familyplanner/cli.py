@@ -254,12 +254,23 @@ def cmd_typefaces(args: argparse.Namespace) -> int:
     return 0
 
 
+def look_font_sets() -> list[str]:
+    """The typeface sets the thirteen looks print in, each once, in look order."""
+    return list(dict.fromkeys(designs.look_fonts(look) for look in designs.LOOKS))
+
+
 def cmd_fonts(args: argparse.Namespace) -> int:
     from .fonts import fetch_fonts
     dest = Path(__file__).parent / "static" / "fonts"
     if getattr(args, "all", False):
+        names = typefaces.names()
+    elif getattr(args, "looks", False):
+        names = look_font_sets()
+    else:
+        names = []
+    if names:
         worst = 0
-        for name in typefaces.names():
+        for name in names:
             worst = max(worst, fetch_fonts(dest, typefaces.resolve(name), force=args.force))
             print()
         return worst
@@ -343,7 +354,10 @@ def build_parser() -> argparse.ArgumentParser:
     f = sub.add_parser("fonts", help="download the typefaces for best fidelity")
     shared(f)
     f.add_argument("--force", action="store_true", help="re-download existing fonts")
-    f.add_argument("--all", action="store_true", help="download every built-in typeface set")
+    which = f.add_mutually_exclusive_group()
+    which.add_argument("--all", action="store_true", help="download every built-in typeface set")
+    which.add_argument("--looks", action="store_true",
+                       help="download the typeface sets the thirteen looks use")
     f.set_defaults(func=cmd_fonts)
 
     return parser

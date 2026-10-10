@@ -148,6 +148,7 @@ python planner.py months             # per-month colours, motifs and taglines
 python planner.py init               # write a starter family.yaml
 python planner.py fonts              # download your book's typefaces
 python planner.py fonts --all        # download every typeface set
+python planner.py fonts --looks      # download the thirteen looks' sets
 ```
 
 `build` picks up `./family.yaml` automatically if it exists; `-c other.yaml`
