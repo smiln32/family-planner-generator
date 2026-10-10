@@ -10,8 +10,9 @@ year text and extra line 80, and long single words). In each case:
   the spot as without it.
 
 The check is only fair in the look's own typefaces: fallback fonts have other
-widths, so the lines wrap differently. A look whose font files are not
-downloaded (`python planner.py fonts --looks`) is skipped, not failed.
+widths, so the lines wrap differently. The font files ship in the repo, and
+tests/test_font_files.py fails if any is missing; as a safety net, a look
+whose files are missing here is skipped, not failed.
 
 What this cannot see is a line drawn over another part of the cover (a
 title, a rule, the edge of a shape). That was checked by eye and by a pixel
@@ -105,7 +106,7 @@ FONT_DIR = render.STATIC_DIR / "fonts"
 
 
 def _missing_fonts(look: str) -> list[str]:
-    """Upright font files this look's typeface set needs that are not downloaded.
+    """Upright font files this look's typeface set needs that are missing.
 
     Italics are left out: a family may publish none, and then the browser
     slants the upright face on every machine alike.
@@ -171,8 +172,9 @@ def measured(browser) -> dict[tuple[str, str], list[dict]]:
 def test_cover_spot_stays_in_place(look, size, request):
     missing = _missing_fonts(look)
     if missing:
-        pytest.skip(f"{look} fonts not downloaded ({len(missing)} files, such as {missing[0]}); "
-                    "run `python planner.py fonts --looks`")
+        pytest.skip(f"{look} fonts missing ({len(missing)} files, such as {missing[0]}); "
+                    "restore familyplanner/static/fonts/ from git, or run "
+                    "`python planner.py fonts --looks`")
     measured = request.getfixturevalue("measured")
     results = measured[(look, size)]
     assert [r["set"] for r in results] == list(SETS)
