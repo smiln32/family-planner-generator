@@ -128,6 +128,21 @@ def test_retro_cover_text_is_level():
         assert not re.search(r"rotate|skew|matrix", body), selector
 
 
+def test_cottage_label_spreads_without_the_options():
+    # Owner change of 2026-10-10: with the options off, the label lines fill
+    # the oval from the same top as with them on (THE FAMILY at the same
+    # height), spread evenly down to the sub line, not a compact centred
+    # block. With the options on, the lines keep their space-evenly layout.
+    css = (render.STATIC_DIR / "looks.css").read_text(encoding="utf-8")
+    label = re.search(r"\.ct-label \{([^}]*)\}", css).group(1)
+    with_own = re.search(r"\.ct-with-own \{([^}]*)\}", css).group(1)
+    assert "justify-content: space-between" in label
+    assert "padding: calc(36 * var(--k)) 0 calc(56 * var(--k))" in label
+    assert "justify-content: space-evenly" in with_own
+    assert "padding: calc(26 * var(--k)) 0" in with_own
+    assert "ct-with-own" not in _cover(_cfg("cottage"))
+
+
 @pytest.mark.parametrize("extras", [{}, ALL_ON])
 def test_cottage_title_is_three_lines(extras):
     # Owner change of 2026-10-10: "Life", "at" and "Home" each on a line.

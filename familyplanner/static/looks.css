@@ -742,8 +742,8 @@
 .ct-label {
   position: relative; width: calc(270 * var(--k)); height: calc(330 * var(--k)); border-radius: 50%; background: var(--paper);
   box-shadow: 0 0 0 calc(8 * var(--k)) color-mix(in srgb, var(--pink) 45%, var(--paper));
-  display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; text-align: center;
-  padding: calc(40 * var(--k)) 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center;
+  padding: calc(36 * var(--k)) 0 calc(56 * var(--k));
 }
 .ct-stitch { position: absolute; inset: calc(10 * var(--k)); border-radius: 50%; border: 1px dashed var(--navy); }
 .ct-kick { font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k)); letter-spacing: 0.34em; padding-left: 0.34em; color: var(--navy); }
@@ -753,8 +753,10 @@
 
 /* Optional cover lines (cfg.cover_extras): the last of the evenly spread
    lines in the oval. .ct-own keeps a fixed height and the lines sit centred
-   in it, so the rest of the label does not move with their length. */
-.ct-with-own { padding: calc(26 * var(--k)) 0; }
+   in it, so the rest of the label does not move with their length. Without
+   them (.ct-label above) the same lines fill the oval from the same top,
+   with the sub line lower; the bottom pad keeps it inside the stitching. */
+.ct-with-own { justify-content: space-evenly; padding: calc(26 * var(--k)) 0; }
 .ct-own { flex: none; align-self: stretch; position: relative; height: calc(46 * var(--k)); }
 .lko-cottage {
   position: absolute; left: calc(46 * var(--k)); right: calc(46 * var(--k)); top: 50%; transform: translateY(-50%);
