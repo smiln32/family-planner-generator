@@ -4,9 +4,9 @@ All three are off by default, so a look cover renders exactly as designed.
 Each one is turned on by itself (cover_show_family, cover_show_year,
 cover_line). Blank, the retired looks and the layouts ignore them.
 
-Phase 1: only the looks in designs.COVER_LINE_LOOKS have the cover spot.
-The tests for the other ten are marked xfail (strict), so they start
-failing the day a look gets its spot and the mark must come off.
+Every one of the thirteen looks has the cover spot (designs.COVER_LINE_LOOKS).
+Long text steps down in size (Config.cover_fit). tests/test_cover_fit.py
+prints the covers in a browser and checks the spot stays in its place.
 """
 
 from __future__ import annotations
@@ -29,12 +29,11 @@ SCHOOL_YEAR = "2026–27"
 
 
 def _look_params():
-    """Every look, with the ones that have no cover spot yet marked xfail."""
-    return [
-        look if look in designs.COVER_LINE_LOOKS else pytest.param(
-            look, marks=pytest.mark.xfail(strict=True, reason="no cover spot yet (phase 1)"))
-        for look in designs.LOOKS
-    ]
+    return list(designs.LOOKS)
+
+
+def test_every_look_has_the_cover_spot():
+    assert set(designs.COVER_LINE_LOOKS) == set(designs.LOOKS)
 
 
 def _cfg(design="editorial", **fields):
@@ -112,7 +111,7 @@ def test_extra_line_prints_on_the_look_cover(look):
     assert f'<div class="lko-line">{LINE}</div>' in cover
 
 
-@pytest.mark.parametrize("look", designs.COVER_LINE_LOOKS)
+@pytest.mark.parametrize("look", list(designs.LOOKS))
 def test_the_spot_has_its_own_styles(look):
     css = (render.STATIC_DIR / "looks.css").read_text(encoding="utf-8")
     for kind in ("family", "year", "line"):
@@ -159,6 +158,34 @@ def test_cover_text_is_length_limited(field):
     assert limit == 80
     with pytest.raises(ConfigError, match=f"{limit} or fewer"):
         _cfg(**{field: "a" * (limit + 1)})
+
+
+# --- long text steps down in size ------------------------------------------
+
+@pytest.mark.parametrize("fields, want", [
+    ({}, 1),
+    (ALL_ON, 1),
+    ({"cover_line": "a" * 14}, 1),
+    ({"cover_line": "a" * 15}, 2),
+    ({"cover_line": "a" * 21}, 3),
+    ({"cover_line": "word " * 14}, 1),
+    ({"cover_line": "word " * 15}, 2),
+    ({"family_name": "x" * 60, "cover_show_family": True, "cover_line": "word " * 16}, 3),
+    # Text that is not turned on does not count.
+    ({"family_name": "x" * 60, "cover_text": "y" * 80}, 1),
+])
+def test_cover_fit_levels(fields, want):
+    assert _cfg(**fields).cover_fit == want
+
+
+def test_short_lines_get_no_fit_class():
+    assert "lko-fit" not in _cover(_cfg(**ALL_ON))
+
+
+@pytest.mark.parametrize("look", list(designs.LOOKS))
+def test_long_lines_get_a_fit_class(look):
+    cover = _cover(_cfg(look, cover_line="Our year together, one small plan at a time, all the way from January on"))
+    assert f'class="lk-own lko-{look} lko-fit2"' in cover
 
 
 def test_cover_line_is_one_line_of_text():
@@ -316,7 +343,7 @@ def test_preview_prints_the_opt_ins(api):
 def test_preview_text_false_does_not_turn_the_family_line_on(api):
     status, body = _post(f"{api}/api/preview", {"family_name": NAME, "cover_show_family": "false",
                                                 "design": "editorial", "preview": "cover"})
-    assert status == 200 and "lk-own" not in body["html"]
+    assert status == 200 and "lk-own" not in body["html"].split("<body", 1)[1]
 
 
 @pytest.mark.parametrize("route", ["preview", "export"])
@@ -345,15 +372,15 @@ def test_old_plan_file_without_opt_ins_opens_clean(api):
     got = back["config"]
     assert (got["cover_show_year"], got["cover_show_family"], got["cover_line"]) == ("off", False, "")
     status, body = _post(f"{api}/api/preview", {**got, "preview": "cover"})
-    assert status == 200 and "lk-own" not in body["html"] and NAME not in body["html"].split("<body", 1)[1]
+    page = body["html"].split("<body", 1)[1]
+    assert status == 200 and "lk-own" not in page and NAME not in page
 
 
 def test_state_says_how_each_cover_treats_the_settings(api):
     with urllib.request.urlopen(f"{api}/api/state", timeout=20) as resp:
         state = json.loads(resp.read())
     kinds = {d["id"]: d["cover"] for d in state["designs"]}
-    assert all(kinds[look] == "lines" for look in designs.COVER_LINE_LOOKS)
-    assert all(kinds[look] == "soon" for look in designs.LOOKS
-               if look not in designs.COVER_LINE_LOOKS)
+    assert all(kinds[look] == "lines" for look in designs.LOOKS)
+    assert set(kinds.values()) == {"lines", "own"}
     assert kinds["blank"] == "own" and kinds["06b"] == "own"
     assert state["config"]["cover_show_year"] == "off"

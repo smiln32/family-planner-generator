@@ -110,15 +110,11 @@ def _config_from(payload: dict, base: Config) -> Config:
 def _cover_kind(design: str) -> str:
     """How a design's cover treats the cover settings, for the editor.
 
-    "lines": a look cover with the spot for the opt-in lines. "soon": a look
-    cover without that spot yet. "own": Blank, the retired looks and the
-    layouts, which print the family name and year by themselves.
+    "lines": a look cover, with the spot for the opt-in lines. "own": Blank,
+    the retired looks and the layouts, which print the family name and year
+    by themselves.
     """
-    if design in designs.COVER_LINE_LOOKS:
-        return "lines"
-    if design in designs.LOOKS:
-        return "soon"
-    return "own"
+    return "lines" if design in designs.COVER_LINE_LOOKS else "own"
 
 
 def _fonts_for_save(value) -> str | dict:

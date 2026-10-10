@@ -359,6 +359,10 @@ WEEK_STARTS = ("sunday", "monday")
 COVER_YEAR_MODES = ("auto", "print", "blank", "omit")
 # Year on a look cover: none, the planner year, or the cover_text line.
 COVER_SHOW_YEAR_MODES = ("off", "year", "custom")
+# When the cover spot steps its text down (Config.cover_fit): all the lines
+# together over 70 or 130 characters, or one word over 14 or 20 characters.
+COVER_FIT_TOTAL = (70, 130)
+COVER_FIT_WORD = (14, 20)
 YEAR_RANGE = (1900, 2999)
 
 # Month names become page ids and tab labels, so keep them to plain words.
@@ -622,6 +626,25 @@ class Config:
         if line:
             out.append(("line", line))
         return out
+
+    @property
+    def cover_fit(self) -> int:
+        """How much the cover spot shrinks its text: 1 (not at all), 2 or 3.
+
+        Long lines and long single words step the size down, so they wrap
+        inside the spot instead of running into the rest of the cover. Short
+        lines, such as a family name and a school year, stay at 1.
+        """
+        texts = [text for _, text in self.cover_extras]
+        if not texts:
+            return 1
+        total = sum(len(text) for text in texts)
+        longest_word = max(len(word) for text in texts for word in text.split())
+        if total > COVER_FIT_TOTAL[1] or longest_word > COVER_FIT_WORD[1]:
+            return 3
+        if total > COVER_FIT_TOTAL[0] or longest_word > COVER_FIT_WORD[0]:
+            return 2
+        return 1
 
     @property
     def stem(self) -> str:

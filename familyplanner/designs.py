@@ -148,9 +148,9 @@ LOOKS: dict[str, dict] = {
 }
 
 # Looks whose cover has the small spot for the optional cover lines
-# (config.Config.cover_extras: family name, year, extra line). The editor
-# explains that the others do not print them yet.
-COVER_LINE_LOOKS: tuple[str, ...] = ("editorial", "cottage", "bauhaus")
+# (config.Config.cover_extras: family name, year, extra line). Every look
+# has one; a new look must get its spot before it joins LOOKS.
+COVER_LINE_LOOKS: tuple[str, ...] = tuple(LOOKS)
 
 # Retired looks. They still resolve (old plan files, and the layouts build on
 # 02, 06, 11 and 12) but the picker no longer offers them.

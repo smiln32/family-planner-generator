@@ -211,3 +211,9 @@ def test_hidden_field_rows_stay_hidden():
     "Year on the cover" row showed even for dated books."""
     assert 'class="field-row stack" id="cover-year-row" hidden' in HTML
     assert re.search(r"\.field-row\[hidden\]\s*\{\s*display:\s*none", CSS)
+
+
+def test_cover_section_has_no_not_yet_note():
+    """Every look has the cover spot now, so the editor never says one is missing."""
+    js = (UI / "ui.js").read_text(encoding="utf-8")
+    assert '"soon"' not in js and "does not print a name" not in js

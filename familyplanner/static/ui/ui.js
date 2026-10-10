@@ -787,7 +787,6 @@ function newBook() {
 
 /* "Personalize the cover" follows the chosen design (designInfo().cover):
    "lines"  a look cover with a spot for the opt-in lines, all off at first;
-   "soon"   a look cover that does not print them yet;
    "own"    Blank, the retired looks and the layouts, which print the family
             name and the year by themselves.
    Only fields that change the chosen cover are shown. */
@@ -799,12 +798,9 @@ function syncCoverSection() {
   const kind = coverKind();
   const onLook = kind !== "own";
   const lines = kind === "lines";
-  const label = designInfo()?.label || state.design;
   const note = $("#cover-note");
   if (lines) {
     note.textContent = "Everything here starts off, so the cover stays as designed. What you turn on prints in one small spot, in the look's own style.";
-  } else if (kind === "soon") {
-    note.textContent = `The ${label} cover does not print a name, year or extra line yet. Editorial, Cottage gingham and Bauhaus blocks do.`;
   } else {
     note.textContent = "This cover prints the year, and the family name when you type one under Your family.";
   }

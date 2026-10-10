@@ -5,7 +5,7 @@
    small spot styled in the look's own fonts and colours (.lko-<look>). #}
 {% set id = look.base %}
 {% macro own_lines() %}
-<div class="lk-own lko-{{ look.base }}">
+<div class="lk-own lko-{{ look.base }}{% if cfg.cover_fit > 1 %} lko-fit{{ cfg.cover_fit }}{% endif %}">
 {% for kind, text in cfg.cover_extras %}
   <div class="lko-{{ kind }}">{{ text }}</div>
 {% endfor %}
@@ -36,6 +36,7 @@
     <div class="mc-kick">Household planner</div>
     <div class="mc-title">the<br>family<br>plan</div>
   </div>
+  {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
   <div class="mc-shapes" aria-hidden="true">
     <i class="s1"></i><i class="s2"></i><i class="s3"></i>
     <i class="s4"></i><i class="s5"></i><i class="s6"><b></b></i>
@@ -47,6 +48,7 @@
     <div class="nd-title">home,<br>together</div>
     <div class="nd-label"><i></i><span>family planner</span></div>
   </div>
+  {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
 
 {% elif id == "farmhouse" %}
   <div class="fh-main">
@@ -57,6 +59,7 @@
   </div>
   <div class="fh-sack" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="fh-tick" aria-hidden="true"></div>
+  {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
 
 {% elif id == "deco" %}
   <i class="dc-f1" aria-hidden="true"></i><i class="dc-f2" aria-hidden="true"></i>
@@ -68,10 +71,11 @@
     <div class="dc-sub"><i></i><span>PLANNER</span><i></i></div>
   </div>
   <div class="dc-arch" aria-hidden="true"><i></i><i></i><i></i></div>
+  {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
 
 {% elif id == "swiss" %}
   <div class="sw-bar"><span>Family</span><span>Planner</span><span>Vol. 1</span><span>8 sections</span></div>
-  <div class="sw-title"><div>Fam-<br>ily<br>Plan-<br>ner</div><i aria-hidden="true"></i></div>
+  <div class="sw-title"><div>Fam-<br>ily<br>Plan-<br>ner</div><i aria-hidden="true"></i>{% if cfg.cover_extras %}{{ own_lines() }}{% endif %}</div>
   <ol class="sw-index">
     {% for t in ["Goals", "Values", "Calendar", "Budget", "Chores", "Meals", "Grocery", "Health"] %}
     <li><b>{{ "%02d"|format(loop.index) }}</b><span>{{ t }}</span></li>
@@ -83,6 +87,7 @@
   <div class="rt-text">
     <div class="rt-title">Good Days<br>Ahead</div>
     <div class="rt-sub">A FAMILY PLANNER</div>
+    {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
   </div>
 
 {% elif id == "bauhaus" %}
@@ -104,6 +109,7 @@
     <div class="al-orn">&#10086;</div>
     <div class="al-sub">Being a faithful record of our days, our plans &amp; our table</div>
   </div>
+  {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
 
 {% elif id == "terracotta" %}
   <i class="tc-a1" aria-hidden="true"></i><i class="tc-a2" aria-hidden="true"></i>
@@ -112,6 +118,7 @@
     <div class="tc-title">Home<br>Base</div>
     <div class="tc-sub">FAMILY PLANNER</div>
   </div>
+  {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
 
 {% elif id == "cottage" %}
   <div class="ct-label">
@@ -133,7 +140,7 @@
   <div class="gz-deck">Household sources confirm: goals set, meals planned, memories pending</div>
   <div class="gz-cols">
     <div><b>The Table</b><span>Weekly menus, grocery runs, and who is on dishes.</span></div>
-    <div><b>The Ledger</b><span>Budgets, bills and the savings jar, month by month.</span></div>
+    <div><b>The Ledger</b><span>Budgets, bills and the savings jar, month by month.</span>{% if cfg.cover_extras %}{{ own_lines() }}{% endif %}</div>
     <div><b>Society Pages</b><span>Birthdays, games, recitals and every trip worth taking.</span></div>
   </div>
 
@@ -141,6 +148,7 @@
   <div class="cs-stripes" aria-hidden="true"></div>
   <div class="cs-text">
     <div class="cs-title">Anchored</div>
+    {% if cfg.cover_extras %}{{ own_lines() }}{% endif %}
     <div class="cs-foot">
       <div class="cs-sub">a family planner<br><span>for steady weeks &amp; open water</span></div>
       <i aria-hidden="true"></i>
