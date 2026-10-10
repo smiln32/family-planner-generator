@@ -75,9 +75,9 @@ def _config_from(payload: dict, base: Config) -> Config:
         cfg.pages = config.check_str_list(payload["pages"], "pages")
     # Not on the form, but carried in plan files; the editor passes them back.
     if "title" in payload:
-        cfg.title = str(payload["title"] or "")
+        cfg.title = config.check_field_text("title", payload["title"])
     if "subtitle" in payload:
-        cfg.subtitle = str(payload["subtitle"] or "")
+        cfg.subtitle = config.check_field_text("subtitle", payload["subtitle"])
     if "linked" in payload:
         cfg.linked = bool(payload["linked"])
     if "months" in payload:
