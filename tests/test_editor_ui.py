@@ -140,7 +140,7 @@ def test_zoom_label_matches_the_script():
     assert f'"{match.group(1)}"' in JS
 
 
-# --- the year on the cover row ----------------------------------------------------
+# --- Personalize the cover ------------------------------------------------------
 
 def _row_classes(field_id: str) -> str:
     """The class list of the .field-row that holds the field's label."""
@@ -149,12 +149,61 @@ def _row_classes(field_id: str) -> str:
     return match.group(1)
 
 
-def test_year_on_the_cover_select_gets_the_whole_panel_width():
+def _cover_section() -> str:
+    start = HTML.index('id="cover-group"')
+    return HTML[start:HTML.index("</section>", start)]
+
+
+@pytest.mark.parametrize("field_id", ["cover-year", "cover-show-year"])
+def test_year_on_the_cover_select_gets_the_whole_panel_width(field_id):
     """At full desktop width the label column squeezed this select and cut off
     its longest choice ("Blank lines to writ"). Its label now sits above it."""
-    assert "stack" in _row_classes("cover-year").split()
+    assert "stack" in _row_classes(field_id).split()
     body = rule(".field-row.stack")
     assert re.search(r"grid-template-columns:\s*1fr\s*;", body)
+
+
+def test_cover_fields_sit_together_under_one_heading():
+    section = _cover_section()
+    assert "<h2>Personalize the cover</h2>" in section
+    for field_id in ("cover-show-year", "cover-text", "cover-show-family",
+                     "cover-line", "cover-year"):
+        assert f'id="{field_id}"' in section, field_id
+    # The old spots are gone, so each field is on the page once.
+    assert HTML.count('id="cover-text"') == 1 and HTML.count('id="cover-year"') == 1
+
+
+def test_cover_inputs_carry_the_text_limits():
+    from familyplanner import config
+    section = _cover_section()
+    for field_id, key in (("cover-text", "cover_text"), ("cover-line", "cover_line")):
+        match = re.search(rf'<input id="{field_id}"[^>]*>', section)
+        assert match and f'maxlength="{config.TEXT_LIMITS[key]}"' in match.group(0), field_id
+
+
+def test_year_choices_match_the_config():
+    from familyplanner import config
+    section = _cover_section()
+    select = section[section.index('id="cover-show-year"'):]
+    select = select[:select.index("</select>")]
+    assert re.findall(r'value="(\w+)"', select) == list(config.COVER_SHOW_YEAR_MODES)
+
+
+def test_cover_section_follows_the_chosen_design():
+    # Guard rail: the section is re-synced whenever the design, the dated
+    # switch or the plan changes, and hides the look-only fields.
+    body = function_text("syncCoverSection")
+    for node in ("#cover-look-fields", "#cover-look-more", "#cover-year-row", "#cover-text-row"):
+        assert f'$("{node}").hidden' in body, node
+    assert function_text("paintForm").count("syncCoverSection()") == 1
+    assert "syncCoverSection(); syncPreviewChoices(); refresh();" in function_text("renderDesigns")
+    assert "syncCoverSection();" in function_text("bind")
+
+
+def test_family_hint_is_plain_text():
+    # The typed name goes in with textContent, never as HTML.
+    body = function_text("syncFamilyHint")
+    assert ".textContent" in body and "innerHTML" not in body
 
 
 def test_hidden_field_rows_stay_hidden():

@@ -64,14 +64,6 @@
           <em>Turn off to leave month grids blank for handwriting</em>
         </span>
       </label>
-      <div class="field-row stack" id="cover-year-row" hidden>
-        <label for="cover-year">Year on the cover</label>
-        <select id="cover-year">
-          <option value="blank">Blank lines to write in</option>
-          <option value="omit">Leave the year off</option>
-          <option value="print">Print the planner year</option>
-        </select>
-      </div>
     </section>
 
     <section class="group">
@@ -85,6 +77,51 @@
       <h2>Page look</h2>
       <p class="group-note">The first thirteen looks each have their own cover, monthly pages, colours and lettering. The A, B and C layouts add Weekly Plan and Daily Plan sheets.</p>
       <div id="designs" class="design-grid" role="radiogroup" aria-label="Page look"></div>
+    </section>
+
+    <section class="group" id="cover-group">
+      <h2>Personalize the cover</h2>
+      <p id="cover-note" class="group-note" aria-live="polite"></p>
+      <div id="cover-look-fields">
+        <div class="field-row stack">
+          <label for="cover-show-year">Year on the cover</label>
+          <select id="cover-show-year">
+            <option value="off">Leave it off</option>
+            <option value="year">Print the planner year</option>
+            <option value="custom">Print my own text</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row stack" id="cover-year-row" hidden>
+        <label for="cover-year">Year on the cover</label>
+        <select id="cover-year">
+          <option value="blank">Blank lines to write in</option>
+          <option value="omit">Leave the year off</option>
+          <option value="print">Print the planner year</option>
+        </select>
+      </div>
+      <div class="field-row stack" id="cover-text-row">
+        <label for="cover-text">Text in place of the year</label>
+        <input id="cover-text" type="text" placeholder="2026–27" autocomplete="off" maxlength="80"
+               aria-describedby="cover-text-hint">
+        <p id="cover-text-hint" class="field-hint"></p>
+      </div>
+      <div id="cover-look-more">
+        <label class="switch">
+          <input id="cover-show-family" type="checkbox" aria-describedby="cover-family-hint">
+          <span class="track" aria-hidden="true"></span>
+          <span class="switch-text">
+            <strong>Print the family name</strong>
+            <em id="cover-family-hint">Type a family name under Your family first.</em>
+          </span>
+        </label>
+        <div class="field-row stack cover-line-row">
+          <label for="cover-line">Extra cover line (optional)</label>
+          <input id="cover-line" type="text" placeholder="Our year together" autocomplete="off" maxlength="80"
+                 aria-describedby="cover-line-hint">
+          <p id="cover-line-hint" class="field-hint">One short line of your own.</p>
+        </div>
+      </div>
     </section>
 
     <section class="group">
@@ -105,10 +142,6 @@
 
     <details class="group more">
       <summary>Paper and lettering size</summary>
-      <div class="field-row">
-        <label for="cover-text">Extra cover line (optional)</label>
-        <input id="cover-text" type="text" placeholder="Our Year" autocomplete="off" maxlength="80">
-      </div>
       <div class="field-row">
         <label for="size">Paper size</label>
         <select id="size">
