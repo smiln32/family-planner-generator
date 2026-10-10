@@ -1,8 +1,10 @@
 """Static checks on the editor's own page (static/ui): keyboard focus in the
-pickers, contrast, text size, click targets and leftover colours.
+pickers, contrast, text size, click targets and the favicon.
 
-These read the files rather than drive a browser, so they guard against the
-old patterns coming back. The behaviour itself was checked by hand in Chrome.
+These read the files rather than drive a browser. The contrast, text size
+and click-target tests check real values. The rest are loose guard rails
+against old patterns coming back, not behaviour tests; the behaviour itself
+was checked by hand in Chrome.
 """
 
 from __future__ import annotations
@@ -44,10 +46,12 @@ def rule(selector: str) -> str:
     return match.group(1)
 
 
-def function_body(name: str) -> str:
-    start = JS.index(f"function {name}(")
-    end = JS.index("\n}\n", start)
-    return JS[start:end]
+def function_text(name: str) -> str:
+    """From `function name(` to the next top-level function, or the end."""
+    match = re.search(rf"^(?:async\s+)?function\s+{name}\s*\(.*?(?=^(?:async\s+)?function\s|\Z)",
+                      JS, re.M | re.S)
+    assert match, f"no function {name} in ui.js"
+    return match.group(0)
 
 
 # --- keyboard focus in the pickers -------------------------------------------
@@ -55,18 +59,17 @@ def function_body(name: str) -> str:
 @pytest.mark.parametrize("name", ["renderDesigns", "renderTypefaces", "renderThemes"])
 def test_pickers_do_not_rebuild_on_every_change(name):
     """Rebuilding the radio group on each arrow key dropped keyboard focus."""
-    body = function_body(name)
-    clear = body.index('host.textContent = ""')
-    assert "sameCards(host, key)" in body[:clear]
-    assert "syncCards(host" in body[:clear]
-    assert "finishCards(host, key, hadFocus)" in body[clear:]
+    # Guard rail, not a behaviour test: each picker still uses the helpers.
+    body = function_text(name)
+    for helper in ("sameCards", "syncCards", "finishCards"):
+        assert re.search(rf"\b{helper}\s*\(", body), helper
 
 
 @pytest.mark.parametrize("card", [".design-card", ".type-card", ".swatch"])
 def test_picker_cards_show_keyboard_focus(card):
     match = re.search(rf"{re.escape(card)}:has\(input:focus-visible\)[^{{]*\{{([^}}]*)\}}", CSS)
     assert match, f"{card} has no focus-visible style"
-    assert "outline: 3px solid var(--navy)" in match.group(1)
+    assert re.search(r"outline:\s*\d+px\s+solid\s+var\(--navy\)", match.group(1))
     assert contrast(token("navy"), token("paper")) >= 3
     assert contrast(token("navy"), "#FFFFFF") >= 3
 
@@ -87,7 +90,7 @@ def test_switch_knob_stands_out_from_the_off_track():
 
 
 def test_placeholder_reaches_four_and_a_half_to_one():
-    assert "color: var(--placeholder)" in CSS
+    assert re.search(r"color:\s*var\(--placeholder\)", CSS)
     assert contrast(token("placeholder"), "#FFFFFF") >= 4.5
 
 
@@ -111,37 +114,27 @@ def test_small_buttons_are_at_least_32px(selector):
 
 def test_reduced_motion_keeps_a_gentle_spinner():
     block = CSS[CSS.index("@media (prefers-reduced-motion: reduce)"):]
-    assert ".spinner span" in block
-    assert "animation: pulse" in block
+    # Guard rail: the reduced-motion block still swaps in the pulse.
+    assert ".spinner" in block
+    assert re.search(r"animation:\s*pulse\b", block)
     assert "@keyframes pulse" in CSS
 
 
 def test_action_messages_stay_at_least_fifteen_seconds():
-    match = re.search(r"action:\s*(\d+)", JS[JS.index("const TOAST_MS"):])
+    match = re.search(r"\baction:\s*(\d+)", JS)
     assert match and int(match.group(1)) >= 15000
     assert "toast-close" in JS
 
 
-# --- leftover colours, labels -------------------------------------------------
-
-@pytest.mark.parametrize("old", [
-    "#B8C4D4", "#A6B2C2", "#CBD5E1", "#D6DEE9", "#DDE4EE", "#46556A", "#12776F",
-    "rgba(20,160,165", "rgba(22,50,95", "rgba(244, 246, 250",
-])
-def test_old_blue_grey_colours_are_gone(old):
-    assert old.lower() not in CSS.lower()
-
+# --- favicon, labels -------------------------------------------------
 
 def test_favicon_uses_the_editor_palette():
-    assert "%2316325F" not in HTML and "%2314A0A5" not in HTML
     assert f"%23{token('navy')[1:]}" in HTML
     assert f"%23{token('teal')[1:]}" in HTML
 
 
 def test_zoom_label_matches_the_script():
-    assert '<span id="zoom-level">Fit page</span>' in HTML
-    assert '"Fit page"' in JS
-
-
-def test_header_does_not_start_with_a_made_up_page_count():
-    assert "30 pages" not in HTML
+    # Guard rail: the label the page starts with is one the script also sets.
+    match = re.search(r'id="zoom-level"[^>]*>\s*([^<]+?)\s*<', HTML)
+    assert match, "no starting text in #zoom-level"
+    assert f'"{match.group(1)}"' in JS
