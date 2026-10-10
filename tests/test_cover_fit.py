@@ -97,14 +97,6 @@ window.addEventListener('load', () => { document.fonts.ready.then(() => {
 """
 
 
-@pytest.fixture(scope="module")
-def chrome() -> Path:
-    try:
-        return render.find_browser()
-    except render.RenderError:
-        pytest.skip("No Chromium-based browser found (set CHROME_PATH to run browser tests)")
-
-
 def _cover_section(cfg, name: str) -> str:
     body = render.render_html(cfg, render.plan_pages(cfg), standalone=True).split("<body", 1)[1]
     start = body.index('<section class="page')
@@ -138,17 +130,18 @@ def _measure(browser: Path, look: str, size: str) -> list[dict]:
              "--disable-extensions", "--allow-file-access-from-files",
              "--virtual-time-budget=15000", f"--user-data-dir={Path(tmp) / 'profile'}",
              f"--window-size={round(w * 96)},{round(h * 96)}", "--dump-dom", page.as_uri()],
-            capture_output=True, text=True, encoding="utf-8", timeout=300)
+            stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", timeout=300)
     found = re.search(r'<pre id="cover-fit">(.*?)</pre>', proc.stdout, re.S)
     assert found, f"{look} {size}: no result from the browser\n{proc.stderr[-600:]}"
     return json.loads(html_lib.unescape(found.group(1)))
 
 
 @pytest.fixture(scope="module")
-def measured(chrome) -> dict[tuple[str, str], list[dict]]:
+def measured(browser) -> dict[tuple[str, str], list[dict]]:
+    """Needs the shared `browser` fixture (tests/conftest.py): skips without one."""
     jobs = [(look, size) for look in designs.LOOKS for size in config.PAGE_SIZES]
     with ThreadPoolExecutor(max_workers=6) as pool:
-        results = pool.map(lambda job: _measure(chrome, *job), jobs)
+        results = pool.map(lambda job: _measure(browser, *job), jobs)
         return dict(zip(jobs, results))
 
 
