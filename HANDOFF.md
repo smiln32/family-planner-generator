@@ -2,13 +2,14 @@
 
 ## State on 2026-10-11
 
-- Batches A, B and C are all merged into `main` on GitHub: PR #1 (batch A fixes), #2 (editor), #3 (CI) and #4 (cover options, fonts, docs). The four batch branches and the spare CI worktree were deleted on this machine; `main` is the only local branch.
-- `python -m pytest`: 494 passed, 0 skipped, locally and in CI (Windows and Linux, Python 3.10 and 3.12).
+- Everything is merged into `main` on GitHub: PR #1 (batch A fixes), #2 (editor), #3 (CI), #4 (cover options, fonts, docs), #5 (handoff), #6 (budget donut and small-page budget fit) and #7 (one-colour one-line titles, cover lettering fit, centred badge icons). `main` is the only branch, here and on GitHub.
+- `python -m pytest`: 675 passed, 0 skipped, locally and in CI (Windows and Linux, Python 3.10 and 3.12). CI now takes about 6 to 10 minutes because of the browser tests.
+- The owner reviewed layout `06b` on 2026-10-11 and keeps its tilted tape-tab headings.
 - The owner approved the cover spots on all thirteen looks, the Cottage gingham and Retro sunset cover changes, and the level Retro sunset inside pages (all 2026-10-10).
 - The six unused font files (`inter-400/700/800`, `poppins-600/700`, `gloria-hallelujah-400`) were deleted on 2026-10-11 with the owner's OK. They were never tracked.
-- GitHub may still hold the merged batch branches (`batch-a-fixes`, `batch-b-editor`, `batch-c-ci`, `batch-c-covers`). Deleting them there is the owner's call.
+- Open questions for the owner: whether How to Use and Belongs To (two-line title pages, not mastheads) should also be one colour on one line; the very small long titles in the retired `original` look at 5.5x8 were left as they are.
 
-## Titles, cover lettering and badge icons, 2026-10-11 (branch `title-fixes`, not pushed)
+## Titles, cover lettering and badge icons, 2026-10-11 (merged as PR #7)
 
 Carla asked for these after using the editor and approved them on 2026-10-11. `python -m pytest`: 675 passed (520 before).
 
@@ -18,7 +19,7 @@ Carla asked for these after using the editor and approved them on 2026-10-11. `p
 - **Badge icons centred.** The icons in the Emergency Contacts list (and every other round badge) sat off the middle of their circles. The badge centred the 24x24 icon box exactly, but many drawings were off centre inside the box: the flame 2 units right, the tooth 1 left, wifi 1.7 low, the drop 1 high, the phone, chart, heart, bed and others less. The 30 off-centre symbols used in badges have their `viewBox` moved by the ink offset; shapes are unchanged. Worst offset was 1.15px, now 0.03px. `tests/test_icon_centring.py` measures real ink in Chrome.
 - **Tests added:** `test_page_titles.py` (all 27 designs at 3 sizes), `test_cover_type.py`, `test_icon_centring.py`. The helper in `test_cover_lines.py` now gives each look its own typeface set, as `config.load` does.
 
-## Budget donut, 2026-10-11 (branch `fix-budget-donut`, not pushed)
+## Budget donut, 2026-10-11 (merged as PR #6)
 
 - **Bug:** the donut under "Expenses Breakdown" on the budget page was cut off flat on all four sides (most visible on the left in `06b`). Cause: in `templates/pages/budget.html` the ring is a circle of radius 15.9155 with a 14-unit stroke, so its outer edge is 22.92 units from the centre, but the SVG's `viewBox` was `0 0 42 42` (21 each way). An SVG clips to its own box, so about 1.9 units of ring were lost on every side.
 - **Fix:** the `viewBox` is now `-2 -2 46 46`, centred on the same point, so the whole ring fits. The SVG box (1.3in column in `.pie-wrap`), colours, segment order, hole-to-ring proportion and legend are unchanged; the visible ring keeps the same outer size on the page.
@@ -169,7 +170,7 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), font files in the repo with licences since 2026-10-10 (`fonts --all` refreshes them). `terracotta` renamed `boho-brush` on 2026-10-09 (old name still accepted). TYPE picker not hand-checked end to end |
 | Thirteen looks (`editorial` to `coastal`) | In `main` since 2026-09-30, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
-| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09; typed text has length limits since 2026-10-09. The whole suite is 494 tests as of 2026-10-10, all passing, and runs in CI on Windows and Linux |
+| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09; typed text has length limits since 2026-10-09. The whole suite is 675 tests as of 2026-10-11, all passing, and runs in CI on Windows and Linux |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Retired 2026-09-30.** Replaced by the thirteen looks. `original` and `02`–`17` live in `designs.LEGACY`: still valid in a config, not offered in the picker, never finished |
 | Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
@@ -222,7 +223,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean, on `main`, matching `origin/main`. All batch work is merged (PRs #1 to #4); see "State on 2026-10-11" at the top.
+1. Read this file, then `git status`. It should be clean, on `main`, matching `origin/main`. All work is merged (PRs #1 to #7); see "State on 2026-10-11" at the top.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
