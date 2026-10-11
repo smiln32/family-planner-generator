@@ -18,24 +18,31 @@
 - Options: `sunday`, `monday`
 - Default: `sunday`
 
-### Q3: Default colour theme?
+### Q3: Default look?
+- Files: `config.example.yaml` (`design`)
+- Type: selection
+- Options: the thirteen looks, the planner layouts and `blank`, as listed in the `design` comment of `config.example.yaml`
+- Default: `editorial`
+- Derived: a look or layout brings its own colours and typeface set, so Q4 and Q5 only matter for `blank` or when the owner wants a different set
+
+### Q4: Default colour theme (Blank look only)?
 - Files: `config.example.yaml` (`theme`)
 - Type: selection
 - Options: the theme names listed in the `theme` comment of `config.example.yaml`
 - Default: `linen`
 
-### Q4: Default typeface set?
+### Q5: Default typeface set?
 - Files: `config.example.yaml` (`fonts`)
 - Type: selection
-- Options: the set names listed in the `fonts` comment of `config.example.yaml`
-- Default: `elegant`
+- Options: "the look's own set" (leave `fonts:` commented out), or a set name listed in the `fonts` comment of `config.example.yaml`
+- Default: the look's own set (`home-edition` for `editorial`)
 
-### Q5: Typical household size, for blank tracker rows?
+### Q6: Typical household size, for blank tracker rows?
 - Files: `config.example.yaml` (number of empty `members` entries)
 - Type: number
 - Default: 5
 
-### Q6: Dated monthly grids by default?
+### Q7: Dated monthly grids by default?
 - Files: `config.example.yaml` (`dated_months`)
 - Type: yes/no
 - Default: yes

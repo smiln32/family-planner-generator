@@ -14,7 +14,7 @@ Read the built book against the factory rules. Do not rebuild unless the human a
 
 ## Process
 
-1. Confirm page count matches the config (30 with default pages and twelve months; 31 if `index` / linked).
+1. Confirm page count matches the config: 30 with default pages and twelve months, 32 for a planner layout (`02a` to `12c`, which adds Weekly Plan and Daily Plan), and one more for the linked edition (`index`). `python planner.py pages -c <the run's YAML>` prints the expected list.
 2. Run the audit table against the HTML or PDF.
 3. Write findings. Separate blockers from nits.
 4. If a blocker is a config mistake, point back to stage 02. If it is a template bug, say which template.
@@ -25,7 +25,7 @@ Read the built book against the factory rules. Do not rebuild unless the human a
 | Check | Pass Condition |
 |-------|----------------|
 | Count | Page list matches `pages` / defaults |
-| Cover | The look's own cover, unique to that style; no family line or year on a look cover. Retired looks: year and family line match the YAML |
+| Cover | The look's own cover, unique to that style. On a look cover only the words turned on in the YAML appear (`cover_show_family`, `cover_show_year`, `cover_line`), in the look's small spot, overlapping nothing; with all off, none. Blank, retired looks and layouts: year and family line match the YAML |
 | Margin | No page visibly tighter at the trim than the others |
 | Months | Twelve unique months, dates match `year` if dated |
 | Footer | Shared footer on pages that are supposed to have it |

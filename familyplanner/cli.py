@@ -30,6 +30,15 @@ def _resolve_config(args: argparse.Namespace) -> Config:
         cfg.year = args.year
     if getattr(args, "family_name", None):
         cfg.family_name = args.family_name
+    # Cover lines. config.validate below checks each one like the file's own.
+    if getattr(args, "cover_text", None) is not None:
+        cfg.cover_text = args.cover_text
+    if getattr(args, "cover_show_year", None) is not None:
+        cfg.cover_show_year = args.cover_show_year
+    if getattr(args, "cover_show_family", None) is not None:
+        cfg.cover_show_family = args.cover_show_family
+    if getattr(args, "cover_line", None) is not None:
+        cfg.cover_line = args.cover_line
     if getattr(args, "undated", False):
         cfg.dated_months = False
     if getattr(args, "linked", False):
@@ -242,15 +251,27 @@ def cmd_typefaces(args: argparse.Namespace) -> int:
     print("      script: Courgette")
     print("      body: Oxygen")
     print("Then run `python planner.py fonts` to download them.")
+    print("The built-in sets need no download: their files ship in the repo.")
     return 0
+
+
+def look_font_sets() -> list[str]:
+    """The typeface sets the thirteen looks print in, each once, in look order."""
+    return list(dict.fromkeys(designs.look_fonts(look) for look in designs.LOOKS))
 
 
 def cmd_fonts(args: argparse.Namespace) -> int:
     from .fonts import fetch_fonts
     dest = Path(__file__).parent / "static" / "fonts"
     if getattr(args, "all", False):
+        names = typefaces.names()
+    elif getattr(args, "looks", False):
+        names = look_font_sets()
+    else:
+        names = []
+    if names:
         worst = 0
-        for name in typefaces.names():
+        for name in names:
             worst = max(worst, fetch_fonts(dest, typefaces.resolve(name), force=args.force))
             print()
         return worst
@@ -272,6 +293,17 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("-y", "--year", type=int, help="override the planner year")
         p.add_argument("-n", "--family-name", metavar="NAME",
                        help="family name for the cover and filename")
+        p.add_argument("--cover-show-year", metavar="MODE",
+                       choices=config.COVER_SHOW_YEAR_MODES,
+                       help="year on a look cover: off, year (the planner year) "
+                            "or custom (the --cover-text line)")
+        p.add_argument("--cover-text", metavar="TEXT",
+                       help="text in place of the year, such as 2026-27")
+        p.add_argument("--cover-show-family", action=argparse.BooleanOptionalAction,
+                       default=None,
+                       help='print "The <name> Family" on a look cover')
+        p.add_argument("--cover-line", metavar="TEXT",
+                       help="one extra line on a look cover")
         p.add_argument("--undated", action="store_true",
                        help="print blank month grids instead of real dates")
         p.add_argument("--linked", action="store_true",
@@ -320,10 +352,14 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--force", action="store_true")
     i.set_defaults(func=cmd_init)
 
-    f = sub.add_parser("fonts", help="download the typefaces for best fidelity")
+    f = sub.add_parser("fonts", help="download custom typefaces, or refresh the built-in "
+                                     "ones (those ship in the repo)")
     shared(f)
-    f.add_argument("--force", action="store_true", help="re-download existing fonts")
-    f.add_argument("--all", action="store_true", help="download every built-in typeface set")
+    f.add_argument("--force", action="store_true", help="re-download files that are already there")
+    which = f.add_mutually_exclusive_group()
+    which.add_argument("--all", action="store_true", help="refresh or re-download every built-in typeface set")
+    which.add_argument("--looks", action="store_true",
+                       help="refresh or re-download the typeface sets the thirteen looks use")
     f.set_defaults(func=cmd_fonts)
 
     return parser

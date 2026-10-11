@@ -10,6 +10,7 @@ Copy this shape into `output/[slug]-brief.md`. Replace the bracketed values.
 - week_starts: [sunday|monday]
 - dated_months: [true|false]
 - page_size: [5.5x8|6x9|letter]
+- cover words: [none, or any of: family name, year, text such as 2026–27, one short line]
 - members:
   - [name or empty line]
 ```

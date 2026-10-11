@@ -209,6 +209,8 @@ body {
   display: grid; grid-template-columns: minmax(7.5rem, 38%) 1fr;
   align-items: start; gap: 10px; margin-bottom: 10px;
 }
+/* `display: grid` would otherwise beat the [hidden] attribute. */
+.field-row[hidden] { display: none; }
 .field-row label { font-size: 12.5px; font-weight: 700; color: var(--navy); line-height: 1.3; padding-top: 8px; }
 
 input[type="text"], input[type="number"], select {
@@ -221,7 +223,13 @@ input[type="text"], input[type="number"], select {
 input::placeholder { color: var(--placeholder); opacity: 1; font-style: italic; }
 input:focus, select:focus { outline: none; border-color: var(--teal); box-shadow: var(--focus); }
 
-.field-row#cover-year-row { margin-top: 12px; }
+/* Label above the field, at every width, so a long choice in a select (or a
+   hint under a field) gets the whole panel width instead of being cut off. */
+.field-row.stack { grid-template-columns: 1fr; gap: 4px; }
+.field-row.stack label { padding-top: 0; }
+.field-hint { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.4; }
+.field-hint:empty { display: none; }
+#cover-group .switch { margin: 4px 0 12px; }
 
 /* Switch, built from a checkbox so it stays keyboard-operable. */
 .switch { display: flex; gap: 11px; align-items: flex-start; cursor: pointer; margin-top: 14px; }

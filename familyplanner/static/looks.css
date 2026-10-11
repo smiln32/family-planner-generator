@@ -13,6 +13,15 @@
 .lk-cover ol, .lk-cover li { margin: 0; padding: 0; list-style: none; }
 .lk-cover em { font-style: normal; }
 
+/* The optional cover lines (cfg.cover_extras) sit in one small spot per look,
+   .lko-<look>, styled further down with that look. --fit steps the text down
+   for long lines (cfg.cover_fit adds .lko-fit2 or .lko-fit3), and a word too
+   long for the spot breaks rather than running off it. */
+.lk-own { --fit: 1; }
+.lk-own.lko-fit2 { --fit: 0.8; }
+.lk-own.lko-fit3 { --fit: 0.64; }
+.lk-own > div { overflow-wrap: anywhere; }
+
 /* --- shared worksheet chrome ------------------------------------------------ */
 
 .lk .mark, .lk .art, .lk .mark-lg, .lk .crest, .lk .heart-tree,
@@ -120,6 +129,25 @@
 .ed-lines span { font-family: var(--font-display); font-size: calc(13 * var(--k)); color: var(--ink); }
 .ed-lines em { font-family: var(--font-body); font-size: calc(7 * var(--k)); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); }
 
+/* Optional cover lines (cfg.cover_extras), under the panel title. Kept short
+   enough to fit the space above the contents list, which stays where it was. */
+.lko-editorial { margin-top: calc(12 * var(--k)); }
+.lko-editorial::before {
+  content: ""; display: block; width: calc(26 * var(--k)); height: 1.5px;
+  background: var(--red); margin-bottom: calc(7 * var(--k));
+}
+.lko-editorial .lko-family {
+  font-family: var(--font-display); font-size: calc(15 * var(--k) * var(--fit)); line-height: 1.15; color: var(--ink);
+}
+.lko-editorial .lko-year {
+  margin-top: calc(4 * var(--k)); font-family: var(--font-body); font-size: calc(8 * var(--k) * var(--fit));
+  font-weight: 700; line-height: 1.2; letter-spacing: 0.24em; text-transform: uppercase; color: var(--red);
+}
+.lko-editorial .lko-line {
+  margin-top: calc(3 * var(--k)); font-family: var(--font-display); font-style: italic;
+  font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.2; color: var(--ink);
+}
+
 .lkm-editorial { --pt: calc(22 * var(--k)); }
 .lkm-editorial .lkm-head { padding-top: calc(24 * var(--k)); }
 .lkm-editorial .lkm-kicker {
@@ -181,6 +209,19 @@
   border-radius: 50%; background: var(--paper);
 }
 
+/* Optional cover lines: right-aligned in the empty corner beside the title,
+   just above the shapes. Positioned, so the title and shapes do not move. */
+.lko-midcentury {
+  position: absolute; right: calc(34 * var(--k)); bottom: calc(276 * var(--k)); width: calc(150 * var(--k));
+  display: flex; flex-direction: column; align-items: flex-end; gap: calc(4 * var(--k)); text-align: right;
+}
+.lko-midcentury .lko-family { font-family: var(--font-display); font-size: calc(17 * var(--k) * var(--fit)); line-height: 1.05; color: var(--navy); }
+.lko-midcentury .lko-year {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k) * var(--fit));
+  line-height: 1.3; letter-spacing: 0.32em; margin-right: -0.32em; text-transform: uppercase; color: var(--pink);
+}
+.lko-midcentury .lko-line { font-family: var(--font-display); font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.2; color: var(--navy); }
+
 .lkm-midcentury { --pt: 0; }
 .lkm-midcentury .lkm-head {
   margin: 0 calc(-1 * var(--px)) calc(8 * var(--k)); padding: 0 var(--px); height: calc(96 * var(--k));
@@ -227,6 +268,19 @@
 .nd-label { display: flex; align-items: center; gap: calc(12 * var(--k)); }
 .nd-label i { width: calc(40 * var(--k)); height: 1px; background: var(--navy); }
 .nd-label span { font-family: var(--font-body); font-size: calc(9 * var(--k)); letter-spacing: 0.28em; text-transform: uppercase; color: var(--navy); }
+
+/* Optional cover lines: top left, in the open space beside the two blocks. */
+.lko-nordic {
+  position: absolute; left: calc(40 * var(--k)); top: calc(44 * var(--k)); width: calc(126 * var(--k));
+  display: flex; flex-direction: column; gap: calc(5 * var(--k));
+}
+.lko-nordic::before { content: ""; display: block; width: calc(24 * var(--k)); height: 1px; background: var(--navy); margin-bottom: calc(5 * var(--k)); }
+.lko-nordic .lko-family { font-family: var(--font-display); font-size: calc(16 * var(--k) * var(--fit)); line-height: 1.1; color: var(--navy); }
+.lko-nordic .lko-year {
+  font-family: var(--font-body); font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3;
+  letter-spacing: 0.28em; text-transform: uppercase; color: var(--navy);
+}
+.lko-nordic .lko-line { font-family: var(--font-body); font-size: calc(9 * var(--k) * var(--fit)); line-height: 1.35; color: var(--navy); }
 
 .lkm-nordic {
   display: grid; grid-template-columns: calc(104 * var(--k)) 1fr; grid-template-rows: auto 1fr;
@@ -291,6 +345,21 @@
 }
 .fh-tick { position: absolute; left: 0; right: 0; bottom: 0; height: calc(30 * var(--k)); }
 
+/* Optional cover lines: centred in the open band above the kicker. */
+.lko-farmhouse {
+  position: absolute; left: calc(60 * var(--k)); right: calc(60 * var(--k)); top: calc(34 * var(--k));
+  display: flex; flex-direction: column; align-items: center; gap: calc(3 * var(--k)); text-align: center;
+}
+.lko-farmhouse .lko-family { font-family: var(--font-script); font-style: italic; font-size: calc(18 * var(--k) * var(--fit)); line-height: 1.1; color: var(--ink); }
+.lko-farmhouse .lko-year {
+  font-family: var(--font-display); font-weight: 700; font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.1;
+  letter-spacing: 0.06em; color: var(--red);
+}
+.lko-farmhouse .lko-line {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.4;
+  letter-spacing: 0.32em; padding-left: 0.32em; text-transform: uppercase; color: var(--ink);
+}
+
 .lkm-farmhouse { --pt: 0; }
 .lkm-farmhouse .lkm-band { display: block; flex: none; height: calc(22 * var(--k)); margin: 0 calc(-1 * var(--px)) calc(10 * var(--k)); }
 .lkm-farmhouse .lkm-head { border-bottom: 2px solid var(--ink); padding-bottom: calc(6 * var(--k)); }
@@ -346,6 +415,18 @@
 .dc-arch i:nth-child(2) { width: calc(110 * var(--k)); height: calc(55 * var(--k)); border-radius: calc(55 * var(--k)) calc(55 * var(--k)) 0 0; opacity: 0.6; }
 .dc-arch i:nth-child(3) { width: calc(60 * var(--k)); height: calc(30 * var(--k)); border-radius: calc(30 * var(--k)) calc(30 * var(--k)) 0 0; background: var(--gold); }
 
+/* Optional cover lines: centred between the title and the arch. */
+.lko-deco {
+  position: absolute; left: calc(70 * var(--k)); right: calc(70 * var(--k)); top: calc(316 * var(--k));
+  display: flex; flex-direction: column; align-items: center; gap: calc(5 * var(--k)); text-align: center;
+}
+.lko-deco .lko-family { font-family: var(--font-display); font-size: calc(17 * var(--k) * var(--fit)); line-height: 1.1; letter-spacing: 0.04em; color: var(--paper); }
+.lko-deco .lko-year {
+  font-family: var(--font-body); font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3;
+  letter-spacing: 0.5em; padding-left: 0.5em; color: var(--gold);
+}
+.lko-deco .lko-line { font-family: var(--font-display); font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.2; letter-spacing: 0.04em; color: var(--gold); }
+
 .lkm-deco { --pt: 0; --gold: color-mix(in srgb, var(--orange) 82%, #fff); }
 .lkm-deco .lkm-head {
   margin: 0 calc(-1 * var(--px)) calc(10 * var(--k)); padding: 0 var(--px); height: calc(92 * var(--k));
@@ -396,6 +477,20 @@
 .sw-index b { font-family: var(--font-body); font-size: calc(7 * var(--k)); font-weight: 700; color: var(--red); }
 .sw-index span { font-family: var(--font-body); font-size: calc(8 * var(--k)); font-weight: 500; color: var(--ink); }
 
+/* Optional cover lines: over columns 3 and 4, at the foot of the title area
+   just above the index, under a rule like the index's. Positioned inside the
+   title box (which fills its grid row), so the title and index do not move.
+   50% plus half a gutter is where column 3 starts. The extra .sw-title in
+   the selectors beats ".sw-title div", which styles the big title. */
+.sw-title .lko-swiss {
+  position: absolute; left: calc(50% + 6 * var(--k)); right: 0; bottom: calc(14 * var(--k));
+  display: flex; flex-direction: column; gap: calc(3 * var(--k));
+  border-top: 1px solid var(--ink); padding-top: calc(5 * var(--k));
+}
+.sw-title .lko-swiss .lko-family { font-family: var(--font-body); font-weight: 800; font-size: calc(16 * var(--k) * var(--fit)); line-height: 1; letter-spacing: -0.03em; color: var(--ink); }
+.sw-title .lko-swiss .lko-year { font-family: var(--font-body); font-weight: 700; font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.2; color: var(--red); }
+.sw-title .lko-swiss .lko-line { font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3; color: var(--ink); }
+
 .lkm-swiss .lkm-head { border-bottom: 3px solid var(--ink); padding-bottom: calc(4 * var(--k)); align-items: flex-end; }
 .lkm-swiss .lkm-name { font-family: var(--font-body); font-weight: 800; font-size: calc(44 * var(--k)); letter-spacing: -0.04em; line-height: 0.9; color: var(--ink); }
 .lkm-swiss .lkm-num { display: block; font-family: var(--font-body); font-weight: 800; font-size: calc(72 * var(--k)); letter-spacing: -0.05em; line-height: 0.8; color: var(--red); }
@@ -429,10 +524,21 @@
 .rt-arcs i:nth-child(4) { width: calc(280 * var(--k)); height: calc(140 * var(--k)); border-radius: calc(140 * var(--k)) calc(140 * var(--k)) 0 0; background: var(--pink); }
 .rt-arcs i:nth-child(5) { width: calc(200 * var(--k)); height: calc(100 * var(--k)); border-radius: calc(100 * var(--k)) calc(100 * var(--k)) 0 0; background: var(--paper); }
 .rt-text { position: absolute; left: 0; right: 0; top: calc(60 * var(--k)); display: flex; flex-direction: column; align-items: center; gap: calc(14 * var(--k)); text-align: center; }
-.rt-title { font-family: var(--font-display); font-size: calc(56 * var(--k)); line-height: 0.92; color: var(--brown); transform: rotate(-4deg); }
+.rt-title { font-family: var(--font-display); font-size: calc(56 * var(--k)); line-height: 0.92; color: var(--brown); }
 .rt-sub { white-space: nowrap; margin-top: calc(6 * var(--k)); font-family: var(--font-body); font-weight: 500; font-size: calc(10 * var(--k)); letter-spacing: 0.36em; color: var(--teal); }
 
-.lkm-retro .lkm-name { font-size: calc(44 * var(--k)); color: var(--teal); transform: rotate(-3deg); transform-origin: left bottom; }
+/* Optional cover lines: under "A family planner", above the arcs. */
+.lko-retro {
+  max-width: calc(320 * var(--k)); display: flex; flex-direction: column; align-items: center; gap: calc(3 * var(--k));
+}
+.lko-retro .lko-family { font-family: var(--font-display); font-size: calc(17 * var(--k) * var(--fit)); line-height: 1.05; color: var(--brown); }
+.lko-retro .lko-year {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3;
+  letter-spacing: 0.36em; padding-left: 0.36em; color: var(--teal);
+}
+.lko-retro .lko-line { font-family: var(--font-display); font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.15; color: var(--orange); }
+
+.lkm-retro .lkm-name { font-size: calc(44 * var(--k)); color: var(--teal); }
 .lkm-retro .lkm-cal::before {
   content: ""; flex: none; height: calc(29 * var(--k)); margin: calc(4 * var(--k)) calc(-1 * var(--px)) calc(6 * var(--k));
   background: linear-gradient(to bottom, var(--brown) 0 calc(5 * var(--k)), transparent calc(5 * var(--k)) calc(8 * var(--k)), var(--teal) calc(8 * var(--k)) calc(13 * var(--k)),
@@ -452,7 +558,6 @@
 .lkm-retro .lkm-lines i { height: calc(14 * var(--k)); border-bottom: 1.5px solid var(--rule); }
 
 .design-retro .display { text-transform: none; letter-spacing: 0; }
-.design-retro .masthead h1.display { transform: rotate(-2deg); }
 .design-retro .banner { border-radius: 999px; background: var(--orange); color: var(--brown); }
 .design-retro .card { border-width: 1.6px; border-radius: 0.14in; }
 .design-retro .page-footer .txt { color: var(--teal); }
@@ -477,6 +582,22 @@
 .bh-grid .b6 { padding: calc(22 * var(--k)); display: flex; flex-direction: column; justify-content: space-between; }
 .bh-grid .b6 span { color: var(--teal); }
 .bh-grid small { font-family: var(--font-body); font-weight: 500; font-size: calc(9 * var(--k)); letter-spacing: 0.2em; color: var(--ink); }
+
+/* Optional cover lines (cfg.cover_extras), between "Do." and the label. */
+.lko-bauhaus {
+  display: flex; flex-direction: column; gap: calc(4 * var(--k));
+  padding-left: calc(10 * var(--k)); border-left: calc(4 * var(--k)) solid var(--pink);
+}
+.lko-bauhaus .lko-family, .lko-bauhaus .lko-year {
+  font-family: var(--font-display); font-weight: 700; font-size: calc(15 * var(--k) * var(--fit));
+  line-height: 1.05; letter-spacing: -0.02em; color: var(--ink);
+}
+.lko-bauhaus .lko-year { color: var(--teal); }
+.lko-bauhaus.lko-fit3 { --fit: 0.5; gap: calc(3 * var(--k)); }
+.lko-bauhaus .lko-line {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k) * var(--fit));
+  line-height: 1.3; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink);
+}
 
 .lkm-bauhaus .lkm-head { justify-content: flex-start; align-items: center; gap: calc(12 * var(--k)); }
 .lkm-bauhaus .lkm-orn { display: flex; gap: calc(12 * var(--k)); order: -1; }
@@ -525,6 +646,21 @@
 .al-orn { font-family: var(--font-body); font-size: calc(16 * var(--k)); color: var(--gold); }
 .al-sub { max-width: calc(200 * var(--k)); font-family: var(--font-script); font-style: italic; font-size: calc(14 * var(--k)); line-height: 1.4; color: var(--gold-lt); }
 
+/* Optional cover lines: centred below the plate, inside the gold frame. */
+.lko-almanac {
+  position: absolute; left: calc(64 * var(--k)); right: calc(64 * var(--k)); bottom: calc(50 * var(--k));
+  display: flex; flex-direction: column; align-items: center; gap: calc(4 * var(--k)); text-align: center;
+}
+.lko-almanac .lko-family {
+  font-family: var(--font-display); font-size: calc(13 * var(--k) * var(--fit)); line-height: 1.2;
+  letter-spacing: 0.14em; padding-left: 0.14em; text-transform: uppercase; color: var(--gold-lt);
+}
+.lko-almanac .lko-year {
+  font-family: var(--font-body); font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3;
+  letter-spacing: 0.4em; padding-left: 0.4em; color: var(--gold);
+}
+.lko-almanac .lko-line { font-family: var(--font-script); font-style: italic; font-size: calc(12 * var(--k) * var(--fit)); line-height: 1.3; color: var(--gold-lt); }
+
 .lkm-almanac .lkm-head { justify-content: center; text-align: center; padding-bottom: calc(8 * var(--k)); border-bottom: 1.5px solid var(--navy); margin-bottom: calc(6 * var(--k)); }
 .lkm-almanac .lkm-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-5 * var(--k)); height: 0.75px; background: var(--navy); }
 .lkm-almanac .lkm-titles { align-items: center; }
@@ -558,6 +694,18 @@
 .tc-text { position: absolute; left: calc(40 * var(--k)); top: calc(44 * var(--k)); display: flex; flex-direction: column; gap: calc(6 * var(--k)); }
 .tc-title { font-family: var(--font-display); font-size: calc(46 * var(--k)); line-height: 0.95; color: var(--navy); }
 .tc-sub { margin-top: calc(4 * var(--k)); font-family: var(--font-body); font-weight: 500; font-size: calc(9 * var(--k)); letter-spacing: 0.3em; color: var(--navy); }
+
+/* Optional cover lines: low inside the plum arch, like a plaque by a door. */
+.lko-terracotta {
+  position: absolute; left: calc(228 * var(--k)); width: calc(118 * var(--k)); bottom: calc(30 * var(--k));
+  display: flex; flex-direction: column; gap: calc(4 * var(--k));
+}
+.lko-terracotta .lko-family { font-family: var(--font-display); font-size: calc(16 * var(--k) * var(--fit)); line-height: 1.05; color: var(--paper); }
+.lko-terracotta .lko-year {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3;
+  letter-spacing: 0.3em; color: var(--sun);
+}
+.lko-terracotta .lko-line { font-family: var(--font-display); font-size: calc(10 * var(--k) * var(--fit)); line-height: 1.2; color: var(--paper); }
 
 .lkm-terracotta .lkm-orn {
   display: block; order: -1; position: relative; flex: none;
@@ -593,13 +741,36 @@
 .ct-label {
   position: relative; width: calc(270 * var(--k)); height: calc(330 * var(--k)); border-radius: 50%; background: var(--paper);
   box-shadow: 0 0 0 calc(8 * var(--k)) color-mix(in srgb, var(--pink) 45%, var(--paper));
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(8 * var(--k)); text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center;
+  padding: calc(36 * var(--k)) 0 calc(56 * var(--k));
 }
 .ct-stitch { position: absolute; inset: calc(10 * var(--k)); border-radius: 50%; border: 1px dashed var(--navy); }
 .ct-kick { font-family: var(--font-body); font-weight: 500; font-size: calc(8 * var(--k)); letter-spacing: 0.34em; padding-left: 0.34em; color: var(--navy); }
 .ct-title { font-family: var(--font-display); font-style: italic; font-size: calc(50 * var(--k)); line-height: 0.95; color: var(--navy); }
-.ct-rule { width: calc(30 * var(--k)); height: 1px; background: var(--navy); margin: calc(6 * var(--k)) 0; }
+.ct-rule { flex: none; width: calc(30 * var(--k)); height: 1px; background: var(--navy); }
 .ct-sub { font-family: var(--font-display); font-size: calc(13 * var(--k)); color: var(--navy); }
+
+/* Optional cover lines (cfg.cover_extras): the last of the evenly spread
+   lines in the oval. .ct-own keeps a fixed height and the lines sit centred
+   in it, so the rest of the label does not move with their length. Without
+   them (.ct-label above) the same lines fill the oval from the same top,
+   with the sub line lower; the bottom pad keeps it inside the stitching. */
+.ct-with-own { justify-content: space-evenly; padding: calc(26 * var(--k)) 0; }
+.ct-own { flex: none; align-self: stretch; position: relative; height: calc(46 * var(--k)); }
+.lko-cottage {
+  position: absolute; left: calc(46 * var(--k)); right: calc(46 * var(--k)); top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: calc(3 * var(--k));
+}
+.lko-cottage .lko-family {
+  font-family: var(--font-display); font-style: italic; font-size: calc(15 * var(--k) * var(--fit)); line-height: 1.1; color: var(--navy);
+}
+.lko-cottage .lko-year {
+  font-family: var(--font-body); font-weight: 500; font-size: calc(7.5 * var(--k) * var(--fit));
+  letter-spacing: 0.34em; padding-left: 0.34em; color: var(--navy);
+}
+.lko-cottage .lko-line { font-family: var(--font-display); font-size: calc(10 * var(--k) * var(--fit)); line-height: 1.2; color: var(--navy); }
+.lko-cottage.lko-fit2 { --fit: 0.7; left: calc(60 * var(--k)); right: calc(60 * var(--k)); }
+.lko-cottage.lko-fit3 { --fit: 0.5; gap: calc(2 * var(--k)); left: calc(62 * var(--k)); right: calc(62 * var(--k)); }
 
 .lkm-cottage { --pt: 0; }
 .lkm-cottage .lkm-band { display: block; flex: none; height: calc(70 * var(--k)); margin: 0 calc(-1 * var(--px)); background-size: calc(20 * var(--k)) calc(20 * var(--k)); }
@@ -647,12 +818,22 @@
 .gz-head { margin-top: calc(8 * var(--k)); font-family: var(--font-display); font-size: calc(40 * var(--k)); line-height: 0.98; letter-spacing: 0.005em; text-align: center; }
 .gz-deck { font-family: var(--font-body); font-style: italic; font-size: calc(12 * var(--k)); text-align: center; color: var(--pink); }
 .gz-cols { flex: 1 1 auto; margin-top: calc(10 * var(--k)); border-top: 0.75px solid var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); }
-.gz-cols div { padding: calc(8 * var(--k)) calc(10 * var(--k)) 0; display: flex; flex-direction: column; gap: calc(4 * var(--k)); }
-.gz-cols div:first-child { padding-left: 0; }
-.gz-cols div:last-child { padding-right: 0; }
-.gz-cols div + div { border-left: 0.75px solid var(--ink); }
+.gz-cols > div { padding: calc(8 * var(--k)) calc(10 * var(--k)) 0; display: flex; flex-direction: column; gap: calc(4 * var(--k)); }
+.gz-cols > div:first-child { padding-left: 0; }
+.gz-cols > div:last-child { padding-right: 0; }
+.gz-cols > div + div { border-left: 0.75px solid var(--ink); }
 .gz-cols b { font-family: var(--font-body); font-weight: 700; font-size: calc(11 * var(--k)); }
 .gz-cols span { font-family: var(--font-body); font-size: calc(8.5 * var(--k)); line-height: 1.4; }
+
+/* Optional cover lines: at the foot of the middle column, under a rule, like
+   a notice. In the column's flow, pushed down by margin-top: auto. */
+.lko-gazette {
+  margin-top: auto; padding-top: calc(6 * var(--k)); border-top: 0.75px solid var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: calc(3 * var(--k)); text-align: center;
+}
+.lko-gazette .lko-family { font-family: var(--font-script); font-size: calc(15 * var(--k) * var(--fit)); line-height: 1.1; }
+.lko-gazette .lko-year { font-family: var(--font-body); font-size: calc(8 * var(--k) * var(--fit)); line-height: 1.3; letter-spacing: 0.2em; text-transform: uppercase; }
+.lko-gazette .lko-line { font-family: var(--font-body); font-style: italic; font-size: calc(9 * var(--k) * var(--fit)); line-height: 1.3; color: var(--pink); }
 
 .lkm-gazette .lkm-titles { display: grid; grid-template-columns: 1fr auto; gap: 0; }
 .lkm-gazette .lkm-kicker {
@@ -694,6 +875,12 @@
 .cs-sub { font-family: var(--font-body); font-size: calc(11 * var(--k)); line-height: 1.4; color: var(--navy); }
 .cs-sub span { color: var(--blue); }
 .cs-foot i { width: calc(30 * var(--k)); height: calc(30 * var(--k)); border-radius: 50%; background: var(--red); }
+
+/* Optional cover lines: in the open space between the title and the foot. */
+.lko-coastal { display: flex; flex-direction: column; gap: calc(4 * var(--k)); max-width: calc(300 * var(--k)); }
+.lko-coastal .lko-family { font-family: var(--font-display); font-weight: 700; font-size: calc(18 * var(--k) * var(--fit)); line-height: 1; letter-spacing: -0.02em; color: var(--navy); }
+.lko-coastal .lko-year { font-family: var(--font-body); font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.3; color: var(--blue); }
+.lko-coastal .lko-line { font-family: var(--font-body); font-size: calc(11 * var(--k) * var(--fit)); line-height: 1.3; color: var(--navy); }
 
 .lkm-coastal { padding-left: calc(var(--px) + calc(22 * var(--k))); }
 .lkm-coastal .lkm-band {

@@ -10,6 +10,7 @@ const MEMBER_DOTS = ["#5F7A62", "#C4A09A", "#C9956A", "#8AA084", "#A0909C", "#7A
 const state = {
   year: 2027, family_name: "", week_starts: "sunday", dated_months: true,
   cover_year: "auto", cover_text: "",
+  cover_show_year: "off", cover_show_family: false, cover_line: "",
   page_size: "letter", members: [], pages: [], theme: "linen", fonts: "home-edition",
   design: "editorial", type_size: { title: 30, cover: 66, body: 9, script: 13 },
   palette: {}, preview: null, zoom: null,
@@ -484,7 +485,7 @@ function renderDesigns() {
           : `Your replaced colours were cleared. ${look.label} uses the theme's colours.`,
           "", { action: "Undo", onClick: undo });
       }
-      renderDesigns(); renderTypefaces(); renderColour(); syncPreviewChoices(); refresh();
+      renderDesigns(); renderTypefaces(); renderColour(); syncCoverSection(); syncPreviewChoices(); refresh();
     });
     const name = el("strong");
     name.textContent = look.label;
@@ -744,13 +745,13 @@ async function openBuilt(path) {
 
 function paintForm() {
   $("#year").value = state.year;
-  $("#cover-text").value = state.cover_text || "";
   $("#family").value = state.family_name;
   $("#size").value = state.page_size;
   $("#week").value = state.week_starts;
   $("#dated").checked = state.dated_months;
   if (!state.cover_year) state.cover_year = "auto";
-  syncCoverYearRow();
+  if (!state.cover_show_year) state.cover_show_year = "off";
+  syncCoverSection();
   renderColour(); renderTypefaces(); renderSizes(); renderDesigns(); renderMembers();
   syncPreviewChoices(); renderPages();
 }
@@ -758,6 +759,9 @@ function paintForm() {
 function newBook() {
   state.family_name = "";
   state.cover_text = "";
+  state.cover_show_year = "off";
+  state.cover_show_family = false;
+  state.cover_line = "";
   state.members = ["", "", "", "", ""];
   state.pages = [...meta.defaultPages];
   state.theme = "linen";
@@ -781,12 +785,57 @@ function newBook() {
 
 /* --- wiring --------------------------------------------------------------- */
 
-function syncCoverYearRow() {
-  const row = $("#cover-year-row");
-  row.hidden = state.dated_months;
-  const select = $("#cover-year");
+/* "Personalize the cover" follows the chosen design (designInfo().cover):
+   "lines"  a look cover with a spot for the opt-in lines, all off at first;
+   "own"    Blank, the retired looks and the layouts, which print the family
+            name and the year by themselves.
+   Only fields that change the chosen cover are shown. */
+function coverKind() {
+  return designInfo()?.cover || "own";
+}
+
+function syncCoverSection() {
+  const kind = coverKind();
+  const onLook = kind !== "own";
+  const lines = kind === "lines";
+  const note = $("#cover-note");
+  if (lines) {
+    note.textContent = "Everything here starts off, so the cover stays as designed. What you turn on prints in one small spot, in the look's own style.";
+  } else {
+    note.textContent = "This cover prints the year, and the family name when you type one under Your family.";
+  }
+  $("#cover-look-fields").hidden = !lines;
+  $("#cover-look-more").hidden = !lines;
+  $("#cover-show-year").value = state.cover_show_year || "off";
+  $("#cover-show-family").checked = Boolean(state.cover_show_family);
+  $("#cover-line").value = state.cover_line || "";
+
+  // The old year choice belongs to covers that print the year by themselves,
+  // and only matters when the month grids are left blank.
+  $("#cover-year-row").hidden = onLook || state.dated_months;
   const mode = state.cover_year;
-  select.value = (mode === "omit" || mode === "print" || mode === "blank") ? mode : "blank";
+  $("#cover-year").value = (mode === "omit" || mode === "print" || mode === "blank") ? mode : "blank";
+
+  // This text also replaces the year on Family Goals and the year calendar,
+  // so it stays in view whenever it holds something.
+  const text = $("#cover-text");
+  text.value = state.cover_text || "";
+  const hasText = Boolean((state.cover_text || "").trim());
+  const custom = lines && state.cover_show_year === "custom";
+  $("#cover-text-row").hidden = onLook && !custom && !hasText;
+  $("#cover-text-hint").textContent = !onLook
+    ? "Prints instead of the year on the cover, Family Goals and the year calendar."
+    : custom
+      ? "Prints on the cover. It also replaces the year on Family Goals and the year calendar."
+      : "Replaces the year on Family Goals and the year calendar. Empty it to print the year.";
+  syncFamilyHint();
+}
+
+function syncFamilyHint() {
+  const name = (state.family_name || "").trim();
+  $("#cover-family-hint").textContent = name
+    ? `Prints “The ${name} Family”.`
+    : "Type a family name under Your family first.";
 }
 
 function bind() {
@@ -799,7 +848,7 @@ function bind() {
     state.cover_text = e.target.value;
     refresh();
   });
-  $("#family").addEventListener("input", (e) => { state.family_name = e.target.value; });
+  $("#family").addEventListener("input", (e) => { state.family_name = e.target.value; syncFamilyHint(); });
   $("#family").addEventListener("change", refresh);
   $("#size").addEventListener("change", (e) => {
     state.page_size = e.target.value; syncPreviewChoices(); applyZoom(); refresh();
@@ -810,11 +859,25 @@ function bind() {
     if (!state.dated_months && (state.cover_year === "auto" || !state.cover_year)) {
       state.cover_year = "blank";
     }
-    syncCoverYearRow();
+    syncCoverSection();
     refresh();
   });
   $("#cover-year").addEventListener("change", (e) => {
     state.cover_year = e.target.value;
+    refresh();
+  });
+  $("#cover-show-year").addEventListener("change", (e) => {
+    state.cover_show_year = e.target.value;
+    syncCoverSection();
+    refresh();
+    if (state.cover_show_year === "custom") $("#cover-text").focus();
+  });
+  $("#cover-show-family").addEventListener("change", (e) => {
+    state.cover_show_family = e.target.checked;
+    refresh();
+  });
+  $("#cover-line").addEventListener("input", (e) => {
+    state.cover_line = e.target.value;
     refresh();
   });
 

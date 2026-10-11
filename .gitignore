@@ -12,11 +12,6 @@ out/
 stages/*/output/*
 !stages/*/output/.gitkeep
 
-# Downloaded typefaces - fetched by `python planner.py fonts`.
-# Kept out of the repo so font binaries are not redistributed without their
-# licence files; the fetcher pulls them from Google Fonts on demand.
-familyplanner/static/fonts/*.woff2
-
 # Python
 __pycache__/
 *.py[cod]

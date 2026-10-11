@@ -52,3 +52,32 @@ def test_unknown_page(capsys, tmp_path):
                      "-o", str(tmp_path))
     assert code == 1
     assert "unknown page 'bogus_page'" in err
+
+
+def _record_fetches(monkeypatch) -> list[str]:
+    """Stand in for the downloader: note each set asked for, touch no network."""
+    from familyplanner import fonts
+    asked: list[str] = []
+    monkeypatch.setattr(fonts, "fetch_fonts", lambda dest, faces, force=False: asked.append(faces.preset) or 0)
+    return asked
+
+
+def test_fonts_looks_fetches_each_look_set_once(monkeypatch, capsys):
+    from familyplanner import designs
+    asked = _record_fetches(monkeypatch)
+    assert cli.main(["fonts", "--looks"]) == 0
+    wanted = {designs.look_fonts(look) for look in designs.LOOKS}
+    assert set(asked) == wanted
+    assert len(asked) == len(wanted)
+
+
+def test_fonts_all_fetches_every_set(monkeypatch, capsys):
+    from familyplanner import typefaces
+    asked = _record_fetches(monkeypatch)
+    assert cli.main(["fonts", "--all"]) == 0
+    assert asked == typefaces.names()
+
+
+def test_fonts_all_and_looks_are_one_or_the_other(capsys):
+    with pytest.raises(SystemExit):
+        cli.main(["fonts", "--all", "--looks"])

@@ -1,5 +1,8 @@
 """Download the chosen typefaces from Google Fonts.
 
+Every built-in typeface set already ships in static/fonts/, with each
+family's licence in static/fonts/licenses/. This downloader fetches the
+families a custom config names, and refreshes the built-in files on request.
 The planner renders without them - planner.css declares fallback stacks - but
 the display faces are what give the pages their character. Everything on
 Google Fonts is open-licensed (SIL OFL or Apache 2.0), so the PDFs you make

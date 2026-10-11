@@ -12,12 +12,15 @@ window open. Your browser is the app. Click **Make PDF** when the pages look
 right.
 
 ```
-python planner.py fonts     # once - downloads the three display fonts
 python planner.py ui        # visual editor + live preview
 python planner.py build     # or straight to out/2027-Family-Planner.pdf
 ```
 
-That's it. No config file needed to get the default 30-page planner.
+That's it. No config file needed to get the default 30-page planner: the
+Editorial look, set in Bodoni Moda and Archivo. The typefaces for every look
+and every built-in typeface set are already in the repo, in
+`familyplanner/static/fonts/`, with each family's licence (see the README
+there). There is no download step.
 
 ## Workspace layout
 
@@ -47,20 +50,47 @@ crisp at any zoom, no upscaled bitmaps):
 ## Looks
 
 Thirteen looks, each with its own cover, monthly page, worksheet chrome,
-colours and typefaces. Covers are type, colour and geometry only, with no
-name or date printed on them.
+colours and typefaces. Covers are type, colour and geometry only. As
+designed they print no name or date; you can turn those on (see Cover
+options below).
 
 `editorial` (default) `midcentury` `nordic` `farmhouse` `deco` `swiss`
 `retro` `bauhaus` `almanac` `terracotta` `cottage` `gazette` `coastal`
 
 ```
-python planner.py fonts --all              # once, for every look's typefaces
 python planner.py build --design deco
 ```
 
 A look brings its own colours, so the theme does not change it; your own
 `palette:` block still wins.
-Its typeface set applies unless you set `fonts:`.
+A look also sets its own lettering: its typeface set applies unless you set
+`fonts:`.
+
+### Cover options
+
+Three settings put your own words on a look cover. All three are off at
+first, so the cover prints exactly as designed. Whatever you turn on prints
+in one small spot, in that look's own fonts and colours.
+
+- **`cover_show_family: true`** prints "The [family name] Family". It needs a
+  `family_name`.
+- **`cover_show_year`** is `off`, `year` (the planner year) or `custom` (the
+  `cover_text` line, such as `2026–27`).
+- **`cover_line`** is one extra line of your own, such as `Our year together`.
+
+Text limits: family name 60 characters, `cover_text` and `cover_line` 80
+each. Longer lines print smaller so they stay in the spot. The editor has
+the same settings under **Personalize the cover**. On the command line:
+
+```
+python planner.py build -n Ramirez --cover-show-family
+python planner.py build --cover-show-year custom --cover-text "2026–27"
+python planner.py build --cover-line "Our year together"
+python planner.py build -c family.yaml --no-cover-show-family
+```
+
+Blank, the retired looks and the layouts ignore these three. Their covers
+print the family name and the year by themselves (see `cover_year` below).
 
 ## The visual editor
 
@@ -76,6 +106,8 @@ planner is already running, it just opens the browser again.
 
 - year, family name (optional), paper size, week start, dated or blank grids
 - page looks named in plain language, each with a strip of its own colours
+- **Personalize the cover**: the family name, the year (or your own text) and
+  one extra line on a look cover, all off at first
 - a colour picker to replace any of the twelve print colours; it starts from the look's colours, and theme cards appear when the Blank look is picked
 - paper, week start and lettering size sit under **Paper and lettering size**
 - tracker rows added and named inline
@@ -98,7 +130,10 @@ python planner.py build --png        # ...plus one 300 dpi PNG per page
 python planner.py build --dpi 150    # smaller PNGs
 python planner.py build --html-only  # just the HTML, to inspect in a browser
 python planner.py build -y 2031      # a different year
-python planner.py build -n Ramirez   # "The Ramirez Family" on the cover
+python planner.py build -n Ramirez   # family name, used in the file name
+python planner.py build -n Ramirez --cover-show-family   # ...and on a look cover
+python planner.py build --cover-show-year year           # the year on a look cover
+python planner.py build --cover-line "Our year together" # one extra cover line
 python planner.py build --undated    # blank month grids instead of real dates
 python planner.py build --only cover,months,year_end
 
@@ -110,7 +145,9 @@ python planner.py themes             # list the colour presets
 python planner.py typefaces          # list the typeface sets
 python planner.py months             # per-month colours, motifs and taglines
 python planner.py init               # write a starter family.yaml
-python planner.py fonts              # download the display fonts
+python planner.py fonts              # fetch your own custom typefaces (built-in ones ship in the repo)
+python planner.py fonts --all        # refresh or re-download every built-in set
+python planner.py fonts --looks      # refresh or re-download the thirteen looks' sets
 ```
 
 `build` picks up `./family.yaml` automatically if it exists; `-c other.yaml`
@@ -146,9 +183,10 @@ python planner.py init      # writes family.yaml, fully commented
 
 ### Ready-made themes
 
-Colour presets ship with the generator. The factory default is `linen`: warm
-taupe, dusty rose and clay on ivory paper, with Playfair Display headings.
-`classic` keeps the original bright jewel-tone printable.
+Colour presets ship with the generator. They colour the Blank look and the
+retired looks; the default book uses the Editorial look, which brings its own
+colours. The default theme is `linen`: warm taupe, dusty rose and clay on
+ivory paper. `classic` keeps the original bright jewel-tone printable.
 
 ```
 python planner.py themes                       # list them with swatches
@@ -167,19 +205,23 @@ just its pink. A `palette:` block also replaces single colours on any look.
 
 ### Typefaces
 
-Forty typeface sets ship with the generator: six general ones, in the table
-below, and two suggested pairings for each page look. Each fills three roles:
+Fifty-two typeface sets ship with the generator: six general ones, in the
+table below, two pairings for each retired look, and one set for each of the
+thirteen looks (Swiss grid uses `grotesk-red`). Each fills three roles:
 `display` (chunky headings), `script` (handwritten lines) and `body`
-(everything else). The set once called `terracotta` is now `boho-brush`, so
-it is not mixed up with the Terracotta look; old files that say
+(everything else). The set once called `terracotta` is now `boho-brush`
+(Tenor Sans, Caveat Brush, Mulish), so it is not mixed up with the
+Terracotta look, which uses `home-base`; old files that say
 `fonts: terracotta` still work.
 
 ```
 python planner.py typefaces                    # see the sets
-python planner.py fonts --fonts italics        # download that set
-python planner.py fonts --all                  # download every set
 python planner.py build --fonts italics        # build with it
 ```
+
+The font files for all fifty-two sets are in the repo, so any set builds
+straight away. `python planner.py fonts --all` refreshes or re-downloads them
+from Google Fonts if you ever need to (`--force` fetches every file again).
 
 | set | display | script | body |
 |---|---|---|---|
@@ -190,9 +232,11 @@ python planner.py build --fonts italics        # build with it
 | `italics` | Courgette | Courgette | Courgette |
 | `neat` | Montserrat | Kalam | Open Sans |
 
-The look pairings have names like `sunday-kitchen`, `ledger` and
-`wedding-album`; `python planner.py typefaces` lists all of them. Choosing a
-look does not change the typefaces, so set `fonts:` yourself.
+The other sets have names like `home-edition`, `sunday-kitchen`, `ledger`,
+`boho-brush` and `wedding-album`; `python planner.py typefaces` lists all of
+them. A look or layout sets its own lettering (Editorial uses `home-edition`:
+Bodoni Moda and Archivo) unless you set `fonts:`. Blank and the retired looks
+use `elegant` unless you set `fonts:`.
 
 Or name **any** Google Fonts families you like:
 
@@ -203,7 +247,8 @@ fonts:
   body: Rubik
 ```
 
-Then `python planner.py fonts` downloads them. The visual editor picks a
+Families outside the built-in sets are not in the repo, so run
+`python planner.py fonts` once to download them. The visual editor picks a
 custom trio up too: it appears in TYPE as a **Custom** card, selected, above
 the presets. If a family does not publish a
 weight the planner asks for, the closest available weight is substituted and
@@ -218,17 +263,26 @@ A layout swaps in a boxed monthly page and adds a Weekly Plan and a Daily
 Plan before the months, so the book is 32 pages. The family worksheets stay.
 
 ```
-python planner.py build --design 06b --fonts composition-book
+python planner.py build --design 06b     # set in composition-book, its own typefaces
 ```
 
 Set `design: 06b` in your config, or pick it in the editor's look picker.
+Each layout has its own cover (title, year and the twelve months at a
+glance) and its own typeface set: `02` ledger, `06` composition-book, `11`
+boardroom, `12` garden-party. Set `fonts:` to use another.
 
 The things people change most:
 
 - **`year`** - monthly grids and the year-at-a-glance page are dated from this.
-- **`cover_text`** - printed on the cover and year mastheads instead of `year`
-  (for example `Our` or `2027-2028`). Leave empty to use the year.
-- **`family_name`** - printed on the cover and used in the output filename.
+- **`cover_text`** - printed on the Family Goals and annual calendar
+  mastheads instead of `year` (for example `Our` or `2027-2028`), and on the
+  cover of Blank, the retired looks and the layouts. A look cover prints it
+  only with `cover_show_year: custom`. Leave empty to use the year.
+- **`family_name`** - used in the output filename and printed on the cover of
+  Blank, the retired looks and the layouts. A look cover prints it only with
+  `cover_show_family: true`.
+- **`cover_show_family`**, **`cover_show_year`**, **`cover_line`** - the
+  optional words on a look cover; see Cover options above.
 - **`members`** - one row per person on the health tracker. Add or remove
   entries to change how many rows it has; names are optional.
 - **`theme`** - a colour preset applied before `palette`. Only the Blank look
@@ -239,12 +293,15 @@ The things people change most:
 - **`palette`** - twelve colour tokens. Change `teal` once and every teal
   element across all thirty pages follows.
 - **`months`** - each month's accent colour, seasonal motif, greeting strip and
-  footer line. Positional, January first, and partial lists are fine.
+  footer line. Positional, January first, and partial lists are fine. Only
+  Blank and the retired looks print these; a look or layout month page uses
+  its own wording.
 - **`pages`** - the running order. Comment out a line to drop that page.
 - **`dated_months: false`** - blank grids to fill in by hand, which is what the
-  original printable did. The cover year becomes fill-in blanks unless you set
-  `cover_text` (print that line), `cover_year: omit` (hide it) or
-  `cover_year: print` (keep the digits).
+  original printable did. On Blank, the retired looks and the layouts, the
+  cover year becomes fill-in blanks unless you set `cover_text` (print that
+  line), `cover_year: omit` (hide it) or `cover_year: print` (keep the
+  digits).
 
 Available motifs: `snowman`, `hearts`, `sprout`, `tulips`, `flowers`, `sun`,
 `beach`, `school`, `pumpkin`, `leaves`, `snowflake`.
@@ -315,9 +372,11 @@ Python 3.10+ and a Chromium-family browser (Chrome, Edge, Chromium or Brave).
 Install and check steps, including tests, are in
 [`stages/03-build/references/tool-setup.md`](stages/03-build/references/tool-setup.md).
 
-The display fonts are optional. Without them the pages fall back to system
-fonts and still build; with them they look right. They are SIL Open Font
-License, so the PDFs you make are yours to print, give away or sell.
+The typefaces ship in the repo, so there is nothing to download. They are
+under the SIL Open Font License 1.1 (77 families) or the Apache License 2.0
+(6 families); each family's licence is in `familyplanner/static/fonts/licenses/`.
+Both licences let you print, give away or sell the PDFs you make. If a font
+file is missing, the pages fall back to system fonts and still build.
 
 ## Differences from the original printable
 
