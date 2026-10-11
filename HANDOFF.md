@@ -1,6 +1,15 @@
-# Handoff, 2026-10-10
+# Handoff, 2026-10-11
 
-## Batch C: cover options and CI, 2026-10-09 to 2026-10-10 (branch `batch-c-covers`, not pushed)
+## State on 2026-10-11
+
+- Batches A, B and C are all merged into `main` on GitHub: PR #1 (batch A fixes), #2 (editor), #3 (CI) and #4 (cover options, fonts, docs). The four batch branches and the spare CI worktree were deleted on this machine; `main` is the only local branch.
+- `python -m pytest`: 494 passed, 0 skipped, locally and in CI (Windows and Linux, Python 3.10 and 3.12).
+- The owner approved the cover spots on all thirteen looks, the Cottage gingham and Retro sunset cover changes, and the level Retro sunset inside pages (all 2026-10-10).
+- The six unused font files (`inter-400/700/800`, `poppins-600/700`, `gloria-hallelujah-400`) were deleted on 2026-10-11 with the owner's OK. They were never tracked.
+- GitHub may still hold the merged batch branches (`batch-a-fixes`, `batch-b-editor`, `batch-c-ci`, `batch-c-covers`). Deleting them there is the owner's call.
+
+
+## Batch C: cover options and CI, 2026-10-09 to 2026-10-10 (merged as PR #4)
 
 `python -m pytest`: 494 passed, 0 skipped, after the fonts went into the repo (485 passed earlier in the batch; 371 passed and 40 xfailed after phase 1; 270 after batch B).
 
@@ -9,10 +18,10 @@
 - **Long text.** `Config.cover_fit` steps the type down (classes `lko-fit2`, `lko-fit3`) when all the lines together pass 70 or 130 characters, or one word passes 14 or 20 characters; a word too long for the spot breaks inside it. This also fixed phase 1: long text ran into the contents list on Editorial, over the sub line on Cottage gingham and off the page on Bauhaus blocks.
 - **Checks.** With all options off, all thirteen covers are pixel-identical to `main` at letter, 5.5x8 and 6x9, and every default book's HTML is identical to `main` outside the stylesheet. `tests/test_cover_fit.py` prints every look at every size in Chrome with usual, middle, longest and long-word text, and checks each line stays on the page and inside any clipping box, does not run out sideways, and moves nothing else. A scratch pixel script (not in the repo) also checked that no line of the spot touches another part of any cover (a title, rule or shape edge) in all 39 cases for each text set. Redo that check by eye if a spot's CSS changes. On 2026-10-10 the Gazette column rules were limited to direct children (`.gz-cols > div`), so they no longer style the cover lines; that left far more room in the spot. The fit test prints each look in its own typefaces and skips a look whose font files are missing (a safety net only: the files are in the repo, see the next item).
 - **CI.** `.github/workflows/tests.yml` (merged into `main` as PR #3) runs pytest on Windows and Linux, Python 3.10 and 3.12, for each push and pull request to `main`. `tests/conftest.py` has a `browser` fixture: tests that print a PDF or PNG skip with a reason when no Chromium browser is found. `origin/main` was merged into `batch-c-covers` locally.
-- **Fonts in the repo (2026-10-10).** All 251 `.woff2` files the 52 built-in typeface sets use (83 families, about 7 MB) are committed in `familyplanner/static/fonts/`, unchanged from Google Fonts, with each family's licence text in `licenses/` and a table (family, licence, source, files) in `familyplanner/static/fonts/README.md`. 77 families are SIL OFL 1.1 and 6 are Apache 2.0 (Chewy, Homemade Apple, Permanent Marker, Rock Salt, Satisfy, Yellowtail); none uses the Ubuntu Font Licence; all allow redistribution. A fresh clone builds every look with no download step, and CI no longer downloads fonts. `tests/test_font_files.py` fails if a built-in file or licence goes missing, so the cover-fit skip cannot hide one. `.gitattributes` marks `*.woff2` binary. `python planner.py fonts` is still there: it downloads families a custom config names, and `--all` / `--looks` / `--force` refresh the built-in files. If a set gains a new family, add its licence file and README row in the same commit. Six older files on this machine (`inter-400/700/800`, `poppins-600/700`, `gloria-hallelujah-400`) are used by no built-in set and were left untracked, not deleted.
+- **Fonts in the repo (2026-10-10).** All 251 `.woff2` files the 52 built-in typeface sets use (83 families, about 7 MB) are committed in `familyplanner/static/fonts/`, unchanged from Google Fonts, with each family's licence text in `licenses/` and a table (family, licence, source, files) in `familyplanner/static/fonts/README.md`. 77 families are SIL OFL 1.1 and 6 are Apache 2.0 (Chewy, Homemade Apple, Permanent Marker, Rock Salt, Satisfy, Yellowtail); none uses the Ubuntu Font Licence; all allow redistribution. A fresh clone builds every look with no download step, and CI no longer downloads fonts. `tests/test_font_files.py` fails if a built-in file or licence goes missing, so the cover-fit skip cannot hide one. `.gitattributes` marks `*.woff2` binary. `python planner.py fonts` is still there: it downloads families a custom config names, and `--all` / `--looks` / `--force` refresh the built-in files. If a set gains a new family, add its licence file and README row in the same commit. Six older files on this machine (`inter-400/700/800`, `poppins-600/700`, `gloria-hallelujah-400`) were used by no built-in set; they were never tracked and were deleted on 2026-10-11.
 - **Docs** (README, `config.example.yaml`, `_config/design-system.md` and `voice.md`, `CONTEXT.md`, `setup/questionnaire.md`, stages 01, 02 and 04) now match the code: 52 typeface sets, a look or layout sets its own lettering unless `fonts:` is set, the default book is Editorial in Bodoni Moda and Archivo, the real `linen` colours, the cover options, layout books at 32 pages, and look and layout month pages ignore taglines, motifs, accents and footers.
 
-## Batch B editor work, 2026-10-09 (branch `batch-b-editor`, made from `batch-a-fixes`, not pushed)
+## Batch B editor work, 2026-10-09 (merged as PR #2)
 
 `python -m pytest`: 270 passed (204 before batch A's text limits).
 
@@ -21,7 +30,7 @@
 - **Editor polish:** control outlines 3:1 or better (`--control-line`), placeholder 5.1:1 in italic, no text under 12px, 32px targets, Undo and Open PDF messages stay 15 seconds with a close button, reduced motion fades the spinner, blue-grey colours and the favicon moved to the editor palette, "Fit page" from the start, a two-column layout between 700px and 1100px. `tests/test_editor_ui.py` (static checks on the files).
 - **Checked by hand in Chrome:** arrow keys in all three pickers (focus stays, ring shows), 800px wide (no overlap or sideways scroll), Download plan then Open plan (title, subtitle and months come back), Start over (five member rows), a plan with a too-long family name (plain error), the Undo message (still there at 9 seconds, gone after 15). Not checked by hand: reduced motion, a real phone.
 
-## Batch A fixes, 2026-10-09 (branch `batch-a-fixes`, not pushed)
+## Batch A fixes, 2026-10-09 (merged as PR #1)
 
 Small bug fixes, one commit each, every fix with a test. `python -m pytest`: 204 passed (159 before).
 
@@ -184,7 +193,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 ## Environment notes
 
 - Windows Smart App Control blocks Git for Windows' unsigned `libcurl-4.dll`, so HTTPS push and fetch fail or hang. This repo pushes over SSH with `core.sshCommand = C:/Windows/System32/OpenSSH/ssh.exe`. Do not switch the remote back to HTTPS.
-- The owner runs pushes. When asked, give the git commands one at a time and wait for "done" between them. Last push (2026-10-03, `git push origin main`) was run by the agent because the owner asked for it in that message; it worked over SSH from the repo root.
+- The owner runs pushes, opens pull requests and merges them. A local `carla-safety` hook blocks the agent from merging a pull request even when asked (it also trips on commands that merely contain the pull-request command text). Give one command at a time and wait for "done". Multi-line pull-request commands with a long body break when pasted into PowerShell: give a one-line command or the GitHub compare link (`.../compare/main...<branch>?expand=1`). After a push, confirm the remote matches with `git rev-parse` and watch CI (`gh run watch`) before saying a pull request is safe to merge. Last push (2026-10-03, `git push origin main`) was run by the agent because the owner asked for it in that message; it worked over SSH from the repo root.
 - Any clone made before 2026-09-24 has the old history. Delete it and re-clone; never push from it, or the names and source pack return.
 - The original source pack (reference planner PDF and 31 page JPGs) lives outside the repo at `..\planner-source-pack\`. Do not copy it back in; it must not be published.
 - `git-filter-repo` is installed (`python -m git_filter_repo`) if history ever needs scrubbing again.
@@ -194,13 +203,14 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean. Batches A and B and the CI work are merged into `main` (PRs #1 to #3). The cover options and the doc fixes sit on the local branch `batch-c-covers` until the owner pushes it and merges a pull request. Show the owner the ten new cover spots before merging.
+1. Read this file, then `git status`. It should be clean, on `main`, matching `origin/main`. All batch work is merged (PRs #1 to #4); see "State on 2026-10-11" at the top.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
 5. Worth doing: open `python planner.py ui` and exercise the colour editor by hand. With a look chosen: the theme cards should be hidden, the pickers should start from the look's colours, a replaced colour should survive download and reopen, and switching to a look with different colours should clear replacements with an Undo in the toast. Then pick `blank`: the theme cards return; click through every theme (especially `citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`) to confirm the 2026-09-28 rework reads right on screen, not just in the hex values. Also scroll the TYPE picker, which now holds 52 sets, and pick one of the new ones; then pick a planner layout such as `06b` in the look picker and check the Weekly Plan, Daily Plan and a month at letter and at `5.5x8`.
 6. If asked to continue look design, follow "Looks" above exactly: get an approved reference first, implement one look at a time, then stop. The thirteen looks are done; before printing one, build the whole book for that look and page through it, since only the cover and January were checked.
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
-8. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
+8. Open, optional: try the editor on a real phone; decide whether layout `06b`'s tilted tape-tab headings should be levelled like Retro sunset (ask the owner first; it is a look design change).
+9. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
 
 > FIRST TURN: read the referenced docs ONE AT A TIME (no parallel tool calls, no batched reads). Parallel reads on the first turn can wedge a new session; sequential reads avoid it.
