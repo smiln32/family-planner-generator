@@ -904,3 +904,40 @@
   content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 0.12in;
   background: repeating-linear-gradient(180deg, var(--navy) 0 0.1in, var(--paper) 0.1in 0.2in);
 }
+
+/* ==========================================================================
+   Cover titles in another typeface set (Carla, 2026-10-11)
+   A look cover is drawn for its own set. When the editor or a config picks
+   another, each title line (fit() in look_cover.html) keeps to a width set
+   per line in --k (--cf-w: the room it has, or its own-set width where it
+   sits tight against other parts) and scales down when the set is wider.
+   No script, so the PDF and the preview agree:
+   - .cf is that width (A) and a size container; .cf-track is 4A wide;
+   - .cf-probe is the line at full size (its width W) and .cf-room takes the
+     rest of the track, 4A - W, as a size container;
+   - .cf-text, the visible line, reads A and 4A - W through container units,
+     is W wide, sits centred in A (or at its left, .cf-left) and scales by
+     min(1, A / W). A transform scales the letter-spacing too and moves
+     nothing else on the cover.
+   In the look's own set none of this is printed, so the cover is unchanged.
+   ========================================================================== */
+@property --cf-a { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --cf-r { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --cf-l1 { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --cf-ln { syntax: "<length>"; inherits: true; initial-value: 1px; }
+.lk-cover .cf { display: block; width: calc(var(--cf-w) * var(--k)); container-type: inline-size; white-space: nowrap; --cf-l1: 1lh; }
+/* --cf-ln is the face's own line height (line-height: normal), which follows
+   its ascenders and descenders; a line with --cf-h also keeps that under
+   --cf-h (in --k), so a tall script stays clear of the rules around it. */
+.lk-cover .cf-track { display: flex; align-items: flex-start; width: 400%; --cf-a: 100cqi; line-height: normal; --cf-ln: 1lh; }
+.lk-cover .cf-room { display: block; flex: 1 1 0; min-width: 0; container-type: inline-size; line-height: var(--cf-l1); }
+.lk-cover .cf-probe { display: block; flex: none; visibility: hidden; line-height: var(--cf-l1); }
+.lk-cover .cf-text {
+  --cf-r: 100cqi; --cf-al: 0.5;
+  display: block; width: calc(4 * var(--cf-a) - var(--cf-r));
+  margin-left: calc((var(--cf-a) - 4 * var(--cf-a) + var(--cf-r)) * var(--cf-al));
+  transform-origin: calc(var(--cf-al) * 100%) 50%;
+  transform: scale(min(1, tan(atan2(var(--cf-a), 4 * var(--cf-a) - var(--cf-r))),
+                       tan(atan2(var(--cf-h, 9999) * var(--k), var(--cf-ln)))));
+}
+.lk-cover .cf-left .cf-text { --cf-al: 0; }
