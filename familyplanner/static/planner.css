@@ -88,6 +88,32 @@ body {
   font-size: var(--type-title);
 }
 
+/* A worksheet title is one colour on one line (Carla, 2026-10-11); see
+   page_title() in macros.html. It keeps its full size when it fits and
+   shrinks just enough when it does not, in any typeface, with no script:
+   - .pt-fit spans the masthead's text column (width A), a size container;
+   - .pt-probe is the title at an eighth of the size, so its width is W/8,
+     where W is the title's width at full size (letter-spacing set in em
+     scales with it, since the probe has the same classes as the title);
+   - .pt-room takes what is left (A - W/8) and is a size container too;
+   - the visible title reads A and A - W/8 through container units
+     (registered lengths, so each resolves where it is set) and takes
+     min(full, full / 8 * A / (W/8)), a hair under, against rounding.
+   The title is drawn across the whole column from the left edge of
+   .pt-room, so it keeps the masthead's own text-align. */
+@property --pt-a { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --pt-r { syntax: "<length>"; inherits: true; initial-value: 0px; }
+.masthead .headings > .pt-fit { display: flex; align-items: flex-start; width: 100%; container-type: inline-size; }
+.pt-fit .pt-room { flex: 1 1 0; min-width: 0; container-type: inline-size; --pt-a: 100cqi; }
+.pt-fit .page-title { white-space: nowrap; flex: none; }
+.masthead .pt-fit h1.pt-probe { font-size: calc(var(--type-title) / 8); visibility: hidden; }
+.masthead .pt-fit .pt-room > h1.page-title {
+  width: var(--pt-a);
+  --pt-r: 100cqi;
+  font-size: min(var(--type-title),
+                 var(--type-title) / 8 * 0.985 * tan(atan2(var(--pt-a), var(--pt-a) - var(--pt-r))));
+}
+
 /* The navy ribbon that carries a page's strapline. */
 .banner {
   display: inline-block;
@@ -399,6 +425,9 @@ body {
 .year-tint span:nth-child(2) { color: var(--pink); }
 .year-tint span:nth-child(3) { color: var(--orange); }
 .year-tint span:nth-child(4) { color: var(--green); }
+/* Family Goals: the year above the title is in the title's one colour. */
+.year-tint.year-plain { color: var(--navy); }
+.year-tint.year-plain span { color: inherit; }
 
 .year-blank {
   display: flex; justify-content: center; align-items: flex-end; gap: 0.12em;
@@ -1656,7 +1685,7 @@ body {
 .design-12 .page {
   box-shadow: inset 0 0 0 1.5px #E8B4BE, inset 0 0 0 4px #FBF7F2, inset 0 0 0 5.5px #C9D4B8;
 }
-.design-12 .masthead h1.display, .design-12 .headings > .display:last-child {
+.design-12 .masthead h1.display:not(.page-title), .design-12 .headings > .display:last-child:not(.page-title) {
   font-family: var(--font-script); text-transform: none; letter-spacing: 0; font-weight: 400; color: #C46A78 !important;
 }
 .design-12 .mark, .design-12 .art { display: none !important; }

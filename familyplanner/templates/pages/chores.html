@@ -1,5 +1,5 @@
 {# title: Household Chores Planner #}
-{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "macros.html" import divider, footer, ico, chip, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set chores = [("broom", "pink"), ("utensils", "orange"), ("washer", "green"),
                  ("trash", "teal"), ("spray", "purple"), ("cart", "pink"),
@@ -9,10 +9,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Household</div>
-      <h1 class="display word-tint">
-        {% for ch in "CHORES" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Household Chores") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">Planner</div>
       {{ divider() }}
     </div>

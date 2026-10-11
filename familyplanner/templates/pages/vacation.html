@@ -1,5 +1,5 @@
 {# title: Vacation and Travel Planner #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines, page_title with context %}
 
 <section class="page vacation-page">
   <header class="masthead">
@@ -14,8 +14,7 @@
       <path d="M14 132c26-8 148-8 174 0v8c-26-8-148-8-174 0z" fill="{{ p.orange }}" opacity=".5"/>
     </svg>
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Vacation &amp; Travel</div>
-      <h1 class="display" style="color:{{ p.teal }}">Planner</h1>
+      {{ page_title("Vacation & Travel Planner") }}
       <div class="banner" style="--banner-bg:{{ p.pink }};font-size:9.5pt">
         Plan Well. Travel Smart. Make Beautiful Memories.</div>
       {{ divider() }}

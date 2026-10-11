@@ -1,5 +1,5 @@
 {# title: Emergency Contacts #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set contacts = [("medical", "red", "Emergency", "Police / Fire / Ambulance"),
                    ("shield", "blue", "Local Police", ""), ("fire", "orange", "Fire Department", ""),
@@ -15,9 +15,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <h1 class="display" style="color:{{ p.navy }}">Emergency</h1>
-      <div class="display" style="color:{{ p.teal }}">Contacts &amp;</div>
-      <div class="display" style="color:{{ p.pink }}">Important Information</div>
+      {{ page_title("Emergency Contacts & Important Information") }}
       <div class="banner" style="--banner-bg:{{ p.navy }};font-size:9pt">
         Be Prepared. Be Safe. Stay Together.</div>
       {{ divider() }}

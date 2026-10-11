@@ -1,5 +1,5 @@
 {# title: Home Maintenance Checklist #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines, page_title with context %}
 {% set tasks = [
   ("home", "orange", "Exterior", "Inspect roof, siding, gutters & downspouts", "Every 6 months"),
   ("wifi", "blue", "HVAC", "Change filters & inspect heating/cooling system", "Every 3 months"),
@@ -22,9 +22,7 @@
       <circle cx="166" cy="98" r="20" fill="{{ p.green }}"/>
     </svg>
     <div class="headings">
-      <h1 class="display" style="color:{{ p.navy }}">Home</h1>
-      <div class="display" style="color:{{ p.green }}">Maintenance</div>
-      <div class="display" style="color:{{ p.navy }}">Checklist</div>
+      {{ page_title("Home Maintenance Checklist") }}
       <div class="banner" style="--banner-bg:{{ p.navy }};font-size:9.5pt">
         A Well-Maintained Home is a Happy Home!</div>
       {{ divider() }}

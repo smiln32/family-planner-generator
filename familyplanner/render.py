@@ -19,7 +19,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import escape
 
-from . import calendars, config, designs
+from . import calendars, config, designs, typefaces
 from .config import Config
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -212,6 +212,11 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     cfg = replace(cfg, palette=config.effective_palette(cfg))
     shell = env.get_template("book.html")
     page_template_cache: dict[str, object] = {}
+    # A look cover is drawn for the look's own typeface set. With another set
+    # its title lines get a fit wrapper (look_cover.html); in the own set the
+    # cover's HTML is exactly as designed.
+    own_set = designs.look_fonts(cfg.design)
+    own_faces = not own_set or cfg.faces == typefaces.resolve(own_set)
 
     bodies = []
     for page in pages:
@@ -224,6 +229,7 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
             script_stack=cfg.faces.stack("script"),
             body_stack=cfg.faces.stack("body"),
             look=look,
+            own_faces=own_faces,
             **page.context,
         )
         bodies.append(_decorate(rendered, cfg, nav, page))

@@ -1,5 +1,5 @@
 {# title: Family Budget Overview #}
-{% from "macros.html" import divider, footer, ico, chip, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set cats = [("home", "teal", "Housing", 30), ("cart", "pink", "Groceries", 25),
                ("car", "orange", "Transportation", 15), ("heart", "green", "Health", 10),
@@ -10,10 +10,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Family</div>
-      <h1 class="display word-tint">
-        {% for ch in "BUDGET" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Family Budget") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">Overview</div>
       {{ divider() }}
     </div>

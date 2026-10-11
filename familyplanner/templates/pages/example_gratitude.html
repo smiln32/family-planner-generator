@@ -3,7 +3,7 @@
    Not in the default running order; build it with:
        python planner.py build --only example_gratitude --png
    Delete this file freely, it is only here as a reference. #}
-{% from "macros.html" import divider, footer, ico, chip, field, lines, numbered with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, lines, numbered, page_title with context %}
 {% from "art.html" import house_family with context %}
 
 {# Pick the page's accent colours from the palette by NAME, never by hex, so
@@ -16,10 +16,7 @@
   <header class="masthead no-art">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Our Weekly</div>
-      <h1 class="display word-tint">
-        {% for ch in "GRATITUDE" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Our Weekly Gratitude") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Journal</div>
       {{ divider() }}
     </div>

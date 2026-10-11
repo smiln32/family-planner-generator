@@ -1,15 +1,12 @@
 {# title: Contents #}
-{% from "macros.html" import divider, footer, ico, chip with context %}
+{% from "macros.html" import divider, footer, ico, chip, page_title with context %}
 {% from "art.html" import house_family with context %}
 
 <section class="page index-page">
   <header class="masthead no-art">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Our Planner</div>
-      <h1 class="display word-tint">
-        {% for ch in "CONTENTS" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Our Planner Contents") }}
       {{ divider() }}
     </div>
   </header>
