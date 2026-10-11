@@ -1,5 +1,5 @@
 {# title: School and Activities Schedule #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set slots = [("sun", "orange", "Before School"), ("backpack", "teal", "School Hours"),
                 ("book", "green", "After School"), ("star", "pink", "Activities & Classes"),
@@ -9,10 +9,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <h1 class="display" style="color:{{ p.navy }}">School &amp;</h1>
-      <div class="display word-tint">
-        {% for ch in "ACTIVITIES" %}<span>{{ ch }}</span>{% endfor %}
-      </div>
+      {{ page_title("School & Activities") }}
       <div class="banner" style="--banner-bg:{{ p.navy }};font-size:14pt">Schedule</div>
       <div class="strapline script">Plan today. Stay organized. Make memories together.</div>
     </div>

@@ -1,5 +1,5 @@
 {# title: Family Time Planner #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, numbered, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, numbered, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set ideas = ["Game Night", "Movie Night", "Cook Together", "Outdoor Adventure",
                 "Family Walk / Bike Ride", "Read Together", "Visit Family / Friends",
@@ -9,8 +9,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <h1 class="display" style="color:{{ p.navy }}">Family</h1>
-      <div class="display" style="color:{{ p.pink }}">Time</div>
+      {{ page_title("Family Time") }}
       <div class="banner" style="--banner-bg:{{ p.green }};font-size:17pt">Planner</div>
       <div class="strapline script">Making time together makes the best memories.</div>
     </div>

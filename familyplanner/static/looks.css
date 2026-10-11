@@ -445,7 +445,7 @@
 .lkm-deco .lkm-label::before, .lkm-deco .lkm-label::after { content: ""; flex: 1; height: 1px; background: var(--gold); }
 
 .design-deco { --gold: color-mix(in srgb, var(--orange) 82%, #fff); }
-.design-deco .masthead h1.display { letter-spacing: 0.1em; }
+.design-deco .masthead h1.display:not(.page-title) { letter-spacing: 0.1em; }
 .design-deco .banner { background: none; color: var(--navy); border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); letter-spacing: 0.3em; font-weight: 400; }
 .design-deco .card { border: 1px solid var(--gold); border-radius: 0; outline: 1px solid var(--gold); outline-offset: 2px; }
 .design-deco .card-tab { border-radius: 0; background: var(--navy); color: var(--gold); letter-spacing: 0.2em; font-weight: 400; }
@@ -673,7 +673,7 @@
 .lkm-almanac .lkm-label { color: var(--navy); font-weight: 400; font-size: calc(9 * var(--k)); letter-spacing: 0.3em; }
 .lkm-almanac .lkm-lines i { border-bottom-width: 0.75px; }
 
-.design-almanac .masthead h1.display { letter-spacing: 0.16em; }
+.design-almanac .masthead h1.display:not(.page-title) { letter-spacing: 0.16em; }
 .design-almanac .masthead { border-bottom: 1.5px solid var(--navy); padding-bottom: 0.08in; box-shadow: 0 3px 0 -2px var(--navy); }
 .design-almanac .banner { background: none; color: var(--brown); padding: 0; font-family: var(--font-script); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11pt; }
 .design-almanac .card { border: 0.75px solid var(--navy); border-radius: 0; outline: 0.75px solid var(--navy); outline-offset: 2px; }

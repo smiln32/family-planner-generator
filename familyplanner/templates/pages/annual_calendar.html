@@ -1,5 +1,5 @@
 {# title: Annual Family Calendar #}
-{% from "macros.html" import divider, footer, ico, chip, year_mark with context %}
+{% from "macros.html" import divider, footer, ico, chip, year_mark, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set motif_icon = {
      "snowman": "snowflake", "hearts": "heart", "sprout": "sprout",
@@ -11,10 +11,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Annual</div>
-      <h1 class="display word-tint">
-        {% for ch in "FAMILY" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Annual Family") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Calendar</div>
       {{ year_mark("annual-year", tint=false) }}
       {{ divider() }}

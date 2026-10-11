@@ -62,6 +62,15 @@
 </div>
 {% endmacro %}
 
+{# A worksheet title: one colour, one line (Carla, 2026-10-11). The text is
+   printed twice: a hidden copy at an eighth of the size measures it, and the
+   CSS (".pt-fit" in planner.css) shrinks the visible copy only as far as it
+   must to fit the masthead. No script: it works in the PDF and the preview.
+   Both copies are h1.display.page-title, so every look rule styles them alike. #}
+{% macro page_title(text) %}
+<div class="pt-fit"><div class="pt-room"><h1 class="display page-title" style="color:{{ p.navy }}">{{ text }}</h1></div><h1 class="display page-title pt-probe" aria-hidden="true">{{ text }}</h1></div>
+{% endmacro %}
+
 {# The standard page masthead: mark on the left, stacked title, optional art. #}
 {% macro masthead(line1, line2="", script_line="", banner="", strap="",
                   banner_colour="navy", line1_colour="navy", line2_colour="teal",

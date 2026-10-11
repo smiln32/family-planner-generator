@@ -1,14 +1,12 @@
 {# title: Family Vision and Mission #}
-{% from "macros.html" import divider, footer, ico, chip, lines, field with context %}
+{% from "macros.html" import divider, footer, ico, chip, lines, field, page_title with context %}
 {% from "art.html" import house_family with context %}
 
 <section class="page vision-page">
   <header class="masthead no-art">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Family</div>
-      <h1 class="display" style="color:{{ p.teal }}">Vision &amp; Mission</h1>
-      <div class="display" style="color:{{ p.navy }}">Statement</div>
+      {{ page_title("Family Vision & Mission Statement") }}
       {{ divider() }}
     </div>
   </header>

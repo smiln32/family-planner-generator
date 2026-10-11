@@ -1,5 +1,5 @@
 {# title: Grocery Shopping List #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set sections = [
      ("apple", "green", "Fruits & Vegetables"), ("milk", "teal", "Dairy & Eggs"),
@@ -12,10 +12,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Grocery</div>
-      <h1 class="display word-tint">
-        {% for ch in "SHOPPING" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Grocery Shopping") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">List</div>
       {{ divider() }}
     </div>

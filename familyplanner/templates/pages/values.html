@@ -1,15 +1,12 @@
 {# title: Family Values Worksheet #}
-{% from "macros.html" import divider, footer, ico, chip, numbered, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, numbered, lines, page_title with context %}
 {% from "art.html" import house_family, person with context %}
 
 <section class="page values-page">
   <header class="masthead no-art">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Family Values</div>
-      <h1 class="display word-tint">
-        {% for ch in "WORKSHEET" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Family Values Worksheet") }}
       {{ divider() }}
     </div>
   </header>

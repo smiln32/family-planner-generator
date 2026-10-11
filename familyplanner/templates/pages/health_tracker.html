@@ -1,5 +1,5 @@
 {# title: Family Health and Wellness Tracker #}
-{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, checklist, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {% set habits = [
      ("apple", "green", "Eat Healthy", "5+ servings of fruits &amp; veggies"),
@@ -13,7 +13,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <h1 class="display" style="color:{{ p.navy }}">Family Health &amp; Wellness</h1>
+      {{ page_title("Family Health & Wellness") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Tracker</div>
       {{ divider() }}
     </div>

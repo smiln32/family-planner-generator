@@ -1,5 +1,5 @@
 {# title: Weekly Meal Planning Sheet #}
-{% from "macros.html" import divider, footer, ico, chip, field, lines with context %}
+{% from "macros.html" import divider, footer, ico, chip, field, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
 {# Each day keeps its own tint and glyph wherever week_starts puts it. #}
 {% set day_style = {
@@ -12,10 +12,7 @@
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
-      <div class="display" style="color:{{ p.navy }}">Weekly</div>
-      <h1 class="display word-tint">
-        {% for ch in "MEAL" %}<span>{{ ch }}</span>{% endfor %}
-      </h1>
+      {{ page_title("Weekly Meal") }}
       <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Planning Sheet</div>
       {{ divider() }}
     </div>
