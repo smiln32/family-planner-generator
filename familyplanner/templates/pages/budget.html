@@ -82,7 +82,9 @@
     <div class="card has-tab" style="--c:{{ p.purple }}">
       <div class="card-tab">{{ ico("coins") }} Expenses Breakdown</div>
       <div class="pie-wrap">
-        <svg class="pie" viewBox="0 0 42 42" role="img" aria-label="Suggested budget split">
+        {# The ring's outer edge is r + stroke/2 = 22.92 from the centre, so the
+           viewBox runs 23 each way from (21, 21); a 0-42 box cut it off flat. #}
+        <svg class="pie" viewBox="-2 -2 46 46" role="img" aria-label="Suggested budget split">
           {% set ns = namespace(offset=25) %}
           {% for icon, colour, label, pct in cats %}
           <circle cx="21" cy="21" r="15.9155" fill="none" stroke="{{ p[colour] }}"
