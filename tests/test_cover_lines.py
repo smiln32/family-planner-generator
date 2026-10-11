@@ -20,7 +20,7 @@ from http.server import ThreadingHTTPServer
 
 import pytest
 
-from familyplanner import cli, config, designs, render, server
+from familyplanner import cli, config, designs, render, server, typefaces
 from familyplanner.config import ConfigError
 
 NAME = "Sample"
@@ -40,6 +40,8 @@ def _cfg(design="editorial", **fields):
     cfg = config.load(None)
     cfg.design = design
     cfg.pages = ["cover"]
+    # In its own typeface set, as config.load gives a look with no `fonts:`.
+    cfg.faces = typefaces.resolve(designs.look_fonts(design))
     for key, value in fields.items():
         setattr(cfg, key, value)
     return config.validate(cfg)
