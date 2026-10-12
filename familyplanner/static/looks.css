@@ -983,36 +983,62 @@
    page (Family Time's "Monthly Family Tradition"). Now:
    - grid columns are minmax(0, 1fr), so a card keeps its share;
    - a card tab that is longer than its card wraps onto a second line. An
-     in-flow tab (Editorial, the layouts' plain headings) just wraps; a tab
-     that hangs over the card's top edge keeps its first line where it was
-     and the translate (one-line height minus the tab's height) lifts the
-     extra line above the card edge instead of over the card's content.
-   A tab that fits stays on one line, so a page that fitted is unchanged.
+     in-flow tab (Editorial, the layouts' plain headings) just wraps. A tab
+     that hangs over the card's top edge is now in the card's flow too,
+     pulled up by negative margins to exactly where it hung before (--pt,
+     --pl: the card's top and side padding; --tt, --tl: how far the tab sits
+     above the card and in from its side; --tab-line: the height of a one-line
+     tab), so its first line stays put and an extra line pushes the card's
+     content down, never up into the row above.
+   A tab that fits stays on one line where it was, so a page that fitted is
+   unchanged.
    ========================================================================== */
 .page .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .page .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .page .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .page .card-tab { white-space: normal; }
-.page .card.has-tab > .card-tab {
-  --tab-line: calc(max(1lh, 0.13in) + 0.07in);
-  max-width: calc(100% - 0.14in);
-  translate: 0 calc(var(--tab-line) - 100%);
+.page .card.has-tab { --pt: 0.2in; --pl: 0.13in; --tt: 0.105in; --tl: 0.14in;
+                      --tab-line: calc(max(1lh, 0.13in) + 0.07in); }
+.page.emergency-page .card.has-tab { --pt: 0.16in; --pl: 0.11in; }
+.design-farmhouse .page .card.has-tab { --tt: 0.11in; }
+.design-almanac .page .card.has-tab { --tab-line: calc(max(1lh, 0.13in) + 0.07in + 1.5px); }
+.design-cottage .page .card.has-tab { --tab-line: calc(max(1lh, 0.13in) + 0.07in + 2px); }
+/* (Looks whose tabs always sat in the card's flow keep their own rules.) */
+body:not(.lk-flat):not(.design-editorial):not(.design-nordic):not(.design-swiss):not(.design-gazette):not(.design-bauhaus):not(.design-02):not(.design-11):not(.layout)
+  .page .card.has-tab > .card-tab {
+  position: relative; top: auto; left: auto; align-self: flex-start; flex: none;
+  margin: calc(-1 * (var(--pt) + var(--tt))) 0 calc(var(--pt) + var(--tt) - var(--tab-line)) calc(var(--tl) - var(--pl));
+  max-width: calc(100% + 2 * var(--pl) - var(--tl));
 }
-.design-almanac .page .card.has-tab > .card-tab { --tab-line: calc(max(1lh, 0.13in) + 0.07in + 1.5px); }
-.design-cottage .page .card.has-tab > .card-tab { --tab-line: calc(max(1lh, 0.13in) + 0.07in + 2px); }
-/* Tabs that sit in the card's flow: no lift, and the full width. */
-:is(.lk-flat, .design-editorial, .design-nordic, .design-swiss, .design-gazette, .design-bauhaus,
-    .design-02, .design-11, .layout) .page .card.has-tab > .card-tab { translate: none; max-width: none; }
 /* Layout box styles whose headings hang over the frame: the worksheet card
-   tabs and the headings of the month, weekly and daily boxes alike. */
-.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) :is(.card.has-tab > .card-tab, .lx-box > .lx-hd) {
-  white-space: normal; translate: 0 calc(var(--tab-line) - 100%);
+   tabs and the headings of the month, weekly and daily boxes alike (a box
+   has no padding of its own; its body pads down under the heading). The
+   layout covers keep their month headings as drawn. */
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) :is(.card.has-tab, .lx-box) { --pl: 0px; }
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) .card.has-tab { --pl: calc(8 * var(--u)); }
+.layout:is(.box-12a, .box-12c) .card.has-tab { --pl: calc(9 * var(--u)); }
+.layout.box-02b .card.has-tab { --pt: calc(9 * var(--u)); }
+.layout.box-06b .card.has-tab { --pt: calc(11 * var(--u)); }
+.layout.box-11c .card.has-tab { --pt: calc(8 * var(--u)); }
+.layout:is(.box-12a, .box-12c) .card.has-tab { --pt: calc(11 * var(--u)); }
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) .lx-box { --pt: 0px; }
+/* Boxed records and Executive desk cards pad 0.13in under the tab. */
+.layout:is(.design-02, .design-11):is(.box-02b, .box-11c) .card.has-tab { --pt: 0.13in; }
+.layout.box-02b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, 8 * var(--u)); }
+.layout.box-06b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(10 * var(--u)); --tab-line: calc(max(1lh, 8 * var(--u)) + 4 * var(--u)); }
+.layout.box-11c :is(.card.has-tab, .lx-box) { --tt: calc(5 * var(--u)); --tl: calc(8 * var(--u)); --tab-line: max(1lh, 8 * var(--u)); }
+.layout.box-12a :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(9 * var(--u)); --tab-line: calc(max(1lh, 8 * var(--u)) + 2 * var(--u)); }
+.layout.box-12c :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, 8 * var(--u)); }
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) :is(.card.has-tab > .card-tab, .page:not(.lx-cover) .lx-box > .lx-hd) {
+  position: relative; top: auto; left: auto; white-space: normal; align-self: flex-start; flex: none;
+  margin: calc(-1 * (var(--pt) + var(--tt))) 0 calc(var(--pt) + var(--tt) - var(--tab-line)) calc(var(--tl) - var(--pl));
+  max-width: calc(100% + 2 * var(--pl) - var(--tl));
 }
-.layout.box-02b :is(.card.has-tab > .card-tab, .lx-box > .lx-hd) { --tab-line: max(1lh, 8 * var(--u)); max-width: calc(100% - 12 * var(--u)); translate: -50% calc(var(--tab-line) - 100%); transform: none; }
-.layout.box-06b :is(.card.has-tab > .card-tab, .lx-box > .lx-hd) { --tab-line: calc(max(1lh, 8 * var(--u)) + 4 * var(--u)); max-width: calc(100% - 10 * var(--u)); }
-.layout.box-11c :is(.card.has-tab > .card-tab, .lx-box > .lx-hd) { --tab-line: max(1lh, 8 * var(--u)); max-width: calc(100% - 16 * var(--u)); }
-.layout.box-12a :is(.card.has-tab > .card-tab, .lx-box > .lx-hd) { --tab-line: calc(max(1lh, 8 * var(--u)) + 2 * var(--u)); max-width: calc(100% - 9 * var(--u)); }
-.layout.box-12c :is(.card.has-tab > .card-tab, .lx-box > .lx-hd) { --tab-line: max(1lh, 8 * var(--u)); max-width: calc(100% - 12 * var(--u)); translate: -50% calc(var(--tab-line) - 100%); transform: none; }
+/* Boxed records B and Beautiful day C centre their headings. */
+.layout:is(.box-02b, .box-12c) :is(.card.has-tab > .card-tab, .page:not(.lx-cover) .lx-box > .lx-hd) {
+  align-self: center; transform: none;
+  margin-left: 0; margin-right: 0; max-width: calc(100% + 2 * var(--pl) - 2 * var(--tl));
+}
 /* Bauhaus pulls its tab bar out to the card edge by the usual card padding;
    the Emergency page's cards are narrower in the padding. */
 .design-bauhaus .emergency-page .card-tab { margin-left: -0.11in; margin-right: -0.11in; }

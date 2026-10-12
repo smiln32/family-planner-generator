@@ -89,6 +89,14 @@ window.addEventListener('load', () => { document.fonts.ready.then(() => {
         }
       }
     }
+    // A long tab wraps downward, pushing the card's content down; it never
+    // climbs into the row above. Its top sits no higher over its card than a
+    // one-line tab's (at most 0.2in, scaled on a small page).
+    for (const tab of sec.querySelectorAll('.card-tab, .lx-box > .lx-hd')) {
+      if (!shown(tab)) continue;
+      const own = tab.closest('.card, .lx-box').getBoundingClientRect();
+      if (tab.getBoundingClientRect().top < own.top - 0.2 * 96 * z - T) P.push(name(tab) + ' climbs above its card');
+    }
     const foot = sec.querySelector('.page-footer');
     if (foot && shown(foot) && foot.getBoundingClientRect().bottom > sr.bottom + T) P.push('footer off the page');
     out.push({page: sec.dataset.page, problems: [...new Set(P)]});
