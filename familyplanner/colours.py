@@ -60,27 +60,33 @@ WEEKEND_TOKENS: tuple[str, ...] = ("red", "pink", "teal", "orange", "purple")
 # weekend is the palette's red unless named. Each season is darkened toward
 # the ink only if neither white nor ink text would reach 4.5:1 on it.
 PICKS: dict[str, dict[str, str]] = {
-    "editorial": {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "purple"},
+    "editorial": {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "#5C4A3C"},
     "midcentury": {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "brown"},
-    "nordic": {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "brown"},
+    "nordic": {"winter": "blue", "spring": "#627358", "summer": "orange", "autumn": "brown"},
     "farmhouse": {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "brown"},
     "deco": {"winter": "#6B7589", "spring": "purple", "summer": "orange", "autumn": "brown"},
-    "swiss": {"winter": "#474747", "spring": "#919191", "summer": "#BDBDBD", "autumn": "#6B6B6B"},
+    # Swiss grid and Boxed records have no colours to spare: their months stay
+    # in the structure colour and the season icons carry the season.
+    "swiss": {"seasons": "off"},
     "retro": {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "#8C7163"},
     "bauhaus": {"winter": "teal", "spring": "#7B8FC6", "summer": "#F2C94C", "autumn": "brown"},
     # Almanac's red is too close to its oxblood titles, so its weekend is the ochre.
     "almanac": {"weekend": "orange", "winter": "blue", "spring": "green",
-                "summer": "#C9A464", "autumn": "pink"},
+                "summer": "#C9A464", "autumn": "#6E4A33"},
     "terracotta": {"winter": "blue", "spring": "green", "summer": "#E8A86E", "autumn": "brown"},
     "cottage": {"winter": "blue", "spring": "green", "summer": "#CBAE85", "autumn": "brown"},
-    "gazette": {"winter": "blue", "spring": "#7E9DBC", "summer": "rule", "autumn": "brown"},
-    "coastal": {"winter": "blue", "spring": "green", "summer": "#C9BFB2", "autumn": "brown"},
+    "gazette": {"winter": "blue", "spring": "#7E9DBC", "summer": "#D4BE96", "autumn": "brown"},
+    "coastal": {"winter": "blue", "spring": "green", "summer": "#D4B98C", "autumn": "brown"},
     # Boxed records is black and white only: a grey weekend and four greys.
-    "02": {"weekend": "#707070", "winter": "#333333", "spring": "#A3A3A3",
-           "summer": "#CCCCCC", "autumn": "#525252"},
-    "06": {"winter": "rule", "spring": "blue", "summer": "#E6A5A5", "autumn": "#6E3140"},
-    "11": {"winter": "#333333", "spring": "#7F8DA3", "summer": "#CDD3DD", "autumn": "#A6B0C0"},
-    "12": {"weekend": "red", "winter": "purple", "spring": "green", "summer": "pink", "autumn": "#957F75"},
+    "02": {"weekend": "#707070", "seasons": "off"},
+    "06": {"winter": "blue", "spring": "rule", "summer": "#E6A5A5", "autumn": "#6E3140"},
+    # Executive desk is navy and slate only. Its weekend is one muted brick
+    # that suits the navy, and its seasons an even ramp of its blue-greys.
+    "11": {"weekend": "#9A4A3A", "winter": "#3E4D66", "spring": "#9CA8BB",
+           "summer": "#D5DBE4", "autumn": "#687790"},
+    # Beautiful day's card frames are its pink, so summer is its peach.
+    "12": {"weekend": "red", "winter": "purple", "spring": "#5A7C55", "summer": "#E8C4B8",
+           "autumn": "#957F75"},
 }
 
 # Blank and the retired looks print in a theme (themes.PRESETS), keyed here
@@ -89,6 +95,7 @@ PICKS: dict[str, dict[str, str]] = {
 _TOKENS = {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "brown"}
 PICKS.update({f"theme:{name}": dict(_TOKENS) for name in (
     "linen", "classic", "amber", "berry", "bold", "citrus", "forest", "pastel", "poppy")})
+PICKS["theme:linen"]["winter"] = "#5E6266"
 PICKS.update({
     "theme:meadow": {"weekend": "brown", "winter": "blue", "spring": "green",
                      "summer": "pink", "autumn": "orange"},
@@ -104,6 +111,10 @@ MIN_SEASON_GAP = 18.0
 MIN_SEASON_GAP_TIGHT = 11.0
 MIN_WEEKEND_FALLBACK = 12.0
 TEXT_CONTRAST = 4.5
+# The weekend accent is text on paper and on light cells and washes (calendar
+# cells, the meal plan's day wash, tinted panels), which are up to about 15%
+# darker than the paper; 5.3:1 on paper keeps it 4.5:1 or better on those.
+WEEKEND_ON_PAPER = 5.3
 WHITE = "#FFFFFF"
 
 
@@ -174,10 +185,11 @@ def readable(colour: str, ink: str) -> str:
 
 def _text_safe(colour: str, paper: str) -> str:
     """`colour`, darkened (toward black, which keeps its hue) until it reads
-    as text on paper."""
-    for step in range(0, 21):
-        darker = mix(colour, "#000000", step / 40) if step else colour
-        if contrast(darker, paper) >= TEXT_CONTRAST:
+    as text on paper, and on the light washes and cells a page puts on its
+    paper (WEEKEND_ON_PAPER)."""
+    for step in range(0, 41):
+        darker = mix(colour, "#000000", step / 80) if step else colour
+        if contrast(darker, paper) >= WEEKEND_ON_PAPER:
             return darker
     return "#000000"
 
@@ -205,7 +217,10 @@ def roles(palette: dict[str, str], family: str = "") -> dict[str, str]:
     if pick:
         if "weekend" in pick:
             weekend = _text_safe(_resolve(pick["weekend"], palette), paper)
-        seasons = {s: readable(_resolve(pick[s], palette), ink) for s in SEASONS}
+        if pick.get("seasons") == "off":
+            seasons = {s: structure for s in SEASONS}
+        else:
+            seasons = {s: readable(_resolve(pick[s], palette), ink) for s in SEASONS}
     out = {"structure": structure, "weekend": weekend, **seasons}
     for name in list(out):
         out[f"{name}-on"] = on_colour(out[name], ink)
