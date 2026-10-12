@@ -276,8 +276,27 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
         font_body=cfg.faces.stack("body"),
         page_width_in=width_in,
         page_height_in=height_in,
+        page_zoom=page_zoom(width_in),
         standalone=standalone,
     )
+
+
+# The side margin of every sheet (book.html, --page-pad-side) and the width
+# the worksheets were laid out for.
+PAGE_PAD_SIDE_IN = 0.32
+LETTER_WIDTH_IN = 8.5
+
+
+def page_zoom(width_in: float) -> float:
+    """How far a letter-sized worksheet is scaled to fit a smaller page.
+
+    The worksheets are laid out in inches for letter. On 5.5x8 and 6x9 they
+    are laid out at letter width and scaled by this factor (CSS zoom, see
+    "Small pages" in looks.css), so the printed margins stay the same and
+    every card and table keeps its letter proportions. 1 at letter.
+    """
+    inner = LETTER_WIDTH_IN - 2 * PAGE_PAD_SIDE_IN
+    return round(min(1.0, (width_in - 2 * PAGE_PAD_SIDE_IN) / inner), 4)
 
 
 def _fonts_css(cfg: Config, font_base: str | None = None) -> str:

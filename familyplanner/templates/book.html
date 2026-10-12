@@ -13,6 +13,8 @@
   --page-pad-top: 0.3in;
   --page-pad-side: 0.32in;
   --page-pad-bottom: 0.26in;
+  /* Scale of a letter-laid worksheet on a smaller page (render.page_zoom). */
+  --page-zoom: {{ page_zoom }};
 {% for name, value in cfg.palette.items() %}
   --{{ name }}: {{ value }};
 {% endfor %}
@@ -43,7 +45,7 @@
 {% endif %}
 </style>
 </head>
-<body class="design-{{ look.base }}{% if look.base in looks %} lk{% endif %}{% if look.layout %} design-{{ cfg.design }} layout box-{{ look.box }}{% endif %}">
+<body class="{% if page_zoom < 1 %}small-page {% endif %}design-{{ look.base }}{% if look.base in looks %} lk{% endif %}{% if look.layout %} design-{{ cfg.design }} layout box-{{ look.box }}{% endif %}">
 {% include "icons.html" %}
 {% for body in bodies %}
 {{ body|safe }}

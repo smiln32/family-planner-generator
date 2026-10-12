@@ -2102,10 +2102,12 @@ body {
 /* --- planner layouts (designs 02a-12c) -------------------------------------
    Daily, weekly and monthly sheets in three structures: lx-a split, lx-b
    stacked bands, lx-c sidebar. --u is 1/300 of the page width (capped for
-   letter) so every size keeps the approved proportions. Colours stay the
+   letter) so every size keeps the approved proportions; on the smaller,
+   taller-in-proportion pages it is also kept to 1/458 of the height (the
+   letter cap's share of a letter page), so a sheet fits its height too. Colours stay the
    parent look's; box-* sets the box style. */
 .page.lx {
-  --u: min(calc(var(--page-w) / 300), 0.024in);
+  --u: min(calc(var(--page-w) / 300), calc(var(--page-h) / 458), 0.024in);
   --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--navy);
   --lx-cal-line: var(--rule); --lx-mark: var(--navy); --lx-mark-ink: #fff;
   --lx-mark-r: 50%; --lx-cb-r: 0; --lx-lstyle: solid; --lx-paper: var(--paper);
@@ -2179,7 +2181,7 @@ body {
    --bd-pad is the card's padding and --hd-margin pulls an in-flow tab out to
    the card edge, mirroring each style's .lx-bd padding below. */
 .layout .page {
-  --u: min(calc(var(--page-w) / 300), 0.024in);
+  --u: min(calc(var(--page-w) / 300), calc(var(--page-h) / 458), 0.024in);
   --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--navy);
   --lx-cal-line: var(--rule); --lx-mark: var(--navy); --lx-mark-ink: #fff;
   --lx-mark-r: 50%; --lx-cb-r: 0; --lx-lstyle: solid; --lx-paper: var(--paper);
