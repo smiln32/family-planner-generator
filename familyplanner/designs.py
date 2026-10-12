@@ -1,7 +1,11 @@
-"""Page-look presets for the whole book.
+"""Page-look presets for the whole book: the chrome axis.
 
-Colour is `theme`. Typefaces are `fonts`. This module is a third axis: a class
-on <body> restyles paper and chrome.
+Four axes set a book, each through its own config key. Pages are `pages`.
+Chrome is `design` (this module): a class on <body> restyles paper and
+chrome, and the design also supplies the default palette (`look_palette`)
+and the default typeface set (`look_fonts`). Colours are `theme` and
+`palette`, which go over the design's palette (config.resolve_palette).
+Type is `fonts`, which replaces the design's set.
 
 The book's looks are the thirteen in `LOOKS` (editorial, midcentury, ...). Each
 one brings its own cover (`templates/look_cover.html`), monthly page

@@ -58,10 +58,12 @@ def test_look_cover_prints_no_name_or_year(cfg):
     assert str(cfg.year) not in body.split('class="page lk-cover', 1)[1].split("</section>")[0]
 
 
-def test_look_palette_goes_over_theme_but_config_wins(cfg):
+def test_look_palette_is_the_base_but_config_wins(cfg):
     cfg.design = "swiss"
     assert config.effective_palette(cfg)["red"] == "#E2321C"
-    cfg.palette["red"] = "#123456"
+    cfg.palette_set["red"] = "#123456"
+    config.validate(cfg)
+    assert cfg.palette["red"] == "#123456"
     assert config.effective_palette(cfg)["red"] == "#123456"
 
 

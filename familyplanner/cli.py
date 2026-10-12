@@ -54,17 +54,10 @@ def _resolve_config(args: argparse.Namespace) -> Config:
         except KeyError as exc:
             raise ConfigError(str(exc).strip("\"'")) from exc
     if getattr(args, "theme", None):
-        try:
-            themes.resolve(args.theme)
-        except KeyError as exc:
-            raise ConfigError(str(exc).strip("\"'")) from exc
-        cfg.theme = args.theme.lower()
-        # Start again from the new theme, so a colour the old theme set and
-        # the new one leaves out (bold and blues have no paper) does not stay
-        # behind looking like a colour someone chose. Only the config file's
-        # own `palette:` block (cfg.palette_set) outranks the flag.
-        cfg.palette = config.theme_palette(cfg.theme)
-        cfg.palette.update(cfg.palette_set)
+        # config.validate below rebuilds the palette from the design, this
+        # theme and the file's own `palette:` block, so nothing of the file's
+        # theme stays behind looking like a colour someone chose.
+        cfg.theme = config.check_theme(args.theme)
     if getattr(args, "design", None):
         try:
             cfg.design = designs.resolve(args.design)
@@ -91,17 +84,6 @@ def _file_names(cfg: Config, key: str) -> bool:
     return isinstance(own, dict) and key in own
 
 
-def _theme_notice(cfg: Config, args: argparse.Namespace) -> str:
-    """A line saying a named theme is not used, because the look brings colours."""
-    if config.uses_theme(cfg.design):
-        return ""
-    if not (getattr(args, "theme", None) or _file_names(cfg, "theme")):
-        return ""
-    return (f"note: theme '{cfg.theme}' is not used; the {cfg.design} look brings "
-            "its own colours. Use --design blank for a theme, or palette: to "
-            "replace a colour.")
-
-
 def _page_label(index: int, total: int, page: render.Page) -> str:
     return f"  [{index:>2}/{total}] {page.title}"
 
@@ -116,9 +98,6 @@ def cmd_build(args: argparse.Namespace) -> int:
           + (f" - {cfg.family_name}" if cfg.family_name else ""))
     if cfg.source:
         print(f"config: {cfg.source}")
-    notice = _theme_notice(cfg, args)
-    if notice:
-        print(notice)
     print(f"{len(pages)} pages:")
     for i, page in enumerate(pages, start=1):
         print(_page_label(i, len(pages), page))
@@ -211,11 +190,11 @@ def cmd_themes(args: argparse.Namespace) -> int:
         swatches = "  ".join(palette[k] for k in swatch_order)
         print(f"  {name:<9} {swatches}")
     print()
-    print("The thirteen looks and the layouts bring their own colours, so a")
-    print("theme shows on the Blank look and the retired looks only:")
-    print("  python planner.py build --design blank --theme pastel")
-    print("Or set `design: blank` and `theme: pastel` in your config. Your own")
-    print("`palette:` block replaces single colours on any look.")
+    print("A theme recolours any look or layout. Colours it does not name stay")
+    print("the look's own; with no theme the look prints in its own colours:")
+    print("  python planner.py build --design coastal --theme adventure")
+    print("Or set `design: coastal` and `theme: adventure` in your config. Your")
+    print("own `palette:` block goes over both and replaces single colours.")
     return 0
 
 

@@ -126,6 +126,24 @@ def test_action_messages_stay_at_least_fifteen_seconds():
     assert "toast-close" in JS
 
 
+# --- colour panel ---------------------------------------------------------
+
+def test_theme_cards_are_never_hidden_by_the_design():
+    """A theme recolours any design, so the theme picker stays on screen for
+    every look and layout, not only for Blank."""
+    assert 'themesHost.hidden' not in JS and '$("#themes").hidden' not in JS
+    assert "hidden = Boolean(look)" not in JS
+    body = function_text("renderColourSource")
+    assert "renderThemes()" in body and ".hidden" not in body
+
+
+def test_theme_picker_leads_with_the_design_s_own_colours():
+    body = function_text("renderThemes")
+    assert 'name: ""' in body and "Design's own colours" in body
+    assert 'theme: ""' in JS and 'state.theme = "";' in JS and '"linen"' not in function_text("newBook")
+    assert "baseColors(look.id, state.theme)" in function_text("renderDesigns")
+
+
 # --- favicon, labels -------------------------------------------------
 
 def test_favicon_uses_the_editor_palette():

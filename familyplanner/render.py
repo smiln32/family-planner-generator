@@ -19,7 +19,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import escape
 
-from . import calendars, colours, config, designs, typefaces
+from . import calendars, colours, config, designs, themes, typefaces
 from .config import Config
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -120,10 +120,15 @@ def colour_roles(cfg: Config) -> dict[str, str]:
     """The colour roles (colours.roles) for this book's printed palette.
 
     `cfg.palette` must already be the effective palette (render_html sets it).
-    A look or layout has hand-picked seasons; Blank and the retired looks take
-    their theme's.
+    The picks follow the colour layer on top: a named theme's picks on any
+    design (so its seasons and weekend follow the theme, and a `palette:`
+    block still moves the token-named ones); otherwise the look or layout's
+    own hand-picked ones, and for Blank and the retired looks the factory
+    theme's (linen).
     """
-    family = designs.colour_family(cfg.design) or f"theme:{cfg.theme}"
+    family = designs.colour_family(cfg.design)
+    if cfg.theme or not family:
+        family = f"theme:{cfg.theme or themes.DEFAULT_THEME}"
     return colours.roles(cfg.palette, family)
 
 
@@ -230,7 +235,8 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     nav = nav_pages if nav_pages is not None else pages
     env = build_environment()
     look = designs.parts(cfg.design)
-    # A layout book prints in its look's colours; see config.effective_palette.
+    # One rule for the printed colours, whichever entry point built `cfg`:
+    # design, then theme, then `palette:` (config.resolve_palette).
     cfg = replace(cfg, palette=config.effective_palette(cfg))
     roles = colour_roles(cfg)
     # Templates read the palette tokens and the colour roles from one map:

@@ -101,8 +101,8 @@ output_name: ""
 #   almanac     oxblood cloth, gold rules  terracotta  sand, clay, plum arches
 #   cottage     sage gingham, blush        gazette     newsprint, blackletter
 #   coastal     navy Breton stripe
-# A look brings its own colours, so `theme:` below has no effect on it; your
-# own palette: block still wins.
+# A look brings its own colours and its own typeface set. `theme:` below
+# recolours any look; your own palette: block goes over both.
 # `blank` strips art. The retired looks (original, 02-17) still build from old
 # plan files but are no longer offered.
 # Planner layouts cross a look with a page structure: `02a` `02b` `02c`,
@@ -121,25 +121,25 @@ design: editorial
 #   body: 9
 #   script: 13
 
-# A colour preset applied before `palette:` below. One of:
-#   linen  classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel  poppy  blues
-# `linen` is the default (warm taupe, dusty rose and clay on ivory). `classic` is the original
-# bright jewel-tone printable.
-# Run `python planner.py themes` to see them. A theme colours the Blank look
-# and the retired looks only; the thirteen looks and the layouts bring their
-# own colours, and `build` prints a note if you name a theme they ignore.
-# Anything under `palette:` overrides the theme, so you can start from
-# `forest` and change one colour.
-theme: linen
+# A colour preset. One of:
+#   linen  classic  amber  berry  bold  citrus  forest  meadow  ocean  pastel
+#   poppy  blues  adventure  goal
+# Run `python planner.py themes` to see them. Colours come in three layers,
+# each replacing the colours it names: the look's own colours (Blank and the
+# retired looks start from `linen`, warm taupe and clay on ivory), then the
+# theme, then `palette:` below. So a theme recolours any look, colours the
+# theme does not name stay the look's own, and `palette:` wins over both.
+# Leave theme unset to print the look exactly as designed.
+# theme: adventure
 
 # ---------------------------------------------------------------------------
 # Colours. Every page pulls from this palette, so changing `teal` here restyles
 # the teal elements across all 30 pages at once.
 #
 # These are the twelve tokens and their `linen` values. Uncomment only the
-# ones you want to change - anything you set here is applied ON TOP of `theme`
-# above (or of the look's own colours), so uncommenting the whole block would
-# pin every colour and make the theme setting do nothing.
+# ones you want to change - anything you set here is applied ON TOP of the
+# look's colours and of `theme` above, so uncommenting the whole block would
+# pin every colour and make the look and theme settings do nothing.
 # ---------------------------------------------------------------------------
 # palette:
 #   navy:   "#5C4A3A"

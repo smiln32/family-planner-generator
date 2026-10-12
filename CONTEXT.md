@@ -8,7 +8,7 @@ Layer 1. Given what the user wants, go to one stage. Then load only that stage's
 |-----------|-------|-------------|
 | Configure the factory (defaults, paper) | `setup/questionnaire.md` | `setup` trigger, once per workspace |
 | Start a new planner for a family or year | `stages/01-intake/CONTEXT.md` | Collect this run's facts only |
-| Pick design, fonts, pages, month lines | `stages/02-customize/CONTEXT.md` | Needs 01 output |
+| Pick pages, chrome (design), colours (theme, palette), type (fonts) | `stages/02-customize/CONTEXT.md` | Needs 01 output; the four axes are independent |
 | Produce HTML/PDF/PNG | `stages/03-build/CONTEXT.md` | Needs 02 `family.yaml` |
 | Check the built book | `stages/04-review/CONTEXT.md` | Needs 03 output |
 | Use the visual editor | `python planner.py ui` | Local app, not a stage |

@@ -89,9 +89,12 @@ PICKS: dict[str, dict[str, str]] = {
            "autumn": "#957F75"},
 }
 
-# Blank and the retired looks print in a theme (themes.PRESETS), keyed here
-# as "theme:<name>". The weekend is worked out (the theme's red unless it is
-# too close to the titles) unless named.
+# A named theme (themes.PRESETS) is keyed here as "theme:<name>". Its picks
+# are used whenever a theme is named, on any design, and for Blank and the
+# retired looks with no theme (they print in `linen`); see
+# render.colour_roles. The weekend is worked out (the theme's red unless it
+# is too close to the titles) unless named. A pick is a token name, so a
+# config `palette:` block still reaches it, or a hex colour.
 _TOKENS = {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "brown"}
 PICKS.update({f"theme:{name}": dict(_TOKENS) for name in (
     "linen", "classic", "amber", "berry", "bold", "citrus", "forest", "pastel", "poppy")})
@@ -103,6 +106,12 @@ PICKS.update({
                     "summer": "pink", "autumn": "brown"},
     "theme:blues": {"weekend": "brown", "winter": "teal", "spring": "orange",
                     "summer": "rule", "autumn": "purple"},
+    # Adventure and goal name four tokens only, so their seasons are fixed
+    # hex colours rather than tokens that would differ from design to design.
+    "theme:adventure": {"winter": "#5E7A7A", "spring": "#6B8A5A",
+                        "summer": "#C9A86E", "autumn": "#8A5A3A"},
+    "theme:goal": {"winter": "#3D4A5C", "spring": "#5E6B4E",
+                   "summer": "#9A8A3F", "autumn": "#5C4A3C"},
 })
 
 # How far apart (CIE76 delta E) two roles must be to read as different.

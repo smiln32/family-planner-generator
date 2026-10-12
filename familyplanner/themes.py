@@ -1,12 +1,16 @@
 """Named colour presets.
 
-A theme is a partial palette: it overrides some of the twelve tokens in
-config.DEFAULT_PALETTE and leaves the rest alone. Anything you set under
-`palette:` in your own config is applied on top, so a theme is a starting
-point rather than a straitjacket.
+A theme is a partial palette: it replaces some of the twelve palette tokens
+and leaves the rest alone. It goes over the design's own colours (a look or
+layout palette, or config.DEFAULT_PALETTE for Blank and the retired looks),
+so a named theme recolours any design. Tokens a theme does not name fall
+through to the design. Anything under `palette:` in your own config is
+applied on top (config.resolve_palette). With no theme (`theme: ""`, the
+default) the design prints in its own colours.
 
-    python planner.py themes                       # list them
-    python planner.py build --theme pastel         # whole book
+    python planner.py themes                               # list them
+    python planner.py build --theme pastel                 # editorial, recoloured
+    python planner.py build --design coastal --theme adventure
     python planner.py build --theme berry --only year_goals   # one page
 """
 
@@ -106,6 +110,18 @@ PRESETS: dict[str, dict[str, str]] = {
         "orange": "#6B85AC", "green": "#8399BE", "purple": "#9BADCF",
         "blue": "#2A4470", "red": "#16325F", "brown": "#5A6B85",
         "ink": "#1F2933", "rule": "#C3CCD8",
+    },
+
+    # Four tokens only: forest green titles, saddle brown accent, brick red
+    # weekend on warm cream. The other tokens come from the design beneath.
+    "adventure": {
+        "navy": "#3D4A3C", "teal": "#8A6B4A", "red": "#9A4A3A", "paper": "#F5F1E8",
+    },
+
+    # Four tokens only: ink-navy titles, old gold accent, rust weekend on
+    # white. The other tokens come from the design beneath.
+    "goal": {
+        "navy": "#1A1A2E", "teal": "#B89A5A", "red": "#8A5A44", "paper": "#FEFEFE",
     },
 }
 

@@ -11,11 +11,11 @@ const state = {
   year: 2027, family_name: "", week_starts: "sunday", dated_months: true,
   cover_year: "auto", cover_text: "",
   cover_show_year: "off", cover_show_family: false, cover_line: "",
-  page_size: "letter", members: [], pages: [], theme: "linen", fonts: "home-edition",
+  page_size: "letter", members: [], pages: [], theme: "", fonts: "home-edition",
   design: "editorial", type_size: { title: 30, cover: 66, body: 9, script: 13 },
   palette: {}, preview: null, zoom: null,
 };
-let meta = { themes: [], typefaces: [], designs: [], currentDesign: null, typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [], paletteRoles: [], themePalettes: {} };
+let meta = { themes: [], typefaces: [], designs: [], currentDesign: null, typeSizeRange: {}, catalogue: [], months: [], defaultPages: [], pageSizes: [], paletteRoles: [], themePalettes: {}, themeTokens: {} };
 let previewSeq = 0;
 
 /* --- helpers -------------------------------------------------------------- */
@@ -152,9 +152,11 @@ function finishCards(host, key, hadFocus) {
   if (hadFocus) host.querySelector("input:checked")?.focus();
 }
 
-/* A look or layout brings its own colours; the theme only decides them for
-   books without (Blank and the retired looks). The colour panel follows that,
-   so it never offers a choice the printed page would ignore. */
+/* Colours come in layers, the same as config.resolve_palette on the server:
+   the design's own palette (a look or layout; Blank and the retired looks
+   start from the linen theme), then the chosen theme's tokens over it, then
+   the colours replaced by hand. A theme recolours any design; no theme
+   (state.theme === "") means the design's own colours. */
 function designInfo(id = state.design) {
   const listed = meta.designs.find((d) => d.id === id);
   if (listed) return listed;
@@ -170,9 +172,11 @@ function upperAll(palette) {
   return Object.fromEntries(Object.entries(palette).map(([k, v]) => [k, String(v).toUpperCase()]));
 }
 
-/* The colours the book starts from before anyone replaces one. */
+/* The colours the book starts from before anyone replaces one: the design's
+   own (or linen), with the chosen theme's tokens over them. */
 function baseColors(design = state.design, theme = state.theme) {
-  return upperAll({ ...themeColors(theme), ...(lookColors(design) || {}) });
+  return upperAll({ ...(lookColors(design) || themeColors("linen")),
+                    ...(theme ? themeTokens(theme) : {}) });
 }
 
 function sameColors(a, b) {
@@ -181,20 +185,14 @@ function sameColors(a, b) {
 }
 
 function renderColourSource() {
-  const look = lookColors();
-  const themesHost = $("#themes");
-  themesHost.hidden = Boolean(look);
+  const name = designInfo()?.label || state.design;
   const note = $("#colour-note");
   const reset = $("#reset-palette");
-  if (look) {
-    const name = designInfo()?.label || state.design;
-    note.textContent = `Colours come with the ${name} look. Replace any colour below; Download plan keeps the replacements. To use a colour theme instead, pick Blank under Page look.`;
-    reset.textContent = "Use the look's colours";
-  } else {
-    note.textContent = "Pick a theme, then replace any colour. Download plan keeps the replacements.";
-    reset.textContent = "Use theme colours";
-    renderThemes();
-  }
+  note.textContent = state.theme
+    ? `The ${state.theme} theme recolours the ${name} look. Pick "Design's own colours" to go back, or replace any colour below; Download plan keeps the theme and the replacements.`
+    : `Colours come with the ${name} look. A theme recolours any look; replace any colour below. Download plan keeps the replacements.`;
+  reset.textContent = "Use the design's own colours";
+  renderThemes();
 }
 
 function renderColour() {
@@ -204,14 +202,19 @@ function renderColour() {
 
 function renderThemes() {
   const host = $("#themes");
-  const key = JSON.stringify(meta.themes.map((t) => [t.name, t.swatches]));
+  // The first card is the design's own colours (no theme), so its strip
+  // follows the chosen design; the rest are the themes.
+  const own = baseColors(state.design, "");
+  const ownCard = { name: "", label: "Design's own colours",
+                    swatches: ["navy", "teal", "pink", "orange", "green", "purple"].map((k) => own[k]) };
+  const key = JSON.stringify([ownCard, ...meta.themes.map((t) => [t.name, t.swatches])]);
   if (sameCards(host, key)) {
     syncCards(host, (value) => value === state.theme);
     return;
   }
   const hadFocus = host.contains(document.activeElement);
   host.textContent = "";
-  for (const theme of meta.themes) {
+  for (const theme of [ownCard, ...meta.themes]) {
     const label = el("label", "swatch");
     label.dataset.on = state.theme === theme.name ? "1" : "0";
     const chips = el("div", "swatch-chips");
@@ -230,7 +233,7 @@ function renderThemes() {
       refresh();
     });
     const name = el("span", "swatch-name");
-    name.textContent = theme.name;
+    name.textContent = theme.label || theme.name;
     label.append(input, chips, name);
     host.append(label);
   }
@@ -247,9 +250,15 @@ function hexForPicker(value) {
   return "";
 }
 
+/* A theme's twelve tokens on linen (its swatches on its own). */
 function themeColors(name) {
   const palettes = meta.themePalettes || {};
   return palettes[name] || palettes[meta.themes?.[0]?.name] || {};
+}
+
+/* Only the tokens a theme names: what it puts over a design's colours. */
+function themeTokens(name) {
+  return (meta.themeTokens || {})[name] || {};
 }
 
 function currentPalette() {
@@ -277,7 +286,7 @@ function renderPalette() {
   host.textContent = "";
   const resolved = currentPalette();
   const base = baseColors();
-  const source = lookColors() ? "look's" : "theme";
+  const source = state.theme ? "theme" : "look's";
   for (const role of meta.paletteRoles || []) {
     const value = hexForPicker(resolved[role.id] || "#000000") || "#000000";
     const replaced = (value.toUpperCase() !== (base[role.id] || "").toUpperCase());
@@ -343,7 +352,7 @@ function renderPalette() {
 
 function syncPaletteReset() {
   const btn = $("#reset-palette");
-  if (btn) btn.hidden = !hasPaletteOverrides();
+  if (btn) btn.hidden = !(hasPaletteOverrides() || state.theme);
 }
 
 /* A config may name three families instead of a preset. That choice has to be
@@ -482,7 +491,7 @@ function renderDesigns() {
         };
         toast(look.palette
           ? `Your replaced colours were cleared. The ${look.label} look brings its own.`
-          : `Your replaced colours were cleared. ${look.label} uses the theme's colours.`,
+          : `Your replaced colours were cleared. ${look.label} starts from the factory colours.`,
           "", { action: "Undo", onClick: undo });
       }
       renderDesigns(); renderTypefaces(); renderColour(); syncCoverSection(); syncPreviewChoices(); refresh();
@@ -495,7 +504,7 @@ function renderDesigns() {
     if (look.palette) {
       const chips = el("span", "design-chips");
       chips.setAttribute("aria-hidden", "true");
-      const colours = { ...themeColors(state.theme), ...look.palette };
+      const colours = baseColors(look.id, state.theme);
       for (const key of ["paper", "navy", "teal", "orange", "green", "purple"]) {
         const i = el("i");
         i.style.background = colours[key];
@@ -764,7 +773,7 @@ function newBook() {
   state.cover_line = "";
   state.members = ["", "", "", "", ""];
   state.pages = [...meta.defaultPages];
-  state.theme = "linen";
+  state.theme = "";
   state.palette = {};
   state.fonts = "home-edition";
   state.design = "editorial";
@@ -889,8 +898,10 @@ function bind() {
     state.pages = [...meta.defaultPages]; syncPreviewChoices(); renderPages(); refresh();
   });
   $("#reset-palette").addEventListener("click", () => {
+    // Back to the design's own colours: no theme, nothing replaced.
+    state.theme = "";
     state.palette = {};
-    renderPalette();
+    renderColour();
     refresh();
   });
 
