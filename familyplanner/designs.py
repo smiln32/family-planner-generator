@@ -269,6 +269,14 @@ def look_palette(design: str) -> dict[str, str]:
     return dict(LOOK_PALETTES.get(look["base"], {})) if look["layout"] else {}
 
 
+def colour_family(design: str) -> str:
+    """Key into colours.PICKS: the look id, a layout's parent look, or ''."""
+    if design in LOOKS:
+        return design
+    look = parts(design)
+    return look["base"] if look["layout"] else ""
+
+
 def names() -> list[str]:
     """Ids offered in the picker: the looks, the layouts, then blank."""
     return list(PRESETS)

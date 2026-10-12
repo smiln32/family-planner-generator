@@ -188,7 +188,8 @@ pages:
 # Only Blank and the retired looks print these. The thirteen looks and the
 # layouts have their own month pages, which use the month names only.
 #
-#   accent: a palette colour name
+#   accent: season (the default: the month's season colour, the same in
+#           every design) or a palette colour name such as teal
 #   motif:  snowman | hearts | sprout | tulips | flowers | sun | beach
 #           school | pumpkin | leaves | snowflake
 # ---------------------------------------------------------------------------

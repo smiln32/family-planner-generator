@@ -16,7 +16,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Emergency Contacts & Important Information") }}
-      <div class="banner" style="--banner-bg:{{ p.navy }};font-size:9pt">
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:9pt">
         Be Prepared. Be Safe. Stay Together.</div>
       {{ divider() }}
     </div>
@@ -37,23 +37,23 @@
 
   <div class="emg-top">
     <div class="emg-top-col">
-      <div class="row">{{ chip("home", "teal", "", ".2in") }}{{ field("Home address:") }}</div>
-      <div class="row">{{ chip("pin", "teal", "", ".2in") }}{{ field("City / State / ZIP:") }}</div>
+      <div class="row">{{ chip("home", "structure", "", ".2in") }}{{ field("Home address:") }}</div>
+      <div class="row">{{ chip("pin", "structure", "", ".2in") }}{{ field("City / State / ZIP:") }}</div>
     </div>
     <div class="emg-top-col">
-      <div class="row">{{ chip("phone", "teal", "", ".2in") }}{{ field("Home phone:") }}</div>
-      <div class="row">{{ chip("mail", "teal", "", ".2in") }}{{ field("Family email:") }}</div>
+      <div class="row">{{ chip("phone", "structure", "", ".2in") }}{{ field("Home phone:") }}</div>
+      <div class="row">{{ chip("mail", "structure", "", ".2in") }}{{ field("Family email:") }}</div>
     </div>
   </div>
 
   <div class="emg-mid">
-    <div class="card has-tab emg-contacts" style="--c:{{ p.teal }}">
+    <div class="card has-tab emg-contacts" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("phone") }} Emergency Contacts</div>
       <div class="emg-head"><span>Contact</span><span>Name</span><span>Phone number</span></div>
       {% for icon, colour, label, sub in contacts %}
       <div class="emg-row">
         <span class="emg-name">
-          {{ chip(icon, colour, "", ".18in") }}
+          {{ chip(icon, "structure", "", ".18in") }}
           <span>{{ label }}{% if sub %}<em>{{ sub }}</em>{% endif %}</span>
         </span>
         <span class="solid-line"></span><span class="solid-line"></span>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="emg-right">
-      <div class="card has-tab" style="--c:{{ p.green }}">
+      <div class="card has-tab" style="--c:{{ p.structure }}">
         <div class="card-tab">{{ ico("users") }} Family Contact List</div>
         <div class="emg-head three"><span>Name</span><span>Relationship</span><span>Phone number</span></div>
         <div class="fam-rows">
@@ -73,7 +73,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="card has-tab" style="--c:{{ p.orange }}">
+      <div class="card has-tab" style="--c:{{ p.structure }}">
         <div class="card-tab">{{ ico("globe") }} Out of Town Contact</div>
         <div class="oot">
           {{ field("Name:") }}{{ field("Relationship:") }}
@@ -84,17 +84,17 @@
   </div>
 
   <div class="emg-bottom">
-    <div class="card has-tab" style="--c:{{ p.purple }}">
-      <div class="card-tab">{{ ico("tools") }} Utility &amp; Service Providers</div>
+    <div class="card has-tab" style="--c:{{ p.structure }}">
+      <div class="card-tab">{{ ico("tools") }} Utilities &amp; Services</div>
       <div class="emg-head two"><span>Service</span><span>Phone number</span></div>
       {% for icon, colour, label in utils %}
       <div class="emg-row two">
-        <span class="emg-name">{{ chip(icon, colour, "", ".17in") }}<span>{{ label }}</span></span>
+        <span class="emg-name">{{ chip(icon, "structure", "", ".17in") }}<span>{{ label }}</span></span>
         <span class="solid-line"></span>
       </div>
       {% endfor %}
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("info") }} Important Information</div>
       <div class="info-fields">
         {{ field("Insurance company:") }}{{ field("Policy number:") }}
@@ -107,14 +107,14 @@
         {{ field("Insurance agent:") }}{{ field("Agent phone:") }}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.blue }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("pencil") }} Notes</div>
       {{ lines(6) }}
     </div>
   </div>
 
   <div class="emg-plan">
-    <div class="card has-tab" style="--c:{{ p.orange }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("pin") }} Family Emergency Plan</div>
       <div class="plan-fields">
         {{ field("Meeting place (near home):") }}
@@ -122,14 +122,14 @@
         {{ field("Notes / special instructions:") }}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.orange }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("clipboard") }} Emergency Checklist</div>
       {{ checklist(items=["Keep emergency kit stocked",
                           "Review plan with family regularly",
                           "Keep important documents in a safe place",
                           "Ensure smoke & CO detectors work",
                           "Keep this information up to date"],
-                   colour="orange", dotted=false) }}
+                   colour="structure", dotted=false) }}
     </div>
   </div>
 

@@ -10,6 +10,17 @@
    card, chip or tint always agrees with its own accent colour. */
 * { --c-wash: color-mix(in srgb, var(--c, #3E5344) 13%, #fff); }
 
+/* Colour roles (Carla, 2026-10-12; _config/design-system.md, colours.py).
+   book.html sets --c-structure, --c-weekend, --c-winter, --c-spring,
+   --c-summer, --c-autumn and an -on text colour for each. On the worksheet
+   pages every header, tab, label, banner and badge is the structure colour;
+   only the weekend (the two weekend days: labels, pills, dates) takes the
+   weekend accent; months take their season's colour. A component with a
+   solid --c fill sets its text in --c-on, which defaults to the structure's
+   text colour. */
+:root { --c-on: var(--c-structure-on, #fff); }
+.we, .lx-we, .lkm-we { --c-on: var(--c-weekend-on, #fff); }
+
 html { font-size: 16px; }
 
 body {
@@ -121,7 +132,7 @@ body {
   margin-top: 0.07in;
   padding: 0.045in 0.28in;
   background: var(--banner-bg, var(--navy));
-  color: #fff;
+  color: var(--c-structure-on, #fff);
   font-family: var(--font-body);
   font-weight: 800;
   font-size: 9pt;
@@ -174,7 +185,7 @@ body {
   display: flex; align-items: center; gap: 0.055in;
   padding: 0.035in 0.13in;
   background: var(--c);
-  color: #fff;
+  color: var(--c-on);
   border-radius: 999px;
   font-weight: 800;
   font-size: var(--type-body);
@@ -182,7 +193,7 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
-.card-tab .ico { width: 0.13in; height: 0.13in; fill: #fff; flex: none; }
+.card-tab .ico { width: 0.13in; height: 0.13in; fill: var(--c-on); flex: none; }
 .card.has-tab { padding-top: 0.2in; }
 
 /* A tab that spans the full card width, as on the tracker pages. */
@@ -190,13 +201,13 @@ body {
   margin: -0.13in -0.13in 0.1in;
   padding: 0.05in 0.13in;
   background: var(--c);
-  color: #fff;
+  color: var(--c-on);
   border-radius: 0.095in 0.095in 0 0;
   font-weight: 800; font-size: 8.6pt;
   letter-spacing: 0.04em; text-transform: uppercase;
   display: flex; align-items: center; gap: 0.06in;
 }
-.card-head .ico { width: 0.14in; height: 0.14in; fill: #fff; flex: none; }
+.card-head .ico { width: 0.14in; height: 0.14in; fill: var(--c-on); flex: none; }
 
 .grid { display: grid; gap: 0.16in; }
 .cols-2 { grid-template-columns: repeat(2, 1fr); }
@@ -228,7 +239,7 @@ body {
   width: 0.18in; height: 0.18in;
   border-radius: 50%;
   background: var(--c);
-  color: #fff;
+  color: var(--c-on);
   font-weight: 800; font-size: 7.6pt;
   display: flex; align-items: center; justify-content: center;
 }
@@ -276,6 +287,7 @@ body {
 .cal-cell { height: var(--cal-cell-h, 0.62in); padding: 0.04in 0.05in; position: relative; }
 .cal-cell + .cal-cell { border-left: 1.1px solid #D3DAE4; }
 .cal-cell .n { font-size: 8.4pt; font-weight: 700; color: var(--navy); }
+.cal-cell .n.we { color: var(--c-weekend); }
 .cal-cell .n.pill {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 0.17in; height: 0.17in; padding: 0 0.03in;
@@ -286,12 +298,12 @@ body {
 .mini { border: 1.3px solid var(--c); border-radius: 0.09in; padding: 0.055in; }
 .mini .mini-head {
   display: flex; align-items: center; justify-content: center; gap: 0.05in;
-  background: var(--c); color: #fff;
+  background: var(--c); color: var(--c-on);
   border-radius: 999px; padding: 0.028in 0.06in;
   font-weight: 800; font-size: 7.4pt; letter-spacing: 0.05em;
   margin-bottom: 0.045in;
 }
-.mini .mini-head .ico { width: 0.11in; height: 0.11in; fill: #fff; }
+.mini .mini-head .ico { width: 0.11in; height: 0.11in; fill: var(--c-on); }
 .mini table { width: 100%; border-collapse: collapse; }
 .mini th, .mini td {
   text-align: center;
@@ -300,14 +312,14 @@ body {
   font-weight: 600;
   color: var(--ink);
 }
-.mini th { font-weight: 800; color: var(--navy); }
-.mini .we { color: var(--red); }
+.mini th { font-weight: 800; color: var(--c-structure); }
+.mini .we { color: var(--c-weekend); }
 
 /* --- tables --------------------------------------------------------------- */
 
 .tbl { width: 100%; border-collapse: separate; border-spacing: 0; }
 .tbl th {
-  color: #fff; font-weight: 800; font-size: 8pt;
+  color: var(--c-on); font-weight: 800; font-size: 8pt;
   letter-spacing: 0.035em; text-transform: uppercase;
   padding: 0.055in 0.06in; text-align: center;
 }
@@ -333,7 +345,7 @@ body {
   border-radius: 50%;
   background: var(--c);
 }
-.chip .ico { width: 62%; height: 62%; fill: #fff; }
+.chip .ico { width: 62%; height: 62%; fill: var(--c-on); }
 .chip.wash { background: var(--c-wash); }
 .chip.wash .ico { fill: var(--c); }
 .chip.ring { background: #fff; border: 2px solid var(--c); }
@@ -462,7 +474,7 @@ body {
 .vm-block { flex: 1 1 auto; display: flex; flex-direction: column; margin-bottom: 0.14in; min-height: 0; }
 .vm-head { display: flex; align-items: center; gap: 0.1in; margin-bottom: -0.21in; z-index: 1; }
 .vm-tag {
-  background: var(--c); color: #fff;
+  background: var(--c); color: var(--c-on);
   padding: 0.05in 0.5in 0.05in 0.16in;
   clip-path: polygon(0 0, calc(100% - 0.16in) 0, 100% 50%, calc(100% - 0.16in) 100%, 0 100%);
   font-weight: 800; font-size: 10pt; letter-spacing: 0.05em;
@@ -533,7 +545,7 @@ body {
 .howto-body { margin: 0; font-size: 9.4pt; line-height: 1.35; }
 .howto-tagline {
   text-align: center; color: var(--navy); font-size: 15pt;
-  border-top: 2px solid color-mix(in srgb, var(--pink) 60%, #fff);
+  border-top: 2px solid color-mix(in srgb, var(--c-structure) 30%, #fff);
   padding-top: 0.1in; margin: 0 1.1in;
 }
 
@@ -551,7 +563,7 @@ body {
 .values-note {
   display: flex; align-items: center; gap: 0.13in;
   background: var(--c-wash, #E7F5F4);
-  --c: var(--teal);
+  --c: var(--c-structure);
   border-radius: 0.11in;
   padding: 0.11in 0.16in;
   margin-bottom: 0.26in;
@@ -646,16 +658,8 @@ body {
    tightens (shorter write-on lines, a smaller donut) instead of pushing the
    right-hand cards off the page. At letter none of these limits is reached. */
 .budget-top, .budget-bottom { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-/* In Midnight deco, Clothbound almanac and layout 06b the Expenses Breakdown
-   tab is wider than its card on a small page, so there the tab wraps. The
-   translate (one-line height minus the tab's height) lifts the extra line
-   above the card edge instead of over the card's content. Letter is left
-   exactly as it was. */
-@container not style(--page-w: 8.5in) {
-  .design-deco .budget-page .card-tab { white-space: normal; translate: 0 calc(max(1lh, 0.13in) + 0.07in - 100%); }
-  .design-almanac .budget-page .card-tab { white-space: normal; translate: 0 calc(max(1lh, 0.13in) + 0.07in + 1.5px - 100%); }
-  .box-06b .budget-page .card-tab { white-space: normal; translate: 0 calc(max(1lh, 8 * var(--u)) + 4 * var(--u) - 100%); }
-}
+/* A card tab longer than its card wraps (see "Everything fits its page" at
+   the end of looks.css). */
 
 .ie-head {
   display: flex; justify-content: space-between;
@@ -754,14 +758,14 @@ body {
 .health-page .masthead { margin-bottom: 0.1in; }
 .health-meta { flex: none; display: flex; align-items: center; gap: 0.2in; margin-bottom: 0.13in; }
 .health-quote {
-  flex: none; background: #FBF6DC; border-radius: 0.07in;
+  flex: none; background: color-mix(in srgb, var(--c-structure) 8%, var(--paper)); border-radius: 0.07in;
   padding: 0.05in 0.18in; font-size: 12pt; color: var(--navy);
 }
 .health-meta .field { flex: 1; }
 
 .health-tbl { flex: none; --row-h: 0.4in; margin-bottom: 0.2in; }
 .health-tbl th { padding: 0.05in 0.03in; font-size: 7.4pt; vertical-align: top; }
-.health-tbl .head-ico { width: 0.15in; height: 0.15in; fill: #fff; margin: 0 auto 0.02in; }
+.health-tbl .head-ico { width: 0.15in; height: 0.15in; fill: var(--c-on); margin: 0 auto 0.02in; }
 .health-tbl th .blurb {
   display: block; font-weight: 600; font-size: 5.9pt;
   text-transform: none; letter-spacing: 0; opacity: 0.92; margin-top: 0.02in;
@@ -825,7 +829,7 @@ body {
 .daytag { width: 1.35in; }
 .daytag .pill {
   display: inline-block; min-width: 0.32in; text-align: center;
-  color: #fff; font-weight: 800; font-size: 6.6pt; letter-spacing: 0.03em;
+  color: var(--c-on); font-weight: 800; font-size: 6.6pt; letter-spacing: 0.03em;
   border-radius: 999px; padding: 0.022in 0.05in; margin-right: 0.06in;
 }
 .famtime-bottom { flex: 1 1 auto; gap: 0.15in; }
@@ -984,7 +988,7 @@ body {
   writing-mode: vertical-rl;
   transition: none;
 }
-.tab.on { background: var(--c); color: #fff; }
+.tab.on { background: var(--c); color: var(--c-on); }
 .tab-home { flex: 0 0 0.36in; writing-mode: horizontal-tb; }
 .tab-home svg { width: 0.17in; height: 0.17in; fill: currentColor; }
 
@@ -1005,7 +1009,7 @@ body {
 }
 .index-num {
   flex: none; width: 0.24in; height: 0.24in; border-radius: 50%;
-  background: var(--c); color: #fff;
+  background: var(--c); color: var(--c-on);
   font-size: 6.6pt; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
 }
@@ -1607,8 +1611,6 @@ body {
   position: static; display: block; text-align: left;
   margin: -0.13in -0.13in 0.1in; padding: 0.055in 0.1in; letter-spacing: 0.12em;
 }
-.design-11 .card:nth-child(even) .card-tab,
-.design-11 .card:nth-child(even) .banner { background: #5A7394; }
 .design-11 .banner::before, .design-11 .banner::after { display: none; }
 .design-11 .card.has-tab { padding-top: 0.13in; }
 .design-11 .dot-line, .design-11 .solid-line { border-color: #C8CED8; }
@@ -1691,7 +1693,7 @@ body {
 .design-12 .mark, .design-12 .art { display: none !important; }
 .design-12 .masthead, .design-12 .masthead.no-art { grid-template-columns: 1fr; }
 .design-12 .card { border: 1.5px solid #E8B4BE; border-radius: 0.04in; background: #FFFBF7; }
-.design-12 .banner, .design-12 .card-tab { background: #E8B4BE; color: #5C4033; border-radius: 0; }
+.design-12 .banner, .design-12 .card-tab { background: var(--c-structure); color: var(--c-structure-on); border-radius: 0; }
 .design-12 .banner::before, .design-12 .banner::after { display: none; }
 .daily-12 { color: #5C4033; position: relative; z-index: 2; gap: 0.08in; }
 .d12-flora { position: absolute; pointer-events: none; z-index: 0; }
@@ -2087,14 +2089,17 @@ body {
 }
 .design-blank .card { border-radius: 0; border-color: var(--rule); }
 .design-blank .card-tab { background: var(--navy); }
+.design-blank .card-tab.we { background: var(--c-weekend); }
 
 /* --- planner layouts (designs 02a-12c) -------------------------------------
    Daily, weekly and monthly sheets in three structures: lx-a split, lx-b
    stacked bands, lx-c sidebar. --u is 1/300 of the page width (capped for
-   letter) so every size keeps the approved proportions. Colours stay the
+   letter) so every size keeps the approved proportions; on the smaller,
+   taller-in-proportion pages it is also kept to 1/458 of the height (the
+   letter cap's share of a letter page), so a sheet fits its height too. Colours stay the
    parent look's; box-* sets the box style. */
 .page.lx {
-  --u: min(calc(var(--page-w) / 300), 0.024in);
+  --u: min(calc(var(--page-w) / 300), calc(var(--page-h) / 458), 0.024in);
   --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--navy);
   --lx-cal-line: var(--rule); --lx-mark: var(--navy); --lx-mark-ink: #fff;
   --lx-mark-r: 50%; --lx-cb-r: 0; --lx-lstyle: solid; --lx-paper: var(--paper);
@@ -2108,7 +2113,7 @@ body {
 }
 .design-02 .page.lx, .design-02.layout .page { --lx-ink: #111; --lx-line: #111; --lx-frame: #111; --lx-cal-line: #111; --lx-mark: #111; --lx-mark-r: 0; --lx-paper: #fff; }
 .design-06 .page.lx, .design-06.layout .page { --lx-ink: #1A2744; --lx-line: #A7C4E0; --lx-frame: #A7C4E0; --lx-cal-line: #A7C4E0; --lx-mark: #C23B3B; --lx-paper: #FFFDF5; background-image: none; }
-.design-11 .page.lx, .design-11.layout .page { --lx-ink: #1B365D; --lx-line: #D5DBE4; --lx-frame: #4A5A72; --lx-cal-line: #C8CED8; --lx-mark: #1B365D; --lx-paper: #fff; }
+.design-11 .page.lx, .design-11.layout .page { --lx-ink: #1B365D; --lx-line: #D5DBE4; --lx-frame: #1B365D; --lx-cal-line: #C8CED8; --lx-mark: #1B365D; --lx-paper: #fff; }
 .design-12 .page.lx, .design-12.layout .page { --lx-ink: #5C4033; --lx-line: #E8D4D0; --lx-frame: #D4C0E0; --lx-cal-line: #E8D4D0; --lx-mark: #8FAE8A; --lx-mark-ink: #5C4033; --lx-cb-r: calc(2 * var(--u)); --lx-lstyle: dotted; --lx-paper: #FBF7F2; }
 
 .lx-top { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: calc(8 * var(--u)); }
@@ -2168,7 +2173,7 @@ body {
    --bd-pad is the card's padding and --hd-margin pulls an in-flow tab out to
    the card edge, mirroring each style's .lx-bd padding below. */
 .layout .page {
-  --u: min(calc(var(--page-w) / 300), 0.024in);
+  --u: min(calc(var(--page-w) / 300), calc(var(--page-h) / 458), 0.024in);
   --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--navy);
   --lx-cal-line: var(--rule); --lx-mark: var(--navy); --lx-mark-ink: #fff;
   --lx-mark-r: 50%; --lx-cb-r: 0; --lx-lstyle: solid; --lx-paper: var(--paper);
@@ -2235,26 +2240,26 @@ body {
    instead of running out of its card. */
 .box-06a .budget-page .card-tab { white-space: normal; }
 .box-06a .lx-bd { padding: calc(1 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)) calc(23 * var(--u)); }
-.box-06b :is(.lx-box, .card) { --tape: #cbc8c2; background: #f6f5f4; border: 1px solid #d7d4cf; border-radius: calc(3 * var(--u)); }
-.box-06b :is(.lx-box, .card):nth-child(3n+2) { --tape: color-mix(in srgb, #A7C4E0 70%, #fff); }
-.box-06b :is(.lx-box, .card):nth-child(3n) { --tape: color-mix(in srgb, #C23B3B 28%, #fff); }
+/* One tape colour for every heading (Carla's colour rule, 2026-10-12): a light
+   wash of the structure colour, with the heading in the structure colour. */
+.box-06b :is(.lx-box, .card) { --tape: color-mix(in srgb, var(--c-structure) 16%, #fff); background: #f6f5f4; border: 1px solid #d7d4cf; border-radius: calc(3 * var(--u)); }
 .box-06b :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-6 * var(--u)); left: calc(10 * var(--u)); transform: rotate(-2deg); background: var(--tape); padding: calc(2 * var(--u)) calc(10 * var(--u)); }
 .box-06b .lx-bd { padding: calc(11 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
 .box-06c :is(.lx-box, .card) { background: #fff; border: 1px solid #A7C4E0; border-radius: calc(3 * var(--u)); }
 .box-06c :is(.lx-hd, .card-tab, .card-head) { border-bottom: 1.5px solid #1A2744; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
 .box-06c .lx-bd { padding: calc(4 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
 
-.box-11a :is(.lx-box, .card) { border: 1.2px solid #4A5A72; border-radius: calc(2 * var(--u)); background: #fff; overflow: hidden; }
-.box-11a :is(.lx-hd, .card-tab, .card-head) { background: #4A5A72; color: #fff; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
-.box-11c :is(.lx-box, .card) { border: 1px solid #4A5A72; border-radius: calc(2 * var(--u)); }
-.box-11c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-5 * var(--u)); left: calc(8 * var(--u)); background: #fff; color: #4A5A72; padding: 0 calc(5 * var(--u)); }
+.box-11a :is(.lx-box, .card) { border: 1.2px solid var(--lx-frame); border-radius: calc(2 * var(--u)); background: #fff; overflow: hidden; }
+.box-11a :is(.lx-hd, .card-tab, .card-head) { background: var(--lx-frame); color: #fff; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
+.box-11c :is(.lx-box, .card) { border: 1px solid var(--lx-frame); border-radius: calc(2 * var(--u)); }
+.box-11c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-5 * var(--u)); left: calc(8 * var(--u)); background: #fff; color: var(--lx-frame); padding: 0 calc(5 * var(--u)); }
 .box-11c .lx-bd { padding: calc(8 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
 
 .box-12a :is(.lx-box, .card), .box-12b :is(.lx-box, .card) { --tone: #E8B4BE; }
-.box-12a :is(.lx-box, .card):nth-child(3n+2), .box-12b :is(.lx-box, .card):nth-child(3n+2) { --tone: #D4C0E0; }
-.box-12a :is(.lx-box, .card):nth-child(3n), .box-12b :is(.lx-box, .card):nth-child(3n) { --tone: #C9D4B8; }
 .box-12a :is(.lx-box, .card) { border: 1.2px solid var(--tone); border-radius: calc(12 * var(--u)); background: #fff; }
-.box-12a :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: calc(9 * var(--u)); background: var(--tone); border-radius: 999px; padding: calc(1 * var(--u)) calc(8 * var(--u)); }
+/* The pill headings are the structure colour (Carla's colour rule); the
+   frames keep the pink. */
+.box-12a :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: calc(9 * var(--u)); background: var(--c-structure); color: var(--c-structure-on); border-radius: 999px; padding: calc(1 * var(--u)) calc(8 * var(--u)); }
 .box-12a .lx-bd, .box-12c .lx-bd { padding: calc(11 * var(--u)) calc(9 * var(--u)) calc(6 * var(--u)); }
 .box-12b :is(.lx-box, .card) { background: color-mix(in srgb, var(--tone) 24%, #fff); border-radius: calc(12 * var(--u)); }
 .box-12b :is(.lx-hd, .card-tab, .card-head), .box-12c :is(.lx-hd, .card-tab, .card-head) { font-family: var(--font-script); font-weight: 400; font-size: calc(12 * var(--u)); line-height: 1.1; letter-spacing: 0; text-transform: none; }
@@ -2262,3 +2267,17 @@ body {
 .box-12b .lx-bd { padding: calc(2 * var(--u)) calc(10 * var(--u)) calc(7 * var(--u)); }
 .box-12c :is(.lx-box, .card) { border: 1.2px dashed #8FAE8A; border-radius: calc(12 * var(--u)); background: #fff; }
 .box-12c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: 50%; transform: translateX(-50%); background: #FBF7F2; padding: 0 calc(6 * var(--u)); }
+
+/* --- colour roles in the layouts (Carla, 2026-10-12) ------------------------
+   Numbered badges are the structure colour, like every badge. A day of the
+   week that falls on the weekend (calendar headers and dates, the day dots,
+   habit and meal day letters, the weekly day boxes) takes the weekend
+   accent; on a solid heading bar the bar takes it. */
+.lx-num { background: var(--c-structure); color: var(--c-structure-on); }
+:is(.lx-cal-hd, .lx-dots, .lx-habits, .lx-list) .lx-we, .lx-day.lx-we { color: var(--c-weekend); }
+.lx-dots .lx-we { border-color: var(--c-weekend); }
+.lx-box.lx-we > .lx-hd { color: var(--c-weekend); }
+:is(.box-plain, .box-02a, .box-11a, .box-12a) .lx-box.lx-we > .lx-hd { background: var(--c-weekend); color: var(--c-weekend-on); }
+.box-06b :is(.lx-box.lx-we, .card.we) { --tape: color-mix(in srgb, var(--c-weekend) 12%, #fff); }
+.layout .card-tab.we { color: var(--c-weekend); }
+:is(.box-plain, .box-02a, .box-11a, .box-12a) .card-tab.we { background: var(--c-weekend); color: var(--c-weekend-on); }

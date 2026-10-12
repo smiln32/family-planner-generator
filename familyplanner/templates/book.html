@@ -13,8 +13,16 @@
   --page-pad-top: 0.3in;
   --page-pad-side: 0.32in;
   --page-pad-bottom: 0.26in;
+  /* Scale of a letter-laid worksheet on a smaller page (render.page_zoom). */
+  --page-zoom: {{ page_zoom }};
 {% for name, value in cfg.palette.items() %}
   --{{ name }}: {{ value }};
+{% endfor %}
+  /* Colour roles (colours.py, _config/design-system.md): one structure
+     colour, one weekend accent, four season colours, and the text colour
+     that reads on each (-on). */
+{% for name, value in roles.items() %}
+  --c-{{ name }}: {{ value }};
 {% endfor %}
   --font-display: {{ font_display|safe }};
   --font-script: {{ font_script|safe }};
@@ -37,7 +45,7 @@
 {% endif %}
 </style>
 </head>
-<body class="design-{{ look.base }}{% if look.base in looks %} lk{% endif %}{% if look.layout %} design-{{ cfg.design }} layout box-{{ look.box }}{% endif %}">
+<body class="{% if page_zoom < 1 %}small-page {% endif %}design-{{ look.base }}{% if look.base in looks %} lk{% endif %}{% if look.layout %} design-{{ cfg.design }} layout box-{{ look.box }}{% endif %}">
 {% include "icons.html" %}
 {% for body in bodies %}
 {{ body|safe }}

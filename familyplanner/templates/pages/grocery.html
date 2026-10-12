@@ -3,7 +3,7 @@
 {% from "art.html" import house_family with context %}
 {% set sections = [
      ("apple", "green", "Fruits & Vegetables"), ("milk", "teal", "Dairy & Eggs"),
-     ("meat", "pink", "Meat, Poultry & Seafood"), ("bread", "purple", "Pantry & Dry Goods"),
+     ("meat", "pink", "Meat & Seafood"), ("bread", "purple", "Pantry & Dry Goods"),
      ("bottle", "orange", "Beverages"), ("spray", "blue", "Household & Cleaning"),
      ("cookie", "orange", "Snacks & Treats"), ("baby", "green", "Baby & Kids"),
      ("paw", "pink", "Pet Supplies")] %}
@@ -13,7 +13,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Grocery Shopping") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">List</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:14pt">List</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Bag of groceries">
@@ -32,23 +32,23 @@
 
   <div class="grid cols-3 grocery-grid">
     {% for icon, colour, label in sections %}
-    <div class="card has-tab" style="--c:{{ p[colour] }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico(icon) }} {{ label }}</div>
-      {{ checklist(n=6, colour=colour) }}
+      {{ checklist(n=6, colour="structure") }}
     </div>
     {% endfor %}
   </div>
 
   <div class="grid grocery-bottom">
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("star") }} Extras / Other Items</div>
       <div class="grocery-cols">
         {% for col in range(2) %}
-        <div class="grocery-col">{{ checklist(n=4, colour="teal") }}</div>
+        <div class="grocery-col">{{ checklist(n=4, colour="structure") }}</div>
         {% endfor %}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.green }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("clipboard") }} Notes</div>
       {{ lines(4) }}
     </div>

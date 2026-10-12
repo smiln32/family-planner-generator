@@ -3,10 +3,12 @@
    width, so a sheet keeps its proportions at every page size. Box styles come
    from the box-* class on the section; see "planner layouts" in planner.css. #}
 
-{# A titled box. `grow` is its share of the column height. #}
-{% macro box(title, grow=0, cls="") %}
-<div class="lx-box {{ cls }}"{% if grow %} style="flex-grow:{{ grow }}"{% endif %}>
-  <div class="lx-hd">{{ title }}</div>
+{# A titled box. `grow` is its share of the column height. `day` marks a
+   box headed by a day of the week ("weekend" or "weekday"); a weekend box
+   heading takes the weekend accent (planner.css, .lx-we). #}
+{% macro box(title, grow=0, cls="", day="") %}
+<div class="lx-box {{ cls }}{% if day == 'weekend' %} lx-we{% endif %}"{% if grow %} style="flex-grow:{{ grow }}"{% endif %}>
+  <div class="lx-hd"{% if day %} data-day="{{ day }}"{% endif %}>{{ title }}</div>
   <div class="lx-bd">{{ caller() }}</div>
 </div>
 {% endmacro %}
@@ -25,9 +27,12 @@
 </div>
 {% endmacro %}
 
-{% macro labelled(labels, two=false) %}
+{# `days` marks the labels as the days of the week, so the weekend ones take
+   the weekend accent. #}
+{% macro labelled(labels, two=false, days=false) %}
+{% set weekend = weekend_flags(cfg.sunday_first) %}
 <div class="lx-list{% if two %} two{% endif %}">
-  {% for label in labels %}<div class="lx-row"><span class="lx-lab">{{ label }}</span><span class="lx-ln"></span></div>{% endfor %}
+  {% for label in labels %}<div class="lx-row"><span class="lx-lab{% if days and weekend[loop.index0] %} lx-we{% endif %}"{% if days %} data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"{% endif %}>{{ label }}</span><span class="lx-ln"></span></div>{% endfor %}
 </div>
 {% endmacro %}
 
@@ -40,9 +45,10 @@
 {% endmacro %}
 
 {# Habit rows: a write-in name, then one tick cell per column. #}
-{% macro habits(rows, heads) %}
+{% macro habits(rows, heads, days=false) %}
+{% set weekend = weekend_flags(cfg.sunday_first) %}
 <div class="lx-habits" style="--cols:{{ heads|length }}">
-  <span></span>{% for h in heads %}<span class="lx-hh">{{ h }}</span>{% endfor %}
+  <span></span>{% for h in heads %}<span class="lx-hh{% if days and weekend[loop.index0] %} lx-we{% endif %}"{% if days %} data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"{% endif %}>{{ h }}</span>{% endfor %}
   {% for _ in range(rows) %}
   <span class="lx-ln"></span>{% for _ in heads %}<span class="lx-hc"></span>{% endfor %}
   {% endfor %}
@@ -50,7 +56,8 @@
 {% endmacro %}
 
 {% macro dots() %}
-<div class="lx-dots">{% for i in day_initials(cfg.sunday_first) %}<span>{{ i }}</span>{% endfor %}</div>
+{% set weekend = weekend_flags(cfg.sunday_first) %}
+<div class="lx-dots">{% for i in day_initials(cfg.sunday_first) %}<span{% if weekend[loop.index0] %} class="lx-we"{% endif %} data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">{{ i }}</span>{% endfor %}</div>
 {% endmacro %}
 
 {% macro write_in(label) %}
@@ -59,10 +66,11 @@
 
 {% macro calendar(month_number) %}
 <div class="lx-cal">
-  <div class="lx-cal-hd">{% for name in day_names(cfg.sunday_first) %}<span>{{ abbr(name)|upper }}</span>{% endfor %}</div>
+  {% set weekend = weekend_flags(cfg.sunday_first) %}
+  <div class="lx-cal-hd">{% for name in day_names(cfg.sunday_first) %}<span{% if weekend[loop.index0] %} class="lx-we"{% endif %} data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">{{ abbr(name)|upper }}</span>{% endfor %}</div>
   <div class="lx-cal-grid">
     {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
-    {% for day in week %}<div class="lx-day">{% if cfg.dated_months and day.number %}{{ day.number }}{% endif %}</div>{% endfor %}
+    {% for day in week %}<div class="lx-day{% if day.weekend %} lx-we{% endif %}"{% if cfg.dated_months and day.number %} data-day="{{ 'weekend' if day.weekend else 'weekday' }}">{{ day.number }}{% else %}>{% endif %}</div>{% endfor %}
     {% endfor %}
   </div>
 </div>

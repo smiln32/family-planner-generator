@@ -31,8 +31,8 @@
 
   <div class="howto-rows">
     {% for icon, colour, title, body in steps %}
-    <div class="howto-row" style="--c:{{ p[colour] }}">
-      {{ chip(icon, colour, "", ".62in") }}
+    <div class="howto-row" style="--c:{{ p.structure }}">
+      {{ chip(icon, "structure", "", ".62in") }}
       <div class="howto-box">
         <div class="howto-title">{{ loop.index }}. {{ title|upper }}</div>
         <p class="howto-body">{{ body }}</p>

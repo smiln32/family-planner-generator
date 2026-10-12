@@ -19,7 +19,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import escape
 
-from . import calendars, config, designs, typefaces
+from . import calendars, colours, config, designs, typefaces
 from .config import Config
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -116,6 +116,28 @@ NON_PAGE_TEMPLATES = {"monthly"}
 TITLE_RE = re.compile(r"\{#\s*title:\s*(.+?)\s*#\}")
 
 
+def colour_roles(cfg: Config) -> dict[str, str]:
+    """The colour roles (colours.roles) for this book's printed palette.
+
+    `cfg.palette` must already be the effective palette (render_html sets it).
+    A look or layout has hand-picked seasons; Blank and the retired looks take
+    their theme's.
+    """
+    family = designs.colour_family(cfg.design) or f"theme:{cfg.theme}"
+    return colours.roles(cfg.palette, family)
+
+
+def month_key(cfg: Config, month: dict, number: int) -> str:
+    """The palette key a month prints in: its season (winter, spring, summer,
+    autumn), or the palette colour the config names for it. Only Blank and
+    the retired looks take a named colour; the looks and layouts always
+    print the seasons."""
+    accent = month.get("accent", config.SEASON_ACCENT)
+    if accent == config.SEASON_ACCENT or not config.uses_theme(cfg.design):
+        return colours.MONTH_SEASON[number]
+    return accent
+
+
 def discover_pages() -> dict[str, str]:
     """Map slug -> title for every template in templates/pages.
 
@@ -178,12 +200,12 @@ def plan_pages(cfg: Config) -> list[Page]:
                 + ", ".join(sorted(known) + [MONTHS_KEYWORD]
                             + [m["name"].lower() for m in cfg.months])
             )
-    accents = ["teal", "pink", "orange", "green", "purple", "blue"]
+    # Contents entries: months in their season colour, every other page in
+    # the structure colour.
     toc = [
         {"slug": page.slug, "title": page.title, "number": number,
-         "accent": (page.context.get("month", {}).get("accent")
-                    if page.template == "pages/monthly.html"
-                    else accents[number % len(accents)])}
+         "accent": (month_key(cfg, page.context["month"], page.context["month_number"])
+                    if page.template == "pages/monthly.html" else "structure")}
         for number, page in enumerate(pages, start=1)
     ]
     for index, page in enumerate(pages):
@@ -210,6 +232,10 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     look = designs.parts(cfg.design)
     # A layout book prints in its look's colours; see config.effective_palette.
     cfg = replace(cfg, palette=config.effective_palette(cfg))
+    roles = colour_roles(cfg)
+    # Templates read the palette tokens and the colour roles from one map:
+    # p.navy, p.green, ... and p.structure, p.weekend, p.winter, ...
+    p = {**cfg.palette, **roles}
     shell = env.get_template("book.html")
     page_template_cache: dict[str, object] = {}
     # A look cover is drawn for the look's own typeface set. With another set
@@ -225,7 +251,8 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
             template = env.get_template(page.template)
             page_template_cache[page.template] = template
         rendered = template.render(
-            cfg=cfg, page=page, p=cfg.palette,
+            cfg=cfg, page=page, p=p,
+            month_key=lambda month, number: month_key(cfg, month, number),
             script_stack=cfg.faces.stack("script"),
             body_stack=cfg.faces.stack("body"),
             look=look,
@@ -237,6 +264,7 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     width_in, height_in = cfg.page_inches
     return shell.render(
         cfg=cfg,
+        roles=roles,
         look=look,
         pages=pages,
         bodies=bodies,
@@ -248,8 +276,27 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
         font_body=cfg.faces.stack("body"),
         page_width_in=width_in,
         page_height_in=height_in,
+        page_zoom=page_zoom(width_in),
         standalone=standalone,
     )
+
+
+# The side margin of every sheet (book.html, --page-pad-side) and the width
+# the worksheets were laid out for.
+PAGE_PAD_SIDE_IN = 0.32
+LETTER_WIDTH_IN = 8.5
+
+
+def page_zoom(width_in: float) -> float:
+    """How far a letter-sized worksheet is scaled to fit a smaller page.
+
+    The worksheets are laid out in inches for letter. On 5.5x8 and 6x9 they
+    are laid out at letter width and scaled by this factor (CSS zoom, see
+    "Small pages" in looks.css), so the printed margins stay the same and
+    every card and table keeps its letter proportions. 1 at letter.
+    """
+    inner = LETTER_WIDTH_IN - 2 * PAGE_PAD_SIDE_IN
+    return round(min(1.0, (width_in - 2 * PAGE_PAD_SIDE_IN) / inner), 4)
 
 
 def _fonts_css(cfg: Config, font_base: str | None = None) -> str:
@@ -367,12 +414,13 @@ def _tab_rail(cfg: Config, pages: list[Page], current: Page) -> str:
     months = [p for p in pages if p.template == "pages/monthly.html"]
     has_index = any(p.slug == "index" for p in pages)
 
+    colour = {**cfg.palette, **colour_roles(cfg)}
     tabs = []
     if has_index:
         on = " on" if current.slug == "index" else ""
         tabs.append(
             f'<a class="tab tab-home{on}" href="#index" '
-            f'style="--c:{escape(cfg.palette["navy"])}" aria-label="Contents">'
+            f'style="--c:{escape(colour["structure"])}" aria-label="Contents">'
             f'<svg viewBox="0 0 24 24"><use href="#i-home"/></svg></a>'
         )
     for page in months:
@@ -380,7 +428,7 @@ def _tab_rail(cfg: Config, pages: list[Page], current: Page) -> str:
         on = " on" if page.slug == current.slug else ""
         tabs.append(
             f'<a class="tab{on}" href="#{escape(page.slug)}" '
-            f'style="--c:{escape(cfg.palette[month["accent"]])}">'
+            f'style="--c:{escape(colour[month_key(cfg, month, page.context["month_number"])])}">'
             f'{escape(month["name"][:3].upper())}</a>'
         )
     if not tabs:

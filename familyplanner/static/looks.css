@@ -941,3 +941,163 @@
                        tan(atan2(var(--cf-h, 9999) * var(--k), var(--cf-ln)))));
 }
 .lk-cover .cf-left .cf-text { --cf-al: 0; }
+
+/* ==========================================================================
+   Colour roles (Carla, 2026-10-12; _config/design-system.md, colours.py)
+   One structure colour for the banners and write-on labels of every look,
+   the weekend accent only for the two weekend days, and the season colour
+   for the month number (set inline in look_monthly.html). The look's own
+   textures and cover art keep their colours.
+   ========================================================================== */
+.design-editorial .banner, .design-swiss .banner, .design-nordic .banner,
+.design-almanac .banner { color: var(--c-structure); }
+.design-retro .banner, .design-coastal .banner { background: var(--c-structure); color: var(--c-structure-on); }
+.design-cottage .banner { background: color-mix(in srgb, var(--c-structure) 16%, var(--paper)); color: var(--c-structure); }
+.design-midcentury .page-footer .txt { color: var(--c-structure); }
+
+.lk-month:not(.lkm-bauhaus) .lkm-label,
+.lkm-swiss .lkm-note:last-child .lkm-label,
+.lkm-gazette .lkm-note:last-child .lkm-label { color: var(--c-structure); }
+.lkm-retro .lkm-label { background: var(--c-structure); color: var(--c-structure-on); }
+.lkm-coastal .lkm-kicker { color: var(--c-structure); }
+
+/* Day-of-week headers: weekdays in the structure colour (where the look sets
+   them on a bar, the bar stays), the weekend days in the weekend accent. */
+.lk-month:not(.lkm-bauhaus):not(.lkm-farmhouse) .lkm-dow span:not(.lkm-we) { color: var(--c-structure); }
+.lk-month .lkm-dow span.lkm-we { color: var(--c-weekend); }
+.lkm-farmhouse .lkm-dow span.lkm-we, .lkm-bauhaus .lkm-dow span.lkm-we,
+.lkm-coastal .lkm-dow span.lkm-we { background: var(--c-weekend); color: var(--c-weekend-on); }
+.lk-month .lkm-cell b.lkm-we { color: var(--c-weekend); }
+
+/* A card headed by a weekend day (the example gratitude page) takes the
+   weekend accent: as text where the look sets its tabs as text, as the fill
+   where it sets them on a bar. */
+:is(.design-nordic, .design-swiss, .design-gazette, .design-almanac) .card-tab.we { color: var(--c-weekend); }
+:is(.design-farmhouse, .design-deco) .card-tab.we { background: var(--c-weekend); color: var(--c-weekend-on); }
+:is(.design-nordic, .design-swiss, .design-gazette, .design-almanac, .design-farmhouse, .design-deco) .card-tab.we .ico { fill: currentColor; }
+
+/* ==========================================================================
+   Everything fits its page (2026-10-12)
+   A card's grid column could grow past its share when something in it would
+   not wrap (an in-flow tab, a long label), pushing the last card off the
+   page; and a long card tab ran past its card, over the next card or off the
+   page (Family Time's "Monthly Family Tradition"). Now:
+   - grid columns are minmax(0, 1fr), so a card keeps its share;
+   - a card tab that is longer than its card wraps onto a second line. An
+     in-flow tab (Editorial, the layouts' plain headings) just wraps. A tab
+     that hangs over the card's top edge is now in the card's flow too,
+     pulled up by negative margins to exactly where it hung before (--pt,
+     --pl: the card's top and side padding; --tt, --tl: how far the tab sits
+     above the card and in from its side; --tab-line: the height of a one-line
+     tab), so its first line stays put and an extra line pushes the card's
+     content down, never up into the row above.
+   A tab that fits stays on one line where it was, so a page that fitted is
+   unchanged.
+   ========================================================================== */
+.page .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.page .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.page .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.page .card-tab { white-space: normal; }
+.page .card.has-tab { --pt: 0.2in; --pl: 0.13in; --tt: 0.105in; --tl: 0.14in;
+                      --tab-line: calc(max(1lh, 0.13in) + 0.07in); }
+.page.emergency-page .card.has-tab { --pt: 0.16in; --pl: 0.11in; }
+.design-farmhouse .page .card.has-tab { --tt: 0.11in; }
+.design-almanac .page .card.has-tab { --tab-line: calc(max(1lh, 0.13in) + 0.07in + 1.5px); }
+.design-cottage .page .card.has-tab { --tab-line: calc(max(1lh, 0.13in) + 0.07in + 2px); }
+/* (Looks whose tabs always sat in the card's flow keep their own rules.) */
+body:not(.lk-flat):not(.design-editorial):not(.design-nordic):not(.design-swiss):not(.design-gazette):not(.design-bauhaus):not(.design-02):not(.design-11):not(.layout)
+  .page .card.has-tab > .card-tab {
+  position: relative; top: auto; left: auto; align-self: flex-start; flex: none;
+  margin: calc(-1 * (var(--pt) + var(--tt))) 0 calc(var(--pt) + var(--tt) - var(--tab-line)) calc(var(--tl) - var(--pl));
+  max-width: calc(100% + 2 * var(--pl) - var(--tl));
+}
+/* Layout box styles whose headings hang over the frame: the worksheet card
+   tabs and the headings of the month, weekly and daily boxes alike (a box
+   has no padding of its own; its body pads down under the heading). The
+   layout covers keep their month headings as drawn. */
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) :is(.card.has-tab, .lx-box) { --pl: 0px; }
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) .card.has-tab { --pl: calc(8 * var(--u)); }
+.layout:is(.box-12a, .box-12c) .card.has-tab { --pl: calc(9 * var(--u)); }
+.layout.box-02b .card.has-tab { --pt: calc(9 * var(--u)); }
+.layout.box-06b .card.has-tab { --pt: calc(11 * var(--u)); }
+.layout.box-11c .card.has-tab { --pt: calc(8 * var(--u)); }
+.layout:is(.box-12a, .box-12c) .card.has-tab { --pt: calc(11 * var(--u)); }
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) .lx-box { --pt: 0px; }
+/* Boxed records and Executive desk cards pad 0.13in under the tab. */
+.layout:is(.design-02, .design-11):is(.box-02b, .box-11c) .card.has-tab { --pt: 0.13in; }
+.layout.box-02b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, var(--tab-ico, 8 * var(--u))); }
+.layout.box-06b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(10 * var(--u)); --tab-line: calc(max(1lh, var(--tab-ico, 8 * var(--u))) + 4 * var(--u)); }
+.layout.box-11c :is(.card.has-tab, .lx-box) { --tt: calc(5 * var(--u)); --tl: calc(8 * var(--u)); --tab-line: max(1lh, var(--tab-ico, 8 * var(--u))); }
+.layout.box-12a :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(9 * var(--u)); --tab-line: calc(max(1lh, var(--tab-ico, 8 * var(--u))) + 2 * var(--u)); }
+.layout.box-12c :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, var(--tab-ico, 8 * var(--u))); }
+.layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) :is(.card.has-tab > .card-tab, .page:not(.lx-cover) .lx-box > .lx-hd) {
+  position: relative; top: auto; left: auto; white-space: normal; align-self: flex-start; flex: none;
+  margin: calc(-1 * (var(--pt) + var(--tt))) 0 calc(var(--pt) + var(--tt) - var(--tab-line)) calc(var(--tl) - var(--pl));
+  max-width: calc(100% + 2 * var(--pl) - var(--tl));
+}
+/* A worksheet card's tab in a layout book is set at about 8pt at letter
+   (the month, weekly and daily boxes keep their larger headings), so the
+   tabs sit on one line like the other designs'; the script headings of
+   School notebook A and Beautiful day B and C at about 10pt. The 06b tape
+   pads less at the sides, so it runs nearly the card's width. */
+.layout .page:not(.lx) .card-tab { font-size: calc(4.6 * var(--u)); }
+.layout .page:not(.lx) .card.has-tab { --tab-ico: 1.1em; }
+.layout .page:not(.lx) .card-tab .ico { width: 1.1em; height: 1.1em; }
+.layout:is(.box-06a, .box-12b, .box-12c) .page:not(.lx) .card-tab { font-size: calc(6 * var(--u)); }
+.layout.box-06b .page:not(.lx) .card-tab { padding-left: calc(6 * var(--u)); padding-right: calc(6 * var(--u)); }
+/* Deco and Almanac space their tab letters a little less, so their tabs
+   too stay on one line. */
+:is(.design-deco, .design-almanac) .page .card-tab { letter-spacing: 0.06em; }
+/* Boxed records B and Beautiful day C centre their headings. */
+.layout:is(.box-02b, .box-12c) :is(.card.has-tab > .card-tab, .page:not(.lx-cover) .lx-box > .lx-hd) {
+  align-self: center; transform: none;
+  margin-left: 0; margin-right: 0; max-width: calc(100% + 2 * var(--pl) - 2 * var(--tl));
+}
+/* Bauhaus pulls its tab bar out to the card edge by the usual card padding;
+   the Emergency page's cards are narrower in the padding. */
+.design-bauhaus .emergency-page .card-tab { margin-left: -0.11in; margin-right: -0.11in; }
+/* The Emergency plan row is at least its usual height and grows when a
+   look's tab bar takes room, taking it from the flexible row above. */
+.page .emg-plan { height: auto; min-height: 1.28in; }
+/* The seven day letters over the tracker dots: a wider box for each letter
+   (a W did not fit), at the same pitch, so the letters do not move. */
+.page .week-head { gap: 0.026in; }
+.page .week-head span { width: 0.1in; }
+/* The month habit tracker's day numbers fit their columns. */
+.lx-month .lx-hh { font-size: calc(4.5 * var(--u)); }
+/* Layout B month: the goals and dates row is never shorter than its three
+   numbered lines (Executive desk and Beautiful day B cut the third); the
+   calendar gives up the room. */
+.lx-month.lx-b > .lx-cols { min-height: min-content; }
+/* Beautiful day B's seven weekly day boxes had no room for their second
+   write-on line, which hung below each box: smaller pads round the
+   heading and the lines. */
+.box-12b.lx-weekly > .lx-box > .lx-hd { padding-top: calc(1 * var(--u)); }
+.box-12b.lx-weekly > .lx-box > .lx-bd { padding-top: calc(1 * var(--u)); padding-bottom: calc(1 * var(--u)); }
+
+/* ==========================================================================
+   Small pages (2026-10-12)
+   The worksheets are laid out in inches for letter. On 5.5x8 and 6x9 their
+   tables and three-card rows ran off the right edge and their last rows off
+   the bottom. A worksheet there is laid out at letter width and scaled by
+   --page-zoom (render.page_zoom: the small page's text width over letter's),
+   with its margins divided by the same factor so they print at their usual
+   size. The page is taller than letter in proportion, and the rows that
+   flex take the extra height. Pages that scale by themselves are left
+   alone: the covers, the look and layout month pages and the layout sheets
+   (sized in --k and --u), and the budget page, which has its own small-page
+   fit.
+   ========================================================================== */
+.small-page .page:not(.lx):not(.lk-month):not(.lk-cover):not(.cover-page):not(.budget-page) {
+  zoom: var(--page-zoom);
+  --u: 0.024in;  /* the letter unit: the page is laid out at letter width */
+  width: calc(var(--page-w) / var(--page-zoom));
+  height: calc(var(--page-h) / var(--page-zoom));
+  padding: calc(var(--page-pad-top) / var(--page-zoom)) calc(var(--page-pad-side) / var(--page-zoom))
+           calc(var(--page-pad-bottom) / var(--page-zoom));
+}
+/* Type floor on the small pages: the annual calendar's dates print at 5.5pt
+   at least, and the health tracker's column notes, which would print under
+   4pt, are left out (the column names stay). */
+.small-page .annual-page .mini :is(th, td) { font-size: max(6.9pt, calc(5.5pt / var(--page-zoom))); }
+.small-page .health-tbl .blurb { display: none; }

@@ -11,7 +11,7 @@
     <div class="headings">
       {{ year_mark("year-tint year-plain", tint=false) }}
       {{ page_title("Family Goals") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">For This Year</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:13pt">For This Year</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Target and star">
@@ -24,9 +24,9 @@
 
   <div class="goal-rows">
     {% for icon, colour in goals %}
-    <div class="goal-row" style="--c:{{ p[colour] }}">
+    <div class="goal-row" style="--c:{{ p.structure }}">
       <span class="num">{{ loop.index }}</span>
-      {{ chip(icon, colour, "wash", ".42in") }}
+      {{ chip(icon, "structure", "wash", ".42in") }}
       <div class="goal-box">
         <div class="field"><span class="label">Goal</span><span class="dot-line"></span></div>
         <div class="field"><span class="label">Why it matters</span><span class="dot-line"></span></div>
@@ -41,12 +41,12 @@
   </div>
 
   <div class="grid cols-2 goal-foot-row">
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("check") }} Mid-Year Check</div>
       {{ field("Date:") }}
       {{ lines(2) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.orange }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("star") }} We'll Celebrate</div>
       {{ lines(3) }}
     </div>

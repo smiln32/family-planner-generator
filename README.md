@@ -290,10 +290,12 @@ The things people change most:
   own colours.
 - **`fonts`** - a typeface set name, or a mapping of
   `display`/`script`/`body` to any Google Fonts families.
-- **`palette`** - twelve colour tokens. Change `teal` once and every teal
-  element across all thirty pages follows.
-- **`months`** - each month's accent colour, seasonal motif, greeting strip and
-  footer line. Positional, January first, and partial lists are fine. Only
+- **`palette`** - twelve colour tokens. The worksheets use them by role
+  (one structure colour for headers and tabs, one weekend accent, four season
+  colours for the months; see `_config/design-system.md`), so a changed token
+  follows into every page that role appears on.
+- **`months`** - each month's accent colour (`season` by default: its season's
+  colour), seasonal motif, greeting strip and footer line. Positional, January first, and partial lists are fine. Only
   Blank and the retired looks print these; a look or layout month page uses
   its own wording.
 - **`pages`** - the running order. Comment out a line to drop that page.

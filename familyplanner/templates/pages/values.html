@@ -12,15 +12,15 @@
   </header>
 
   <div class="values-note">
-    {{ chip("heart", "teal", "", ".34in") }}
+    {{ chip("heart", "structure", "", ".34in") }}
     <p>Values are what matter most to our family.<br>
        List the values that guide our decisions, actions, and the way we treat each other.</p>
   </div>
 
-  <div class="card has-tab values-main" style="--c:{{ p.teal }}">
+  <div class="card has-tab values-main" style="--c:{{ p.structure }}">
     <div class="card-tab">{{ ico("star") }} Our Top Family Values</div>
     <div class="values-body">
-      <div class="values-list">{{ numbered(5, "teal", solid=false) }}</div>
+      <div class="values-list">{{ numbered(5, "structure", solid=false) }}</div>
       <svg class="heart-tree" viewBox="0 0 120 130" role="img" aria-label="Heart tree">
         <path d="M56 128V72l-14-16 14 8V44l12 14V30l10 22V128z" fill="{{ p.navy }}"/>
         <path d="M20 124c18-7 62-7 80 0z" fill="{{ p.green }}"/>
@@ -39,13 +39,13 @@
   </div>
 
   <div class="grid cols-2 values-pair">
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("users") }} How We Live Our Values</div>
       <p class="values-q">How do we show these values in our daily life?</p>
       {{ lines(4) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.green }}">
-      <div class="card-tab">{{ ico("target") }} Ways To Strengthen Our Values</div>
+    <div class="card has-tab" style="--c:{{ p.structure }}">
+      <div class="card-tab">{{ ico("target") }} Strengthening Our Values</div>
       <p class="values-q">What can we do together to make our values even stronger?</p>
       {{ lines(4) }}
     </div>

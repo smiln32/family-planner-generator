@@ -23,7 +23,7 @@
     </svg>
     <div class="headings">
       {{ page_title("Home Maintenance Checklist") }}
-      <div class="banner" style="--banner-bg:{{ p.navy }};font-size:9.5pt">
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:9.5pt">
         A Well-Maintained Home is a Happy Home!</div>
       {{ divider() }}
     </div>
@@ -45,10 +45,10 @@
   </header>
 
   <div class="maint-meta">
-    <div class="meta-cell">{{ chip("calendar", "green", "", ".28in") }}{{ field("Today's date:") }}</div>
-    <div class="meta-cell">{{ chip("home", "blue", "", ".28in") }}{{ field("Property address:") }}</div>
-    <div class="meta-cell">{{ chip("wrench", "orange", "", ".28in") }}{{ field("Next major check:") }}</div>
-    <div class="meta-cell">{{ chip("clipboard", "teal", "", ".28in") }}{{ field("Notes:") }}</div>
+    <div class="meta-cell">{{ chip("calendar", "structure", "", ".28in") }}{{ field("Today's date:") }}</div>
+    <div class="meta-cell">{{ chip("home", "structure", "", ".28in") }}{{ field("Property address:") }}</div>
+    <div class="meta-cell">{{ chip("wrench", "structure", "", ".28in") }}{{ field("Next major check:") }}</div>
+    <div class="meta-cell">{{ chip("clipboard", "structure", "", ".28in") }}{{ field("Notes:") }}</div>
   </div>
 
   <div class="maint-label">Regular Maintenance Tasks</div>
@@ -58,67 +58,67 @@
       <tr>
         {% for label, colour in [("Area", "green"), ("Task", "blue"), ("Frequency", "purple"),
                                  ("Last done", "orange"), ("Next due", "teal"), ("Done", "green")] %}
-        <th style="background:{{ p[colour] }}">{{ label }}</th>
+        <th style="background:{{ p.structure }}">{{ label }}</th>
         {% endfor %}
       </tr>
     </thead>
     <tbody>
       {% for icon, colour, area, task, freq in tasks %}
       <tr>
-        <td><div class="chore-cell">{{ chip(icon, colour, "", ".22in") }}
+        <td><div class="chore-cell">{{ chip(icon, "structure", "", ".22in") }}
           <span class="area-name">{{ area|upper }}</span></div></td>
         <td class="task-cell">{{ task }}</td>
         <td class="center small">{{ freq }}</td>
         <td><span class="solid-line"></span></td>
         <td><span class="solid-line"></span></td>
-        <td class="box-cell"><span class="check c" style="--c:{{ p[colour] }}"></span></td>
+        <td class="box-cell"><span class="check c" style="--c:{{ p.structure }}"></span></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
   <div class="grid cols-3 maint-row">
-    <div class="card has-tab" style="--c:{{ p.green }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("flower") }} Seasonal Checklist</div>
       {{ checklist(items=["Spring: Clean gutters, check A/C",
                           "Summer: Inspect deck, seal windows",
                           "Fall: Clean fireplace, check roof",
                           "Winter: Insulate pipes, check heater"],
-                   colour="green", dotted=false) }}
+                   colour="structure", dotted=false) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.blue }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("calendar") }} Monthly Tasks</div>
       {{ checklist(items=["Check all smoke detectors",
                           "Clean sink drains and disposal",
                           "Inspect for leaks under sinks",
                           "Wipe kitchen and bathroom caulking",
                           "Check door locks and handles"],
-                   colour="blue", dotted=false) }}
+                   colour="structure", dotted=false) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.purple }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("home") }} Annual Tasks</div>
       {{ checklist(items=["Service HVAC system", "Inspect attic and insulation",
                           "Check water heater", "Clean dryer vent",
                           "Deep clean exterior"],
-                   colour="purple", dotted=false) }}
+                   colour="structure", dotted=false) }}
     </div>
   </div>
 
   <div class="grid cols-3 maint-row">
-    <div class="card has-tab" style="--c:{{ p.orange }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("phone") }} Emergency Contacts</div>
       <div class="vac-fields">
         {{ field("Plumber:") }}{{ field("Electrician:") }}
         {{ field("HVAC technician:") }}{{ field("Roofing:") }}{{ field("Other:") }}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.teal }}">
-      <div class="card-tab">{{ ico("tools") }} Supplies To Keep On Hand</div>
+    <div class="card has-tab" style="--c:{{ p.structure }}">
+      <div class="card-tab">{{ ico("tools") }} Supplies On Hand</div>
       {{ checklist(items=["Flashlight and batteries", "Duct tape", "Plumbers tape",
                           "Screwdriver set", "Adjustable wrench", "Caulk and caulk gun"],
-                   colour="teal", dotted=false) }}
+                   colour="structure", dotted=false) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("pencil") }} Notes &amp; Reminders</div>
       {{ lines(6) }}
     </div>

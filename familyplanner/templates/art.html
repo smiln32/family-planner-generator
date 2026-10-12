@@ -68,7 +68,7 @@
 {# The desk-calendar + seasonal object that sits on the right of a monthly
    masthead. `motif` picks the object; everything shares the calendar block. #}
 {% macro month_art(month) %}
-{% set c = p[month.accent] %}
+{% set c = p[month_key(month, month_number)] %}
 <svg class="art" viewBox="0 0 200 150" role="img" aria-label="{{ month.name }}">
   <g>
     <rect x="20" y="26" width="96" height="86" rx="7" fill="#FCFBF6"
@@ -92,7 +92,7 @@
 
 {# Seasonal object, drawn to the right of the desk calendar. #}
 {% macro motif(kind, month) %}
-{% set c = p[month.accent] %}
+{% set c = p[month_key(month, month_number)] %}
 {% if kind == "snowman" %}
   <circle cx="156" cy="98" r="24" fill="#FFFFFF" stroke="#C8D8E6" stroke-width="3"/>
   <circle cx="156" cy="62" r="16" fill="#FFFFFF" stroke="#C8D8E6" stroke-width="3"/>

@@ -14,15 +14,17 @@
       <h1 class="lkm-name">{{ month.name }}</h1>
       {% if M.sub %}<div class="lkm-sub">{{ M.sub }}</div>{% endif %}
     </div>
-    <div class="lkm-num">{{ "%02d"|format(month_number) }}</div>
+    {# The month number is the month accent: its season's colour. #}
+    <div class="lkm-num" style="color:{{ p[month_key(month, month_number)] }}">{{ "%02d"|format(month_number) }}</div>
   </header>
   <div class="lkm-cal">
     <div class="lkm-dow">
-      {% for n in day_names(cfg.sunday_first) %}<span><b>{{ n[:1] }}</b><i>{{ n[1:3] }}</i></span>{% endfor %}
+      {% set weekend = weekend_flags(cfg.sunday_first) %}
+      {% for n in day_names(cfg.sunday_first) %}<span{% if weekend[loop.index0] %} class="lkm-we"{% endif %} data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"><b>{{ n[:1] }}</b><i>{{ n[1:3] }}</i></span>{% endfor %}
     </div>
     <div class="lkm-grid" style="--rows:{{ weeks|length }}">
       {% for week in weeks %}{% for day in week %}
-      <div class="lkm-cell">{% if cfg.dated_months and day.number %}<b>{{ day.number }}</b>{% endif %}</div>
+      <div class="lkm-cell">{% if cfg.dated_months and day.number %}<b{% if day.weekend %} class="lkm-we"{% endif %} data-day="{{ 'weekend' if day.weekend else 'weekday' }}">{{ day.number }}</b>{% endif %}</div>
       {% endfor %}{% endfor %}
     </div>
   </div>

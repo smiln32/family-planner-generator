@@ -10,7 +10,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Household Chores") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">Planner</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:14pt">Planner</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Potted plant">
@@ -26,15 +26,17 @@
   <table class="tbl chores-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.teal }}">Chores</th>
-        <th style="background:{{ p.green }}">Who</th>
-        <th style="background:{{ p.purple }}" colspan="7">Days of the Week</th>
-        <th style="background:{{ p.orange }}">Notes</th>
+        <th style="background:{{ p.structure }}">Chores</th>
+        <th style="background:{{ p.structure }}">Who</th>
+        <th style="background:{{ p.structure }}" colspan="7">Days of the Week</th>
+        <th style="background:{{ p.structure }}">Notes</th>
       </tr>
       <tr class="day-head">
         <th></th><th></th>
+        {% set weekend = weekend_flags(cfg.sunday_first) %}
         {% for initial in day_initials(cfg.sunday_first) %}
-        <th style="color:{{ p[['pink','orange','green','teal','blue','purple','pink'][loop.index0]] }}">
+        <th data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
+            style="color:{{ p.weekend if weekend[loop.index0] else p.structure }}">
           {{ initial }}</th>
         {% endfor %}
         <th></th>
@@ -43,12 +45,13 @@
     <tbody>
       {% for icon, colour in chores %}
       <tr>
-        <td><div class="chore-cell">{{ chip(icon, colour, "", ".26in") }}<span class="dot-line"></span></div></td>
+        <td><div class="chore-cell">{{ chip(icon, "structure", "", ".26in") }}<span class="dot-line"></span></div></td>
         <td><span class="dot-line"></span></td>
         {% for i in range(7) %}
         <td class="box-cell">
-          <span class="check c"
-                style="--c:{{ p[['pink','orange','green','teal','blue','purple','pink'][i]] }}"></span>
+          {% set we = weekend_flags(cfg.sunday_first)[i] %}
+          <span class="check c{% if we %} we{% endif %}"
+                style="--c:{{ p.weekend if we else p.structure }}"></span>
         </td>
         {% endfor %}
         <td><span class="dot-line"></span></td>
@@ -57,13 +60,13 @@
     </tbody>
   </table>
 
-  <div class="card chores-note" style="--c:{{ p.teal }}">
+  <div class="card chores-note" style="--c:{{ p.structure }}">
     <div class="chores-note-lead caps">Let's work<br>together<br>as a family!</div>
     <div class="chores-note-body">
-      <div class="caps tiny" style="color:{{ p.teal }}">Notes &amp; Reminders</div>
+      <div class="caps tiny" style="color:{{ p.structure }}">Notes &amp; Reminders</div>
       <span class="dot-line"></span><span class="dot-line"></span><span class="dot-line"></span>
     </div>
-    {{ chip("clipboard", "teal", "wash", ".55in") }}
+    {{ chip("clipboard", "structure", "wash", ".55in") }}
   </div>
 
   {{ footer("Many hands make a happy home.") }}

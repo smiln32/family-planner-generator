@@ -7,6 +7,7 @@ Canonical print rules for the Family Success Planner. Templates and `familyplann
 - Three paper sizes: `5.5x8` (5.5 by 8 in), `6x9` (6 by 9 in), and `letter` (8.5 by 11 in). Default is `letter`.
 - One printed margin for every sheet, set on the page box in `templates/book.html` (`--page-pad-*`). Dense pages tighten interior spacing. They never shrink the outer margin.
 - Print at 100% / Actual size. Do not fit-to-page. Use paper that matches `page_size`.
+- The worksheets are laid out in inches for letter. On `5.5x8` and `6x9` a worksheet is laid out at letter width and scaled to the page (CSS `zoom` by `render.page_zoom`: the small page's text width over letter's, about 0.62 and 0.68), with its margins kept at their printed size; it gets proportionally more height, which its flexible rows take. The covers, the look and layout month pages and the layout sheets size themselves (`--k`, `--u`; `--u` also keeps to the page height) and are not scaled; the budget page keeps its own small-page fit. A zoomed worksheet uses the letter layout unit (`--u: 0.024in`). The annual calendar's dates print at 5.5pt or more and the health tracker's column notes are left out on the small sizes. Every card, table and tab sits inside the margins at every size (`tests/test_page_fit.py`).
 
 ## Type
 
@@ -29,9 +30,26 @@ One rule for lettering: a look or layout sets its own typeface set, and a `fonts
 
 Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green`, `purple`, `blue`, `red`, `brown`, `ink`, `paper`, `rule`). The default `linen` theme is warm beige and ivory. `classic` is the original bright printable. Each named theme should read as its name at a glance (`citrus` stays lemon/lime/tangerine, `ocean` stays blue/green/seafoam with no coral or red, `forest` stays green/brown, `poppy` stays pink/red with no cyan). When adding or editing a theme, keep its twelve tokens inside that colour family rather than defaulting to a generic dark-navy-plus-bright-accent scheme. A config `palette:` block overrides individual tokens.
 
+## Colour roles
+
+Carla approved this rule on 2026-10-12. It holds on every page in every design (the thirteen looks, the twelve layouts, blank and original); covers, page titles, fonts, textures and art keep their own colours. `familyplanner/colours.py` picks the colours from the design's palette; templates read them as `p.structure`, `p.weekend`, `p.winter` ...; CSS reads `--c-structure`, `--c-weekend`, `--c-winter` ... and `--c-<role>-on`, the text colour that reads on each (white or the palette's ink, at least 4.5:1).
+
+1. **Structure**: one colour per design, its title colour (the palette's `navy`). Every table header, card tab or heading, section label, column header, banner and badge or numbered circle uses it. Nothing alternates.
+2. **Weekend**: one accent per design (its `red`, darkened until it reads 5.3:1 on paper, so 4.5:1 on light cells; Almanac uses its ochre, Boxed records a grey, Executive desk a muted brick, decided 2026-10-12 pending Carla's look). Saturday and Sunday labels, day pills, weekend columns and weekend dates use it, everywhere (worksheets, month pages, weekly and daily sheets, the annual calendar). Weekdays use the structure colour. The accent is used for nothing else on a worksheet, not even totals (totals sit on a light wash of the structure colour). Farmhouse sets its titles in the same barn red; titles keep their colour.
+3. **Seasons**: four colours per design from its own palette: winter (December, January, February), spring (March to May), summer (June to August), autumn (September to November). They colour the annual calendar's month boxes, the month entries in the contents and tab rail, and the month accents of the pages that show one (the month number on Editorial and Swiss grid, the script line and art on Blank and original). The looks, layouts and themes have hand-picked seasons (`colours.PICKS`), at least delta E 15 apart; where a palette has too few colours (School notebook, Executive desk, Deco, Gazette, Coastal) they are tints or shades of its own colours. Swiss grid and Boxed records have no colours to spare: their months stay in the structure colour and the season icons carry the season (decided 2026-10-12, pending Carla's look). A month's `accent` in the config is `season` by default; a palette name still gives that month its own colour in Blank and the retired looks.
+4. **Neutral fills** (row stripes, cell backgrounds, paper, light washes) stay neutral, and a fill is never a colour from outside the palette. The budget donut keeps one colour per category, because a chart needs them, starting with the structure colour.
+
+Exceptions that are a look's art, not chrome: the Bauhaus month pages keep their red, blue and butter shapes and coloured Plan/Make/Do blocks; Beautiful day keeps its pink card frames and page border; the Farmhouse stripe, Cottage gingham, Coastal stripe and the Mid-century and Bauhaus corner shapes keep their colours.
+
+`tests/test_colour_roles.py` checks every page of every design in Chrome.
+
+## Variety between designs
+
+Carla said on 2026-10-12 that pages may differ from one design to the next. A page type (Family Values, Family Goals, Budget and so on) must cover the same basic information in every design, but its layout, extra sections and style can change from design to design; a section on one design's page need not appear on the same page in another. Variety is welcome. What stays fixed everywhere is the colour roles above and that everything fits its page.
+
 ## Cards and chrome
 
-- `.card-tab` is 8pt everywhere. If a label does not fit, shorten the label.
+- `.card-tab` is 8pt everywhere. A label longer than its card wraps onto a second line inside the card's width; the first line stays where a one-line tab sits and the extra line pushes the card's content down (see "Everything fits its page" in `looks.css`). Prefer a label that fits on one line: in a layout book a worksheet tab is about 8pt at letter (`4.6 * --u`; the script layouts about 10pt), and a label that wraps at letter should be shortened.
 - Every page ends with the shared footer macro, except cover, belongs_to, how_to_use, and values, which have their own bottom art.
 - Illustrations are inline SVG in `templates/art.html` and the icon sprite in `templates/icons.html`. No network images at build time.
 
