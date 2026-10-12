@@ -1,4 +1,6 @@
-"""Who decides a book's colours: the look when it has its own, else the theme.
+"""Who decides a book's colours: the design's own palette (linen for Blank
+and the retired looks), a named theme over it on any design, then the
+config's own `palette:` block (config.resolve_palette).
 
 The editor, plan files and `build` all follow the same rule, so no screen
 offers a colour choice the printed page would ignore.
@@ -25,18 +27,23 @@ def _linen(token):
 
 # --- config ---------------------------------------------------------------
 
-def test_look_book_ignores_theme(cfg):
+def test_theme_recolours_a_look_book(cfg):
     cfg.design = "editorial"
-    cfg.theme, cfg.palette = "linen", config.theme_palette("linen")
-    linen = config.effective_palette(cfg)
-    cfg.theme, cfg.palette = "ocean", config.theme_palette("ocean")
-    assert config.effective_palette(cfg) == linen
-    assert linen["teal"] == designs.LOOKS["editorial"]["palette"]["teal"]
+    own = config.effective_palette(cfg)
+    assert cfg.theme == "" and own["teal"] == designs.LOOKS["editorial"]["palette"]["teal"]
+    cfg.theme = "ocean"
+    ocean = config.effective_palette(cfg)
+    assert ocean["teal"] == themes.PRESETS["ocean"]["teal"]
+    assert ocean == config.resolve_palette("editorial", "ocean", {})
+    # Tokens a theme does not name stay the look's own.
+    cfg.theme = "blues"
+    assert config.effective_palette(cfg)["paper"] == own["paper"]
 
 
 def test_blank_book_follows_theme(cfg):
     cfg.design = "blank"
-    cfg.theme, cfg.palette = "ocean", config.theme_palette("ocean")
+    assert config.effective_palette(cfg) == config.theme_palette("linen")
+    cfg.theme = "ocean"
     assert config.effective_palette(cfg) == config.theme_palette("ocean")
 
 
@@ -57,12 +64,17 @@ def test_replacement_matching_theme_still_wins(tmp_path):
     assert _linen("teal") != designs.LOOKS["editorial"]["palette"]["teal"]
 
 
-def test_overrides_compare_against_the_look():
+def test_overrides_compare_against_the_look_when_no_theme():
     look = designs.LOOKS["editorial"]["palette"]
     picked = {"teal": look["teal"], "navy": "#123456"}
-    assert config.palette_overrides("linen", picked, "editorial") == {"navy": "#123456"}
+    assert config.palette_overrides("", picked, "editorial") == {"navy": "#123456"}
+    # With a theme on the look, the theme's tokens are the base instead.
+    # (`blues` names no paper, so the paper base is still the look's own.)
+    assert config.palette_overrides("blues", {"teal": themes.PRESETS["blues"]["teal"],
+                                              "paper": look["paper"]}, "editorial") == {}
     # Without a design the old theme-only comparison still applies.
     assert config.palette_overrides("linen", {"teal": _linen("teal")}) == {}
+    assert config.palette_overrides("", {"teal": _linen("teal")}) == {}
 
 
 # --- the editor's API -----------------------------------------------------
@@ -109,13 +121,17 @@ def test_state_for_a_retired_look_offers_the_theme(tmp_path):
     assert state["config"]["palette"] == {}
 
 
-def test_state_reports_replacements_against_the_look(tmp_path):
+def test_state_reports_the_colours_the_file_set(tmp_path):
+    """The editor starts from the `palette:` block as written, so a colour set
+    on purpose stays set even when it equals the look's own."""
     look = designs.LOOKS["editorial"]["palette"]
     plan = tmp_path / "family.yaml"
     plan.write_text(f"design: editorial\npalette:\n  teal: '{look['teal']}'\n  navy: '#123456'\n",
                     encoding="utf-8")
     handler = type("H", (server.Handler,), {"base_config": config.load(plan), "out_dir": tmp_path})
-    assert handler._state(handler.__new__(handler))["config"]["palette"] == {"navy": "#123456"}
+    state = handler._state(handler.__new__(handler))
+    assert state["config"]["palette"] == {"teal": look["teal"], "navy": "#123456"}
+    assert state["config"]["theme"] == ""
 
 
 def test_preview_prints_replacement_matching_theme(cfg):
@@ -124,18 +140,20 @@ def test_preview_prints_replacement_matching_theme(cfg):
     assert config.effective_palette(out)["teal"] == _linen("teal")
 
 
-def test_theme_does_not_change_a_look_preview(api):
-    a = _post(f"{api}/api/preview", {"design": "editorial", "theme": "linen", "preview": "chores"})
+def test_theme_changes_a_look_preview_and_a_blank_one(api):
+    a = _post(f"{api}/api/preview", {"design": "editorial", "theme": "", "preview": "chores"})
     b = _post(f"{api}/api/preview", {"design": "editorial", "theme": "ocean", "preview": "chores"})
-    assert a["html"] == b["html"]
-    c = _post(f"{api}/api/preview", {"design": "blank", "theme": "linen", "preview": "chores"})
+    assert a["html"] != b["html"]
+    assert themes.PRESETS["ocean"]["navy"] in b["html"]
+    assert designs.LOOKS["editorial"]["palette"]["navy"] in a["html"]
+    c = _post(f"{api}/api/preview", {"design": "blank", "theme": "", "preview": "chores"})
     d = _post(f"{api}/api/preview", {"design": "blank", "theme": "ocean", "preview": "chores"})
     assert c["html"] != d["html"]
 
 
 def test_plan_round_trip_keeps_look_replacements(api):
     picked = {"teal": _linen("teal"), "navy": designs.LOOKS["editorial"]["palette"]["navy"]}
-    plan = _post(f"{api}/api/export", {"design": "editorial", "theme": "linen", "palette": picked})
+    plan = _post(f"{api}/api/export", {"design": "editorial", "palette": picked})
     back = _post(f"{api}/api/import", {"text": plan["markdown"]})["config"]
     # navy equals the look's own colour, so there is nothing to keep.
     assert back["palette"] == {"teal": _linen("teal")}
@@ -144,21 +162,25 @@ def test_plan_round_trip_keeps_look_replacements(api):
 
 # --- build ----------------------------------------------------------------
 
-@pytest.mark.parametrize("text, noted", [
-    ("design: editorial\ntheme: ocean\n", True),
-    ("design: blank\ntheme: ocean\n", False),
-    ("design: editorial\n", False),
+@pytest.mark.parametrize("text", [
+    "design: editorial\ntheme: ocean\n",
+    "design: blank\ntheme: ocean\n",
+    "design: editorial\n",
 ])
-def test_build_notes_an_unused_theme(capsys, tmp_path, text, noted):
+def test_build_prints_no_theme_note(capsys, tmp_path, text):
     plan = tmp_path / "family.yaml"
     plan.write_text(text, encoding="utf-8")
     assert cli.main(["build", "--html-only", "-c", str(plan), "-o", str(tmp_path)]) == 0
-    assert ("theme 'ocean' is not used" in capsys.readouterr().out) is noted
+    out = capsys.readouterr().out
+    assert "note:" not in out and "is not used" not in out
 
 
-def test_build_notes_an_unused_theme_flag(capsys, tmp_path):
-    assert cli.main(["build", "--html-only", "--theme", "berry", "-o", str(tmp_path)]) == 0
-    assert "theme 'berry' is not used" in capsys.readouterr().out
+def test_theme_flag_recolours_a_look(capsys, tmp_path):
+    assert cli.main(["build", "--html-only", "--theme", "berry", "--only", "chores",
+                     "-o", str(tmp_path)]) == 0
+    assert "is not used" not in capsys.readouterr().out
+    html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
+    assert f"--navy: {themes.PRESETS['berry']['navy']}" in html
     assert themes.DEFAULT_THEME == "linen"
 
 
@@ -169,13 +191,15 @@ def _flag_config(tmp_path, text, *flags):
     return cli._resolve_config(args)
 
 
-@pytest.mark.parametrize("old", ["linen", "ocean", "berry"])
+@pytest.mark.parametrize("old", ["", "linen", "ocean", "berry"])
 def test_theme_flag_on_a_look_book_keeps_the_look_paper(tmp_path, old):
-    """`--theme` must not leave the old theme's colours behind as replacements."""
-    cfg = _flag_config(tmp_path, f"design: editorial\ntheme: {old}\n", "--theme", "blues")
+    """`--theme` must not leave the old theme's colours behind as replacements.
+    `blues` names no paper, so the paper stays the look's own."""
+    line = f"theme: {old}\n" if old else ""
+    cfg = _flag_config(tmp_path, f"design: editorial\n{line}", "--theme", "blues")
     printed = config.effective_palette(cfg)
     assert printed["paper"] == designs.LOOKS["editorial"]["palette"]["paper"]
-    assert printed == config.base_palette("blues", "editorial")
+    assert printed == config.resolve_palette("editorial", "blues", {})
 
 
 def test_theme_flag_on_a_blank_book_uses_the_new_theme(tmp_path):

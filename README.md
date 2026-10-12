@@ -61,10 +61,10 @@ options below).
 python planner.py build --design deco
 ```
 
-A look brings its own colours, so the theme does not change it; your own
-`palette:` block still wins.
-A look also sets its own lettering: its typeface set applies unless you set
-`fonts:`.
+A look brings its own colours and its own lettering. A `theme` recolours
+any look (colours the theme does not name stay the look's own), and your
+own `palette:` block goes over both. A `fonts:` entry replaces the look's
+typeface set. Leave `theme` and `fonts` unset to print the look as designed.
 
 ### Cover options
 
@@ -108,7 +108,7 @@ planner is already running, it just opens the browser again.
 - page looks named in plain language, each with a strip of its own colours
 - **Personalize the cover**: the family name, the year (or your own text) and
   one extra line on a look cover, all off at first
-- a colour picker to replace any of the twelve print colours; it starts from the look's colours, and theme cards appear when the Blank look is picked
+- theme cards for every look, starting with "Design's own colours", and a colour picker to replace any of the twelve print colours
 - paper, week start and lettering size sit under **Paper and lettering size**
 - tracker rows added and named inline
 - every page toggled in or out; click a page name to jump the preview to it
@@ -137,7 +137,7 @@ python planner.py build --cover-line "Our year together" # one extra cover line
 python planner.py build --undated    # blank month grids instead of real dates
 python planner.py build --only cover,months,year_end
 
-python planner.py build --design blank --theme berry   # Blank look, recoloured
+python planner.py build --design coastal --theme adventure   # a look, recoloured
 python planner.py build --fonts italics  # different typefaces
 
 python planner.py pages              # list what would be built
@@ -183,25 +183,27 @@ python planner.py init      # writes family.yaml, fully commented
 
 ### Ready-made themes
 
-Colour presets ship with the generator. They colour the Blank look and the
-retired looks; the default book uses the Editorial look, which brings its own
-colours. The default theme is `linen`: warm taupe, dusty rose and clay on
-ivory paper. `classic` keeps the original bright jewel-tone printable.
+Colour presets ship with the generator. A theme recolours any look or
+layout: its colours go over the look's own, and the colours it does not name
+stay the look's. With no theme a look prints as designed; Blank and the
+retired looks then print in `linen`, warm taupe, dusty rose and clay on ivory
+paper. `classic` keeps the original bright jewel-tone printable.
 
 ```
 python planner.py themes                       # list them with swatches
-python planner.py build --design blank --theme pastel          # whole book
+python planner.py build --theme pastel                        # editorial, recoloured
+python planner.py build --design coastal --theme adventure    # another look
 python planner.py build --design blank --theme berry --only year_goals --png   # one page
 ```
 
-`linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `blues`
+`linen` `classic` `amber` `berry` `bold` `citrus` `forest` `meadow` `ocean` `pastel` `poppy` `blues` `adventure` `goal`
 
-A theme colours the Blank look and the retired looks. The thirteen looks and
-the layouts bring their own colours, so a theme has no effect on them; the
-build prints a note if you name one. Set `design: blank` and `theme: pastel` in
-your config to make it the default. A theme is only a starting point - your
-own `palette:` block is applied on top, so you can take `forest` and override
-just its pink. A `palette:` block also replaces single colours on any look.
+`adventure` and `goal` set only the headings, main accent, weekend red and
+paper, so most of the look shows through. Set `theme: adventure` in your
+config to make it the default. A theme is only a starting point - your own
+`palette:` block is applied on top of the look and the theme, so you can take
+`forest` and override just its pink, or replace one colour on any look with
+no theme at all.
 
 ### Typefaces
 
@@ -285,9 +287,9 @@ The things people change most:
   optional words on a look cover; see Cover options above.
 - **`members`** - one row per person on the health tracker. Add or remove
   entries to change how many rows it has; names are optional.
-- **`theme`** - a colour preset applied before `palette`. Only the Blank look
-  and the retired looks use it; the thirteen looks and the layouts bring their
-  own colours.
+- **`theme`** - a colour preset laid over the look's own colours, on any
+  look or layout, and applied before `palette`. Leave it out to print the
+  look as designed.
 - **`fonts`** - a typeface set name, or a mapping of
   `display`/`script`/`body` to any Google Fonts families.
 - **`palette`** - twelve colour tokens. The worksheets use them by role

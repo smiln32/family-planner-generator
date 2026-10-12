@@ -44,10 +44,11 @@ def test_layout_book_uses_its_look_colours_and_fonts(cfg):
     cfg.design = "06b"
     palette = config.effective_palette(cfg)
     assert palette["navy"] == "#1A2744" and palette["paper"] == "#FFFDF5"
-    cfg.palette["pink"] = "#123456"          # the config's own replacement still wins
+    cfg.palette_set["pink"] = "#123456"      # the config's own replacement still wins
+    config.validate(cfg)
     assert config.effective_palette(cfg)["pink"] == "#123456"
     plain = config.load(None)
-    plain.design = "original"                # a retired look keeps the theme's colours
+    plain.design = "original"                # a retired look starts from linen
     assert config.effective_palette(plain)["navy"] == config.DEFAULT_PALETTE["navy"]
     assert designs.look_fonts("06b") == "composition-book"
     assert designs.look_fonts("06") == "" and designs.look_palette("original") == {}

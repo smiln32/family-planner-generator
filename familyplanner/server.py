@@ -90,17 +90,13 @@ def _config_from(payload: dict, base: Config) -> Config:
     if "months" in payload:
         cfg.months = config.merge_months(payload["months"])
 
-    cfg.theme = config.check_theme(payload.get("theme"))
-    # The UI sends only the colours someone replaced; the look or theme
-    # supplies the rest at render time (config.effective_palette).
-    replaced = config.sanitize_palette(payload.get("palette"))
-    palette = config.theme_palette(cfg.theme)
-    palette.update(replaced)
-    cfg.palette = palette
-    cfg.palette_set = replaced
-
-    cfg.faces = config.check_fonts(payload.get("fonts") or typefaces.DEFAULT_SET)
+    # Design, theme, palette, fonts, in that order. The UI sends only the
+    # colours someone replaced; config.validate resolves the printed palette
+    # from the design, the theme and those (config.resolve_palette).
     cfg.design = config.check_design(payload.get("design") or designs.DEFAULT_DESIGN)
+    cfg.theme = config.check_theme(payload.get("theme"))
+    cfg.palette_set = config.sanitize_palette(payload.get("palette"))
+    cfg.faces = config.check_fonts(payload.get("fonts") or typefaces.DEFAULT_SET)
     cfg.type_size = config.check_type_size(payload.get("type_size"))
     # Same rules as `planner.py build`, so the UI cannot reach the renderer
     # with a value the command line would have refused.
@@ -310,14 +306,20 @@ class Handler(BaseHTTPRequestHandler):
                 "subtitle": cfg.subtitle,
                 "linked": cfg.linked,
                 "months": _months_for_save(cfg.months),
-                "palette": config.palette_overrides(
-                    cfg.theme, config.effective_palette(cfg), cfg.design),
+                # The colours the file set on purpose, as written. They go
+                # over the design and the theme (config.resolve_palette).
+                "palette": dict(cfg.palette_set),
             },
             "paletteRoles": [
                 {"id": key, "label": label} for key, label in config.PALETTE_ROLES
             ],
             "themePalettes": {
                 name: config.theme_palette(name) for name in themes.names()
+            },
+            # Only the tokens each theme names: what goes over a design's
+            # colours when that theme is picked (config.resolve_palette).
+            "themeTokens": {
+                name: themes.resolve(name) for name in themes.names()
             },
             "themes": [
                 {"name": name,
@@ -337,7 +339,8 @@ class Handler(BaseHTTPRequestHandler):
                  # A layout book brings its own sheets and typeface set.
                  "adds": designs.LAYOUT_PAGES if designs.parts(name)["layout"] else [],
                  "fonts": designs.look_fonts(name),
-                 # The look's own colours, or null when the theme decides them.
+                 # The look's own colours, or null for Blank and the retired
+                 # looks (they start from linen). A theme goes over either.
                  "palette": designs.look_palette(name) or None,
                  # How this cover treats the cover settings (see _cover_kind).
                  "cover": _cover_kind(name)}
@@ -431,6 +434,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def _export(self, payload: dict) -> None:
         body = self._plan_fields(payload)
+        # No theme means the design's own colours; the file says nothing.
+        if not body["theme"]:
+            del body["theme"]
         self._json({
             "markdown": config.render_plan_markdown(body),
             "filename": config.plan_filename(body),
@@ -451,7 +457,8 @@ class Handler(BaseHTTPRequestHandler):
             "cover_line": "",
             "page_size": "letter",
             "members": [],
-            "theme": themes.DEFAULT_THEME,
+            # No theme: the design's own colours.
+            "theme": "",
             "design": designs.DEFAULT_DESIGN,
             "type_size": {},
             "pages": list(config.DEFAULT_PAGES),

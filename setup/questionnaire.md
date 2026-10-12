@@ -23,13 +23,13 @@
 - Type: selection
 - Options: the thirteen looks, the planner layouts and `blank`, as listed in the `design` comment of `config.example.yaml`
 - Default: `editorial`
-- Derived: a look or layout brings its own colours and typeface set, so Q4 and Q5 only matter for `blank` or when the owner wants a different set
+- Derived: a look or layout brings its own colours and typeface set. Q4 recolours any look; Q5 replaces its set. Leave both unset to print the look as designed
 
-### Q4: Default colour theme (Blank look only)?
+### Q4: Default colour theme?
 - Files: `config.example.yaml` (`theme`)
 - Type: selection
-- Options: the theme names listed in the `theme` comment of `config.example.yaml`
-- Default: `linen`
+- Options: "the look's own colours" (leave `theme:` commented out), or a theme name listed in the `theme` comment of `config.example.yaml`; a theme recolours any look
+- Default: the look's own colours (Blank and the retired looks then print in `linen`)
 
 ### Q5: Default typeface set?
 - Files: `config.example.yaml` (`fonts`)

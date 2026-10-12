@@ -13,8 +13,10 @@ import yaml
 
 from . import designs, themes, typefaces
 
-# Factory colours: warm taupe, beige and ivory on warm paper. Token names
-# stay the same (navy, teal, …) so templates do not care which look is default.
+# Factory colours: warm taupe, beige and ivory on warm paper (the `linen`
+# theme). Blank and the retired looks start from these; the looks and
+# layouts start from their own twelve tokens (designs.look_palette). Token
+# names stay the same (navy, teal, …) so templates do not care which.
 DEFAULT_PALETTE: dict[str, str] = {
     "navy": "#5C4A3A",
     "teal": "#9C8768",
@@ -62,7 +64,12 @@ def normalize_hex(raw: str) -> str:
 
 
 def theme_palette(theme: str) -> dict[str, str]:
-    """Twelve tokens for a named theme, before any personal replacements."""
+    """A theme's twelve tokens on the factory palette (linen fills the gaps).
+
+    This is what a theme looks like on its own, for the editor's theme cards
+    and swatches. What a book prints is `resolve_palette`, where the gaps are
+    filled by the design beneath instead.
+    """
     merged = dict(DEFAULT_PALETTE)
     merged.update(themes.resolve(theme or themes.DEFAULT_THEME))
     return {key: normalize_hex(value) for key, value in merged.items()}
@@ -86,47 +93,56 @@ def sanitize_palette(raw: Any) -> dict[str, str]:
     return out
 
 
-def base_palette(theme: str, design: str) -> dict[str, str]:
-    """The colours a book starts from before personal replacements.
+def resolve_palette(design: str, theme: str, palette_set: Any) -> dict[str, str]:
+    """The twelve colours a book prints with. The one rule for every entry point.
 
-    A look or layout brings its own twelve colours, so the theme only shows
-    through on books without them (`blank` and the retired looks).
+    Three layers, lowest first, each replacing the tokens it names:
+
+    1. the design's own palette (a look or layout), or DEFAULT_PALETTE
+       (`linen`) for Blank and the retired looks, which have none;
+    2. the named theme, when `theme` is not empty, on any design;
+    3. the config's own `palette:` block (`palette_set`).
+
+    `design` and `theme` must already be checked (check_design, check_theme).
+    Returns a new dict of normalised hex values; nothing it reads is changed.
     """
-    merged = theme_palette(theme)
-    merged.update({key: normalize_hex(value)
-                   for key, value in designs.look_palette(design).items()})
-    return merged
+    base = dict(designs.look_palette(design)) or dict(DEFAULT_PALETTE)
+    if theme:
+        base.update(themes.resolve(theme))
+    base.update(sanitize_palette(palette_set))
+    return {key: normalize_hex(value) for key, value in base.items()}
+
+
+def base_palette(theme: str, design: str) -> dict[str, str]:
+    """The colours a book starts from before personal replacements:
+    the design's palette with the theme (if any) over it."""
+    return resolve_palette(design, theme, {})
 
 
 def uses_theme(design: str) -> bool:
-    """True when the theme decides the book's colours; False when the look does."""
+    """True for a design without colours of its own (Blank and the retired
+    looks), whose base is the factory palette. These are also the designs
+    that honour a palette name as a month's `accent` (render.month_key).
+    A named theme recolours every design; this is not about that."""
     return not designs.look_palette(design)
 
 
 def palette_overrides(theme: str, palette: Any, design: str = "") -> dict[str, str]:
     """Tokens that differ from the book's starting colours, for a plan file.
 
-    Without a design this compares against the theme alone, as it always did.
+    The starting colours are `base_palette(theme, design)`; without a design
+    that is the theme on the factory palette, as it always was.
     """
-    base = base_palette(theme, design) if design else theme_palette(theme)
+    base = base_palette(theme, design)
     cleaned = sanitize_palette(palette)
     return {key: value for key, value in cleaned.items() if value != base[key]}
 
 
 def effective_palette(cfg: "Config") -> dict[str, str]:
-    """The palette the renderer prints with.
-
-    A book without its own colours prints `cfg.palette` as it is. A look or
-    layout book puts its colours over the theme, then the tokens the config
-    replaced itself, so every sheet matches the look's cover and months.
-    """
-    if uses_theme(cfg.design):
-        return dict(cfg.palette)
-    merged = base_palette(cfg.theme, cfg.design)
-    merged.update(palette_overrides(cfg.theme, cfg.palette))
-    # Tokens set on purpose win even when they happen to match the theme.
-    merged.update(sanitize_palette(cfg.palette_set))
-    return {key: normalize_hex(value) for key, value in merged.items()}
+    """The palette the renderer prints with: resolve_palette on the config's
+    design, theme and `palette:` block. Tokens set on purpose win even when
+    they happen to equal the layer beneath."""
+    return resolve_palette(cfg.design, cfg.theme, cfg.palette_set)
 
 
 # Per-month personality: accent colour, seasonal motif, greeting strip and the
@@ -203,7 +219,10 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "linked": False,
     # Rows on the shared trackers, so a family of three is not stuck with five.
     "members": ["", "", "", "", ""],
-    "theme": "linen",
+    # Colours: the design's own, recoloured by `theme` when one is named ("" is
+    # none), then by `palette:`. See resolve_palette.
+    "theme": "",
+    # Lettering: a look or layout's own set when the file names none.
     "fonts": "elegant",
     "design": "editorial",
     "type_size": {},
@@ -434,7 +453,10 @@ def check_flag(raw: Any, name: str) -> bool:
 
 
 def check_theme(raw: Any) -> str:
-    name = str(raw or themes.DEFAULT_THEME).strip().lower()
+    """A theme name, or "" for none (the design's own colours)."""
+    name = str(raw or "").strip().lower()
+    if not name:
+        return ""
     try:
         themes.resolve(name)
     except KeyError as exc:
@@ -555,18 +577,25 @@ class Config:
     cover_year: str
     cover_text: str
     linked: bool
+    # Colours: a theme name or "" for none; see resolve_palette.
     theme: str
+    # Chrome: the look or layout. It also supplies the default palette and
+    # the default typeface set.
     design: str
     type_size: dict[str, float]
+    # Type: the faces in use (the file's `fonts:` or the design's own set).
     faces: typefaces.Typefaces
     members: list[str]
+    # The resolved palette, resolve_palette(design, theme, palette_set).
+    # Rebuilt by `validate`; set `palette_set` to change a colour.
     palette: dict[str, str]
     months: list[dict[str, str]]
     pages: list[str]
     page_size: str
     output_name: str
     source: Path | None = field(default=None)
-    # The `palette:` block as written, before the theme fills the rest in.
+    # The `palette:` block as written: the colours set on purpose, which go
+    # over the design and the theme.
     palette_set: dict[str, str] = field(default_factory=dict)
     # Opt-in lines on a look cover (see DEFAULT_CONFIG). Off by default.
     cover_show_year: str = "off"
@@ -688,15 +717,16 @@ def load(path: Path | None) -> Config:
             )
         data.update(loaded)
 
-    # Palette resolution, lowest precedence first: the built-in defaults, then
-    # the named theme, then whatever the config's own `palette:` block sets.
+    # Four axes, checked in this order: design (chrome), theme and palette
+    # (colours), fonts (type). Pages are checked at plan time
+    # (render.plan_pages), against the templates that exist.
+    design = check_design(data.get("design"))
     theme = check_theme(data.get("theme"))
     palette_set = sanitize_palette(data.get("palette"))
-    palette = theme_palette(theme)
-    palette.update(palette_set)
+    palette = resolve_palette(design, theme, palette_set)
 
-    # A layout book is set in its look's typefaces unless the file names a set.
-    design = check_design(data.get("design"))
+    # A look or layout book is set in its own typefaces unless the file
+    # names a set; explicit fonts win whatever the design or theme.
     fonts = data.get("fonts")
     if path is None or "fonts" not in loaded:
         fonts = designs.look_fonts(design) or fonts
@@ -735,25 +765,24 @@ def validate(cfg: Config) -> Config:
     `load` validates what it reads; this covers values set afterwards, so
     every entry point reaches the renderer through the same rules.
     """
+    # Design, then theme, then palette, then fonts (same order as `load`).
+    cfg.design = check_design(cfg.design)
+    cfg.theme = check_theme(cfg.theme)
+    cfg.palette_set = sanitize_palette(cfg.palette_set)
+    cfg.palette = resolve_palette(cfg.design, cfg.theme, cfg.palette_set)
+    cfg.faces = check_fonts(cfg.faces.preset or cfg.faces.roles)
     cfg.year = check_year(cfg.year)
     cfg.week_starts = check_week_starts(cfg.week_starts)
     cfg.cover_year = check_cover_year(cfg.cover_year)
     cfg.cover_show_year = check_cover_show_year(cfg.cover_show_year)
     cfg.cover_show_family = check_flag(cfg.cover_show_family, "cover_show_family")
-    cfg.theme = check_theme(cfg.theme)
-    cfg.design = check_design(cfg.design)
     cfg.type_size = check_type_size(cfg.type_size)
-    cfg.faces = check_fonts(cfg.faces.preset or cfg.faces.roles)
     cfg.page_size = normalize_page_size(cfg.page_size)
     cfg.members = check_members(cfg.members)
+    # Page ids are checked at plan time (render.plan_pages).
     cfg.pages = check_str_list(cfg.pages, "pages") or list(DEFAULT_PAGES)
     for name in TEXT_LIMITS:
         setattr(cfg, name, check_field_text(name, getattr(cfg, name)))
-
-    palette = dict(DEFAULT_PALETTE)
-    palette.update(sanitize_palette(cfg.palette))
-    cfg.palette = palette
-    cfg.palette_set = sanitize_palette(cfg.palette_set)
     cfg.months = _check_months(cfg.months)
     return cfg
 
