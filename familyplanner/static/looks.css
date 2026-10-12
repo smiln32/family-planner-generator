@@ -965,7 +965,8 @@
    them on a bar, the bar stays), the weekend days in the weekend accent. */
 .lk-month:not(.lkm-bauhaus):not(.lkm-farmhouse) .lkm-dow span:not(.lkm-we) { color: var(--c-structure); }
 .lk-month .lkm-dow span.lkm-we { color: var(--c-weekend); }
-.lkm-farmhouse .lkm-dow span.lkm-we, .lkm-bauhaus .lkm-dow span.lkm-we { background: var(--c-weekend); color: var(--c-weekend-on); }
+.lkm-farmhouse .lkm-dow span.lkm-we, .lkm-bauhaus .lkm-dow span.lkm-we,
+.lkm-coastal .lkm-dow span.lkm-we { background: var(--c-weekend); color: var(--c-weekend-on); }
 .lk-month .lkm-cell b.lkm-we { color: var(--c-weekend); }
 
 /* A card headed by a weekend day (the example gratitude page) takes the
@@ -1024,16 +1025,29 @@ body:not(.lk-flat):not(.design-editorial):not(.design-nordic):not(.design-swiss)
 .layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) .lx-box { --pt: 0px; }
 /* Boxed records and Executive desk cards pad 0.13in under the tab. */
 .layout:is(.design-02, .design-11):is(.box-02b, .box-11c) .card.has-tab { --pt: 0.13in; }
-.layout.box-02b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, 8 * var(--u)); }
-.layout.box-06b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(10 * var(--u)); --tab-line: calc(max(1lh, 8 * var(--u)) + 4 * var(--u)); }
-.layout.box-11c :is(.card.has-tab, .lx-box) { --tt: calc(5 * var(--u)); --tl: calc(8 * var(--u)); --tab-line: max(1lh, 8 * var(--u)); }
-.layout.box-12a :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(9 * var(--u)); --tab-line: calc(max(1lh, 8 * var(--u)) + 2 * var(--u)); }
-.layout.box-12c :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, 8 * var(--u)); }
+.layout.box-02b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, var(--tab-ico, 8 * var(--u))); }
+.layout.box-06b :is(.card.has-tab, .lx-box) { --tt: calc(6 * var(--u)); --tl: calc(10 * var(--u)); --tab-line: calc(max(1lh, var(--tab-ico, 8 * var(--u))) + 4 * var(--u)); }
+.layout.box-11c :is(.card.has-tab, .lx-box) { --tt: calc(5 * var(--u)); --tl: calc(8 * var(--u)); --tab-line: max(1lh, var(--tab-ico, 8 * var(--u))); }
+.layout.box-12a :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(9 * var(--u)); --tab-line: calc(max(1lh, var(--tab-ico, 8 * var(--u))) + 2 * var(--u)); }
+.layout.box-12c :is(.card.has-tab, .lx-box) { --tt: calc(7 * var(--u)); --tl: calc(6 * var(--u)); --tab-line: max(1lh, var(--tab-ico, 8 * var(--u))); }
 .layout:is(.box-02b, .box-06b, .box-11c, .box-12a, .box-12c) :is(.card.has-tab > .card-tab, .page:not(.lx-cover) .lx-box > .lx-hd) {
   position: relative; top: auto; left: auto; white-space: normal; align-self: flex-start; flex: none;
   margin: calc(-1 * (var(--pt) + var(--tt))) 0 calc(var(--pt) + var(--tt) - var(--tab-line)) calc(var(--tl) - var(--pl));
   max-width: calc(100% + 2 * var(--pl) - var(--tl));
 }
+/* A worksheet card's tab in a layout book is set at about 8pt at letter
+   (the month, weekly and daily boxes keep their larger headings), so the
+   tabs sit on one line like the other designs'; the script headings of
+   School notebook A and Beautiful day B and C at about 10pt. The 06b tape
+   pads less at the sides, so it runs nearly the card's width. */
+.layout .page:not(.lx) .card-tab { font-size: calc(4.6 * var(--u)); }
+.layout .page:not(.lx) .card.has-tab { --tab-ico: 1.1em; }
+.layout .page:not(.lx) .card-tab .ico { width: 1.1em; height: 1.1em; }
+.layout:is(.box-06a, .box-12b, .box-12c) .page:not(.lx) .card-tab { font-size: calc(6 * var(--u)); }
+.layout.box-06b .page:not(.lx) .card-tab { padding-left: calc(6 * var(--u)); padding-right: calc(6 * var(--u)); }
+/* Deco and Almanac space their tab letters a little less, so their tabs
+   too stay on one line. */
+:is(.design-deco, .design-almanac) .page .card-tab { letter-spacing: 0.06em; }
 /* Boxed records B and Beautiful day C centre their headings. */
 .layout:is(.box-02b, .box-12c) :is(.card.has-tab > .card-tab, .page:not(.lx-cover) .lx-box > .lx-hd) {
   align-self: center; transform: none;
@@ -1076,8 +1090,14 @@ body:not(.lk-flat):not(.design-editorial):not(.design-nordic):not(.design-swiss)
    ========================================================================== */
 .small-page .page:not(.lx):not(.lk-month):not(.lk-cover):not(.cover-page):not(.budget-page) {
   zoom: var(--page-zoom);
+  --u: 0.024in;  /* the letter unit: the page is laid out at letter width */
   width: calc(var(--page-w) / var(--page-zoom));
   height: calc(var(--page-h) / var(--page-zoom));
   padding: calc(var(--page-pad-top) / var(--page-zoom)) calc(var(--page-pad-side) / var(--page-zoom))
            calc(var(--page-pad-bottom) / var(--page-zoom));
 }
+/* Type floor on the small pages: the annual calendar's dates print at 5.5pt
+   at least, and the health tracker's column notes, which would print under
+   4pt, are left out (the column names stay). */
+.small-page .annual-page .mini :is(th, td) { font-size: max(6.9pt, calc(5.5pt / var(--page-zoom))); }
+.small-page .health-tbl .blurb { display: none; }

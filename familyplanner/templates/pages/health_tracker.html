@@ -90,7 +90,7 @@
 
   <div class="grid cols-3 health-bottom">
     <div class="card has-tab" style="--c:{{ p.structure }}">
-      <div class="card-tab">{{ ico("heart") }} Family Wellness Goals</div>
+      <div class="card-tab">{{ ico("heart") }} Wellness Goals</div>
       {{ checklist(items=["Eat more nutritious meals together",
                           "Exercise and have fun together",
                           "Reduce stress and spend quality time",
@@ -110,7 +110,7 @@
       </div>
     </div>
     <div class="card has-tab" style="--c:{{ p.structure }}">
-      <div class="card-tab">{{ ico("calendar") }} Appointments &amp; Reminders</div>
+      <div class="card-tab">{{ ico("calendar") }} Appointments</div>
       <div class="appt-head"><span>Date</span><span>Appointment</span><span>Time</span></div>
       <div class="appt-rows">
         {% for _ in range(7) %}

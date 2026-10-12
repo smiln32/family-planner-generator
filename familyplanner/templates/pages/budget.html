@@ -1,7 +1,9 @@
 {# title: Family Budget Overview #}
 {% from "macros.html" import divider, footer, ico, chip, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
-{% set cats = [("home", "teal", "Housing", 30), ("cart", "pink", "Groceries", 25),
+{# The donut's categories need their own colours (a chart); the largest
+   starts in the structure colour. #}
+{% set cats = [("home", "structure", "Housing", 30), ("cart", "pink", "Groceries", 25),
                ("car", "orange", "Transportation", 15), ("heart", "green", "Health", 10),
                ("cap", "purple", "Education", 10), ("coins", "orange", "Savings", 6),
                ("star", "blue", "Other", 4)] %}

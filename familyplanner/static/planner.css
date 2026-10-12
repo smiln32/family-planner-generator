@@ -758,14 +758,14 @@ body {
 .health-page .masthead { margin-bottom: 0.1in; }
 .health-meta { flex: none; display: flex; align-items: center; gap: 0.2in; margin-bottom: 0.13in; }
 .health-quote {
-  flex: none; background: #FBF6DC; border-radius: 0.07in;
+  flex: none; background: color-mix(in srgb, var(--c-structure) 8%, var(--paper)); border-radius: 0.07in;
   padding: 0.05in 0.18in; font-size: 12pt; color: var(--navy);
 }
 .health-meta .field { flex: 1; }
 
 .health-tbl { flex: none; --row-h: 0.4in; margin-bottom: 0.2in; }
 .health-tbl th { padding: 0.05in 0.03in; font-size: 7.4pt; vertical-align: top; }
-.health-tbl .head-ico { width: 0.15in; height: 0.15in; fill: #fff; margin: 0 auto 0.02in; }
+.health-tbl .head-ico { width: 0.15in; height: 0.15in; fill: var(--c-on); margin: 0 auto 0.02in; }
 .health-tbl th .blurb {
   display: block; font-weight: 600; font-size: 5.9pt;
   text-transform: none; letter-spacing: 0; opacity: 0.92; margin-top: 0.02in;
@@ -1693,7 +1693,7 @@ body {
 .design-12 .mark, .design-12 .art { display: none !important; }
 .design-12 .masthead, .design-12 .masthead.no-art { grid-template-columns: 1fr; }
 .design-12 .card { border: 1.5px solid #E8B4BE; border-radius: 0.04in; background: #FFFBF7; }
-.design-12 .banner, .design-12 .card-tab { background: #E8B4BE; color: #5C4033; border-radius: 0; }
+.design-12 .banner, .design-12 .card-tab { background: var(--c-structure); color: var(--c-structure-on); border-radius: 0; }
 .design-12 .banner::before, .design-12 .banner::after { display: none; }
 .daily-12 { color: #5C4033; position: relative; z-index: 2; gap: 0.08in; }
 .d12-flora { position: absolute; pointer-events: none; z-index: 0; }
@@ -2257,7 +2257,9 @@ body {
 
 .box-12a :is(.lx-box, .card), .box-12b :is(.lx-box, .card) { --tone: #E8B4BE; }
 .box-12a :is(.lx-box, .card) { border: 1.2px solid var(--tone); border-radius: calc(12 * var(--u)); background: #fff; }
-.box-12a :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: calc(9 * var(--u)); background: var(--tone); border-radius: 999px; padding: calc(1 * var(--u)) calc(8 * var(--u)); }
+/* The pill headings are the structure colour (Carla's colour rule); the
+   frames keep the pink. */
+.box-12a :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: calc(9 * var(--u)); background: var(--c-structure); color: var(--c-structure-on); border-radius: 999px; padding: calc(1 * var(--u)) calc(8 * var(--u)); }
 .box-12a .lx-bd, .box-12c .lx-bd { padding: calc(11 * var(--u)) calc(9 * var(--u)) calc(6 * var(--u)); }
 .box-12b :is(.lx-box, .card) { background: color-mix(in srgb, var(--tone) 24%, #fff); border-radius: calc(12 * var(--u)); }
 .box-12b :is(.lx-hd, .card-tab, .card-head), .box-12c :is(.lx-hd, .card-tab, .card-head) { font-family: var(--font-script); font-weight: 400; font-size: calc(12 * var(--u)); line-height: 1.1; letter-spacing: 0; text-transform: none; }
@@ -2275,7 +2277,7 @@ body {
 :is(.lx-cal-hd, .lx-dots, .lx-habits, .lx-list) .lx-we, .lx-day.lx-we { color: var(--c-weekend); }
 .lx-dots .lx-we { border-color: var(--c-weekend); }
 .lx-box.lx-we > .lx-hd { color: var(--c-weekend); }
-:is(.box-plain, .box-02a, .box-11a) .lx-box.lx-we > .lx-hd { background: var(--c-weekend); color: var(--c-weekend-on); }
-.box-06b .lx-box.lx-we { --tape: color-mix(in srgb, var(--c-weekend) 22%, #fff); }
+:is(.box-plain, .box-02a, .box-11a, .box-12a) .lx-box.lx-we > .lx-hd { background: var(--c-weekend); color: var(--c-weekend-on); }
+.box-06b :is(.lx-box.lx-we, .card.we) { --tape: color-mix(in srgb, var(--c-weekend) 12%, #fff); }
 .layout .card-tab.we { color: var(--c-weekend); }
-:is(.box-plain, .box-02a, .box-11a) .card-tab.we { background: var(--c-weekend); color: var(--c-weekend-on); }
+:is(.box-plain, .box-02a, .box-11a, .box-12a) .card-tab.we { background: var(--c-weekend); color: var(--c-weekend-on); }
