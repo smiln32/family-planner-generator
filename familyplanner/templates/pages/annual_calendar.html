@@ -12,7 +12,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Annual Family") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Calendar</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:13pt">Calendar</div>
       {{ year_mark("annual-year", tint=false) }}
       {{ divider() }}
     </div>
@@ -35,7 +35,9 @@
   <div class="mini-grid">
     {% for month in cfg.months %}
     {% set month_number = loop.index %}
-    <div class="mini" style="--c:{{ p[month.accent] }}">
+    {# Each month box is in its season's colour (colours.MONTH_SEASON). #}
+    {% set key = month_key(month, month_number) %}
+    <div class="mini" data-season="{{ key }}" style="--c:{{ p[key] }};--c-on:{{ p[key ~ '-on'] if (key ~ '-on') in p else '#fff' }}">
       <div class="mini-head">
         {{ ico(motif_icon.get(month.motif, "heart")) }} {{ month.name|upper }}
       </div>
@@ -43,14 +45,14 @@
         <thead><tr>
           {% set weekend = weekend_flags(cfg.sunday_first) %}
           {% for initial in day_initials(cfg.sunday_first) %}
-          <th{% if weekend[loop.index0] %} class="we"{% endif %}>{{ initial }}</th>
+          <th class="{{ 'we' if weekend[loop.index0] else 'wd' }}" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">{{ initial }}</th>
           {% endfor %}
         </tr></thead>
         <tbody>
           {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
           <tr>
             {% for day in week %}
-            <td{% if day.weekend %} class="we"{% endif %}>{{ day.number or "" }}</td>
+            <td{% if day.weekend %} class="we"{% if day.number %} data-day="weekend"{% endif %}{% endif %}>{{ day.number or "" }}</td>
             {% endfor %}
           </tr>
           {% endfor %}
@@ -60,17 +62,17 @@
     {% endfor %}
   </div>
 
-  <div class="card annual-dates" style="--c:{{ p.teal }}">
+  <div class="card annual-dates" style="--c:{{ p.structure }}">
     <div class="dates-label">
-      {{ chip("calendar", "teal", "", ".4in") }}
+      {{ chip("calendar", "structure", "", ".4in") }}
       <span class="script">Important<br>Dates &amp; Events</span>
     </div>
     <div class="dates-cols">
       {% for col in range(2) %}
       <div class="dates-col">
-        {% for colour in ["teal", "pink", "orange", "green", "purple"] %}
+        {% for _ in range(5) %}
         <div class="row">
-          <svg class="ico bullet" style="fill:{{ p[colour] }}"><use href="#i-heart"/></svg>
+          <svg class="ico bullet" style="fill:{{ p.structure }}"><use href="#i-heart"/></svg>
           <span class="dot-line"></span>
         </div>
         {% endfor %}

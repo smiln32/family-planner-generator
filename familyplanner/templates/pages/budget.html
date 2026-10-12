@@ -11,7 +11,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Family Budget") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:14pt">Overview</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:14pt">Overview</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Sunny day">
@@ -26,7 +26,7 @@
   </header>
 
   <div class="grid cols-2 budget-top">
-    <div class="card" style="--c:{{ p.teal }}">
+    <div class="card" style="--c:{{ p.structure }}">
       <div class="card-head" style="justify-content:center">Income</div>
       <div class="ie-head"><span>Source</span><span>Amount</span></div>
       <div class="ie-rows">
@@ -37,31 +37,31 @@
         </div>
         {% endfor %}
       </div>
-      <div class="total-bar" style="background:{{ p.teal }}1F">
+      <div class="total-bar" style="background:{{ p.structure }}1F">
         <span>Total Income</span><span class="total-box">$</span>
       </div>
     </div>
 
-    <div class="card" style="--c:{{ p.green }}">
+    <div class="card" style="--c:{{ p.structure }}">
       <div class="card-head" style="justify-content:center">Expenses Summary</div>
       <div class="ie-head"><span>Category</span><span>Budget</span></div>
       <div class="ie-rows">
         {% for icon, colour, label, pct in cats %}
         <div class="ie-row cat">
-          {{ chip(icon, colour, "", ".2in") }}
+          {{ chip(icon, "structure", "", ".2in") }}
           <span class="cat-name">{{ label }}</span><span class="dot-line"></span>
           <span class="money">$</span><span class="dot-line"></span>
         </div>
         {% endfor %}
       </div>
-      <div class="total-bar" style="background:{{ p.green }}1F">
+      <div class="total-bar" style="background:{{ p.structure }}1F">
         <span>Total Expenses</span><span class="total-box">$</span>
       </div>
     </div>
   </div>
 
   <div class="grid cols-2 budget-bottom">
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("chart") }} Monthly Summary</div>
       <div class="ie-rows">
         {% for label in ["Total Income", "Total Expenses", "Total Savings"] %}
@@ -71,12 +71,12 @@
         </div>
         {% endfor %}
       </div>
-      <div class="total-bar" style="background:{{ p.pink }}22">
+      <div class="total-bar" style="background:{{ p.structure }}22">
         <span>Balance</span><span class="total-box">$</span>
       </div>
     </div>
 
-    <div class="card has-tab" style="--c:{{ p.purple }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("coins") }} Expenses Breakdown</div>
       <div class="pie-wrap">
         {# The ring's outer edge is r + stroke/2 = 22.92 from the centre, so the
@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <div class="card has-tab budget-notes" style="--c:{{ p.teal }}">
+  <div class="card has-tab budget-notes" style="--c:{{ p.structure }}">
     <div class="card-tab">{{ ico("pencil") }} Notes</div>
     {{ lines(3) }}
   </div>

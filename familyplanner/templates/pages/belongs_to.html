@@ -33,7 +33,7 @@
          ("user", "Name", "teal"), ("home", "Address", "pink"),
          ("phone", "Phone", "orange"), ("mail", "Email", "green")] %}
     <div class="belongs-row">
-      {{ chip(icon, colour, "", ".38in") }}
+      {{ chip(icon, "structure", "", ".38in") }}
       <span class="belongs-label">{{ label }}:</span>
       <span class="dot-line"></span>
     </div>
@@ -41,7 +41,7 @@
   </div>
 
   <div class="grid cols-2 belongs-mid">
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("users") }} Family Members</div>
       {# One row per family member, and never fewer than five to write on. #}
       {% set people = cfg.members + [""] * (5 - cfg.members|length) %}
@@ -50,14 +50,14 @@
       {% if two_cols %}<div class="belongs-members" style="--rows:{{ (people|length + 1) // 2 }}">{% endif %}
       {% for name in people %}
       <div class="belongs-member">
-        {{ chip("heart", ["teal", "pink", "orange", "green", "purple"][loop.index0 % 5], "", ".22in") }}
+        {{ chip("heart", "structure", "", ".22in") }}
         {% if name %}<span class="member-name">{{ name }}</span>{% endif %}
         <span class="dot-line"></span>
       </div>
       {% endfor %}
       {% if two_cols %}</div>{% endif %}
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("calendar") }} About This Book</div>
       <div class="belongs-about">
         {{ field("We started this planner:") }}

@@ -118,12 +118,15 @@ def test_accented_month_names_allowed():
     assert months[1]["name"] == "Février"
 
 
-def test_tab_rail_escapes_values(cfg):
+def test_tab_rail_escapes_values(cfg, monkeypatch):
     cfg.linked = True
     cfg.pages = ["months"]
     pages = render.plan_pages(cfg)
-    # Bypass validation to prove the rail escapes on its own.
-    cfg.palette = {**cfg.palette, "teal": '"><script>x</script>'}
+    # Bypass validation to prove the rail escapes on its own. Month tabs print
+    # in their season colour (colours.MONTH_SEASON), so poison that.
+    real = render.colour_roles
+    monkeypatch.setattr(render, "colour_roles",
+                        lambda c: {**real(c), "winter": '"><script>x</script>'})
     rail = render._tab_rail(cfg, pages, pages[0])
     assert "<script>" not in rail
     assert "&#34;&gt;&lt;script&gt;" in rail

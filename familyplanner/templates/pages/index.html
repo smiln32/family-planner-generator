@@ -16,7 +16,7 @@
   <div class="index-cols">
     {% for entry in toc %}
     <a class="index-row" href="#{{ entry.slug }}"
-       style="--c:{{ p[entry.accent] }}">
+       style="--c:{{ p[entry.accent] }}{% if (entry.accent ~ '-on') in p %};--c-on:{{ p[entry.accent ~ '-on'] }}{% endif %}">
       <span class="index-num">{{ "%02d"|format(entry.number) }}</span>
       <span class="index-title">{{ entry.title }}</span>
       <span class="index-dots"></span>

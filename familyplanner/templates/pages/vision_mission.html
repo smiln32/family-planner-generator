@@ -17,15 +17,15 @@
        ("target", "Our Mission",
         "What we value and how we will live and support each other every day.", "green",
         ["We will treat each other with…", "Each week we will…"])] %}
-  <div class="vm-block" style="--c:{{ p[colour] }}">
+  <div class="vm-block" style="--c:{{ p.structure }}">
     <div class="vm-head">
-      {{ chip(icon, colour, "ring", ".42in") }}
+      {{ chip(icon, "structure", "ring", ".42in") }}
       <span class="vm-tag">{{ label|upper }}</span>
       <span class="vm-blurb">{{ blurb }}</span>
     </div>
     <div class="vm-box">
       {% for prompt in prompts %}
-      <div class="vm-prompt caps tiny" style="color:{{ p[colour] }}">{{ prompt }}</div>
+      <div class="vm-prompt caps tiny" style="color:{{ p.structure }}">{{ prompt }}</div>
       {{ lines(2) }}
       {% endfor %}
     </div>
@@ -33,11 +33,11 @@
   {% endfor %}
 
   <div class="grid cols-2 vm-foot-row">
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("heart") }} Our Family Motto</div>
       {{ lines(2) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.orange }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("star") }} Remember This By</div>
       {{ field("Picture / object:") }}
       {{ field("Place:") }}

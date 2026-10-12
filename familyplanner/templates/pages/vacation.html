@@ -15,7 +15,7 @@
     </svg>
     <div class="headings">
       {{ page_title("Vacation & Travel Planner") }}
-      <div class="banner" style="--banner-bg:{{ p.pink }};font-size:9.5pt">
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:9.5pt">
         Plan Well. Travel Smart. Make Beautiful Memories.</div>
       {{ divider() }}
     </div>
@@ -37,12 +37,12 @@
   </header>
 
   <div class="vac-meta">
-    <div class="meta-cell">{{ chip("pin", "teal", "", ".28in") }}{{ field("Destination:") }}</div>
-    <div class="meta-cell">{{ chip("calendar", "pink", "", ".28in") }}
+    <div class="meta-cell">{{ chip("pin", "structure", "", ".28in") }}{{ field("Destination:") }}</div>
+    <div class="meta-cell">{{ chip("calendar", "structure", "", ".28in") }}
       <div class="meta-fields">{{ field("From:") }}{{ field("To:") }}</div></div>
-    <div class="meta-cell">{{ chip("wallet", "orange", "", ".28in") }}
+    <div class="meta-cell">{{ chip("wallet", "structure", "", ".28in") }}
       <div class="meta-fields">{{ field("Planned:") }}{{ field("Actual:") }}</div></div>
-    <div class="meta-cell">{{ chip("camera", "teal", "", ".28in") }}{{ field("Travel goal:") }}</div>
+    <div class="meta-cell">{{ chip("camera", "structure", "", ".28in") }}{{ field("Travel goal:") }}</div>
   </div>
 
   <table class="tbl vac-tbl">
@@ -50,14 +50,14 @@
       <tr>
         {% for label, colour in [("Day", "teal"), ("Date", "pink"), ("Destination / Plan", "orange"),
                                  ("Activities", "green"), ("Budget", "blue"), ("Notes", "purple")] %}
-        <th style="background:{{ p[colour] }}">{{ label }}</th>
+        <th style="background:{{ p.structure }}">{{ label }}</th>
         {% endfor %}
       </tr>
     </thead>
     <tbody>
       {% for i in range(1, 8) %}
       <tr>
-        <td class="daynum"><span class="num hollow" style="--c:{{ p.teal }}">{{ i }}</span></td>
+        <td class="daynum"><span class="num hollow" style="--c:{{ p.structure }}">{{ i }}</span></td>
         <td></td><td></td><td></td><td></td><td></td>
       </tr>
       {% endfor %}
@@ -65,30 +65,30 @@
   </table>
 
   <div class="grid cols-3 vac-row">
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("plane") }} Transportation</div>
       <div class="vac-fields">
         {{ field("Flight / train / car:") }}{{ field("From:") }}{{ field("To:") }}
         {{ field("Booking ref:") }}{{ field("Notes:") }}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("hotel") }} Accommodation</div>
       <div class="vac-fields">
         {{ field("Hotel / stay:") }}{{ field("Check-in:") }}{{ field("Check-out:") }}
         {{ field("Booking ref:") }}{{ field("Notes:") }}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.green }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("suitcase") }} Packing Checklist</div>
       {{ checklist(items=["Clothing", "Toiletries", "Electronics",
                           "Travel documents", "Medications", "Other essentials"],
-                   colour="green") }}
+                   colour="structure") }}
     </div>
   </div>
 
   <div class="grid cols-3 vac-row">
-    <div class="card has-tab" style="--c:{{ p.orange }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("coins") }} Budget Breakdown</div>
       <div class="vac-fields">
         {% for label in ["Transportation", "Accommodation", "Food", "Activities", "Shopping", "Other"] %}
@@ -96,15 +96,15 @@
           <span class="money">$</span><span class="dot-line"></span></div>
         {% endfor %}
       </div>
-      <div class="total-bar" style="background:{{ p.orange }}22">
+      <div class="total-bar" style="background:{{ p.structure }}22">
         <span>Total budget</span><span class="total-box">$</span>
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.purple }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("camera") }} Things To Do</div>
-      {{ checklist(n=7, colour="purple") }}
+      {{ checklist(n=7, colour="structure") }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.blue }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("book") }} Notes &amp; Reminders</div>
       {{ lines(7) }}
     </div>

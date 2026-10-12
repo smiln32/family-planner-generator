@@ -14,7 +14,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Family Health & Wellness") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Tracker</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:13pt">Tracker</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Healthy food and heart">
@@ -39,23 +39,25 @@
   <table class="tbl health-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.navy }}">Family Member</th>
+        <th style="background:{{ p.structure }}">Family Member</th>
         {% for icon, colour, label, blurb in habits %}
-        <th style="background:{{ p[colour] }}">
+        <th style="background:{{ p.structure }}">
           <svg class="ico head-ico"><use href="#i-{{ icon }}"/></svg>
           <span>{{ label }}</span>
           <span class="blurb">{{ blurb|safe }}</span>
         </th>
         {% endfor %}
-        <th style="background:{{ p.teal }}">Notes</th>
+        <th style="background:{{ p.structure }}">Notes</th>
       </tr>
       <tr class="day-head">
         <th></th>
         {% for icon, colour, label, blurb in habits %}
         <th>
           <div class="week-head">
+            {% set weekend = weekend_flags(cfg.sunday_first) %}
             {% for initial in day_initials(cfg.sunday_first) %}
-            <span style="color:{{ p[colour] }}">{{ initial }}</span>
+            <span data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
+                  style="color:{{ p.weekend if weekend[loop.index0] else p.structure }}">{{ initial }}</span>
             {% endfor %}
           </div>
         </th>
@@ -68,14 +70,14 @@
       <tr>
         <td>
           <div class="member-cell">
-            {{ chip("user", ["teal", "pink", "orange", "green", "purple"][loop.index0 % 5], "", ".22in") }}
+            {{ chip("user", "structure", "", ".22in") }}
             {% if member %}<span class="member-name">{{ member }}</span>
             {% else %}<span class="solid-line"></span>{% endif %}
           </div>
         </td>
         {% for icon, colour, label, blurb in habits %}
         <td>
-          <div class="week-dots" style="--c:{{ p[colour] }}">
+          <div class="week-dots" style="--c:{{ p.structure }}">
             {% for _ in range(7) %}<span></span>{% endfor %}
           </div>
         </td>
@@ -87,27 +89,27 @@
   </table>
 
   <div class="grid cols-3 health-bottom">
-    <div class="card has-tab" style="--c:{{ p.green }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("heart") }} Family Wellness Goals</div>
       {{ checklist(items=["Eat more nutritious meals together",
                           "Exercise and have fun together",
                           "Reduce stress and spend quality time",
                           "Get enough sleep every night",
                           "Stay healthy with regular check-ups"],
-                   colour="green", dotted=false) }}
+                   colour="structure", dotted=false) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("star") }} Weekly Highlights</div>
       <div class="hl-block">
-        <div class="hl-q" style="color:{{ p.teal }}">What went well this week?</div>
+        <div class="hl-q" style="color:{{ p.structure }}">What went well this week?</div>
         {{ lines(3) }}
       </div>
       <div class="hl-block">
-        <div class="hl-q" style="color:{{ p.pink }}">What can we improve?</div>
+        <div class="hl-q" style="color:{{ p.structure }}">What can we improve?</div>
         {{ lines(3) }}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.purple }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("calendar") }} Appointments &amp; Reminders</div>
       <div class="appt-head"><span>Date</span><span>Appointment</span><span>Time</span></div>
       <div class="appt-rows">

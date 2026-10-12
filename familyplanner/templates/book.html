@@ -16,6 +16,12 @@
 {% for name, value in cfg.palette.items() %}
   --{{ name }}: {{ value }};
 {% endfor %}
+  /* Colour roles (colours.py, _config/design-system.md): one structure
+     colour, one weekend accent, four season colours, and the text colour
+     that reads on each (-on). */
+{% for name, value in roles.items() %}
+  --c-{{ name }}: {{ value }};
+{% endfor %}
   --font-display: {{ font_display|safe }};
   --font-script: {{ font_script|safe }};
   --font-body: {{ font_body|safe }};

@@ -10,7 +10,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("School & Activities") }}
-      <div class="banner" style="--banner-bg:{{ p.navy }};font-size:14pt">Schedule</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:14pt">Schedule</div>
       <div class="strapline script">Plan today. Stay organized. Make memories together.</div>
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Backpack and books">
@@ -28,11 +28,11 @@
 
   <div class="school-meta">
     <div class="meta-cell">
-      {{ chip("calendar", "teal", "", ".3in") }}
+      {{ chip("calendar", "structure", "", ".3in") }}
       <div class="meta-fields">{{ field("Week of:") }}{{ field("Month:") }}</div>
     </div>
     <div class="meta-cell">
-      {{ chip("clock", "purple", "", ".3in") }}
+      {{ chip("clock", "structure", "", ".3in") }}
       <div class="meta-fields">{{ field("School start:") }}{{ field("School end:") }}</div>
     </div>
   </div>
@@ -40,9 +40,12 @@
   <table class="tbl school-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.navy }}">Time</th>
+        <th style="background:{{ p.structure }}">Time</th>
+        {% set weekend = weekend_flags(cfg.sunday_first) %}
         {% for name in day_names(cfg.sunday_first) %}
-        <th style="background:{{ p[['pink','orange','green','teal','purple','orange','green'][loop.index0]] }}">
+        {% set key = "weekend" if weekend[loop.index0] else "structure" %}
+        <th data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
+            style="background:{{ p[key] }};color:{{ p[key ~ '-on'] }}">
           {{ name }}</th>
         {% endfor %}
       </tr>
@@ -51,7 +54,7 @@
       {% for icon, colour, label in slots %}
       <tr>
         <td class="slotcell">
-          <svg class="ico slot-ico" style="fill:{{ p[colour] }}"><use href="#i-{{ icon }}"/></svg>
+          <svg class="ico slot-ico" style="fill:{{ p.structure }}"><use href="#i-{{ icon }}"/></svg>
           <span>{{ label }}</span>
         </td>
         {% for _ in range(7) %}<td></td>{% endfor %}
@@ -61,28 +64,28 @@
   </table>
 
   <div class="grid cols-3 school-bottom">
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("star") }} Activities List</div>
       <div class="star-rows">
-        {% for colour in ["orange", "green", "purple", "pink", "teal"] %}
+        {% for _ in range(5) %}
         <div class="row">
-          <svg class="ico bullet" style="fill:{{ p[colour] }}"><use href="#i-star"/></svg>
+          <svg class="ico bullet" style="fill:{{ p.structure }}"><use href="#i-star"/></svg>
           <span class="dot-line"></span>
         </div>
         {% endfor %}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("bell") }} Important Reminders</div>
-      {{ checklist(n=5, colour="pink") }}
+      {{ checklist(n=5, colour="structure") }}
     </div>
-    <div class="card has-tab tinted" style="--c:{{ p.green }}">
+    <div class="card has-tab tinted" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("calendar") }} Special Events</div>
       {{ lines(5) }}
     </div>
   </div>
 
-  <div class="card has-tab school-notes" style="--c:{{ p.navy }}">
+  <div class="card has-tab school-notes" style="--c:{{ p.structure }}">
     <div class="card-tab">{{ ico("pencil") }} Notes</div>
     {{ lines(3) }}
   </div>

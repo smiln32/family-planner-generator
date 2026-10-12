@@ -109,7 +109,7 @@ def test_meal_plan_days_follow_week_starts(cfg, week_starts, expected):
     cfg.week_starts = week_starts
     cfg.pages = ["meal_plan"]
     html = render.render_html(cfg, render.plan_pages(cfg))
-    days = re.findall(r'<span class="dayname">(\w+)</span>\s*'
+    days = re.findall(r'<span class="dayname"[^>]*>(\w+)</span>\s*'
                       r'<svg class="ico dayglyph"[^>]*>\s*<use href="#i-(\w+)"', html)
     assert [d for d, _ in days] == expected
     # Each day keeps its own glyph when the order shifts.
@@ -163,9 +163,9 @@ def test_annual_calendar_shades_saturday_and_sunday_headers(cfg, week_starts):
     cfg.pages = ["annual_calendar"]
     html = render.render_html(cfg, render.plan_pages(cfg))
     head = re.search(r"<thead><tr>(.*?)</tr></thead>", html, re.S).group(1)
-    cells = re.findall(r'<th( class="we")?>(\w)</th>', head)
+    cells = re.findall(r'<th class="(we|wd)"[^>]*>(\w)</th>', head)
     names = WEEK_NAMES[week_starts]
-    shaded = {names[i] for i, (we, _) in enumerate(cells) if we}
+    shaded = {names[i] for i, (we, _) in enumerate(cells) if we == "we"}
     assert len(cells) == 7
     assert shaded == {"Saturday", "Sunday"}
 

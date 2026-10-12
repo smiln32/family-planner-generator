@@ -130,42 +130,47 @@ def effective_palette(cfg: "Config") -> dict[str, str]:
 
 
 # Per-month personality: accent colour, seasonal motif, greeting strip and the
-# footer line. `planner.py months` prints this table so it is easy to edit.
+# footer line. The accent "season" (the default) prints the month in its
+# season's colour (colours.MONTH_SEASON: winter, spring, summer, autumn), so
+# months follow one pattern in every design; a palette name such as "teal"
+# gives one month that colour instead (Blank and the retired looks only). `planner.py months` prints this table so it is easy to edit.
+SEASON_ACCENT = "season"
+
 DEFAULT_MONTHS: list[dict[str, str]] = [
-    {"name": "January", "accent": "teal", "motif": "snowman",
+    {"name": "January", "accent": "season", "motif": "snowman",
      "tagline": "A New Month, New Memories Together",
      "footer": "Together is our favorite place to be."},
-    {"name": "February", "accent": "pink", "motif": "hearts",
+    {"name": "February", "accent": "season", "motif": "hearts",
      "tagline": "Love Grows Here",
      "footer": "Making time together makes the best memories."},
-    {"name": "March", "accent": "green", "motif": "sprout",
+    {"name": "March", "accent": "season", "motif": "sprout",
      "tagline": "Fresh Starts and Happy Hearts",
      "footer": "Little moments make the biggest memories."},
-    {"name": "April", "accent": "green", "motif": "tulips",
+    {"name": "April", "accent": "season", "motif": "tulips",
      "tagline": "Make Every Day a Beautiful Memory",
      "footer": "Family time is the best time."},
-    {"name": "May", "accent": "pink", "motif": "flowers",
+    {"name": "May", "accent": "season", "motif": "flowers",
      "tagline": "Bloom Together, Grow Together",
      "footer": "Home is where our story begins."},
-    {"name": "June", "accent": "orange", "motif": "sun",
+    {"name": "June", "accent": "season", "motif": "sun",
      "tagline": "Sunshine, Smiles and Family Time",
      "footer": "Make every sunny day count."},
-    {"name": "July", "accent": "blue", "motif": "beach",
+    {"name": "July", "accent": "season", "motif": "beach",
      "tagline": "Adventure Awaits Our Family",
      "footer": "Collect moments, not things."},
-    {"name": "August", "accent": "purple", "motif": "sun",
+    {"name": "August", "accent": "season", "motif": "sun",
      "tagline": "Soak Up Every Last Sunny Day",
      "footer": "The best memories are made together."},
-    {"name": "September", "accent": "teal", "motif": "school",
+    {"name": "September", "accent": "season", "motif": "school",
      "tagline": "New Routines, New Adventures",
      "footer": "One family, one team."},
-    {"name": "October", "accent": "orange", "motif": "pumpkin",
+    {"name": "October", "accent": "season", "motif": "pumpkin",
      "tagline": "Cozy Days and Family Ways",
      "footer": "Grateful hearts, happy home."},
-    {"name": "November", "accent": "brown", "motif": "leaves",
+    {"name": "November", "accent": "season", "motif": "leaves",
      "tagline": "Grateful Together, Always",
      "footer": "Thankful for every moment together."},
-    {"name": "December", "accent": "red", "motif": "snowflake",
+    {"name": "December", "accent": "season", "motif": "snowflake",
      "tagline": "Make Every Day a Beautiful Memory",
      "footer": "Family Together - A Season of Love!"},
 ]
@@ -794,9 +799,10 @@ def _check_months(months: list[dict[str, str]]) -> list[dict[str, str]]:
             raise ConfigError(f"months[{i}].name {name!r} is used twice")
         seen.add(name.lower())
         accent = str(month.get("accent", ""))
-        if accent not in DEFAULT_PALETTE:
+        if accent != SEASON_ACCENT and accent not in DEFAULT_PALETTE:
             raise ConfigError(
-                f"months[{i}].accent must be a palette name like 'teal' (got {accent!r})"
+                f"months[{i}].accent must be 'season' or a palette name like 'teal' "
+                f"(got {accent!r})"
             )
         month["name"] = name
     return months

@@ -10,7 +10,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Family Time") }}
-      <div class="banner" style="--banner-bg:{{ p.green }};font-size:17pt">Planner</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:17pt">Planner</div>
       <div class="strapline script">Making time together makes the best memories.</div>
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Sofa and plant">
@@ -28,9 +28,9 @@
   </header>
 
   <div class="famtime-meta">
-    <div class="meta-cell">{{ chip("calendar", "teal", "", ".26in") }}{{ field("Week of:") }}</div>
-    <div class="meta-cell">{{ chip("users", "pink", "", ".26in") }}{{ field("Our family goal:") }}</div>
-    <div class="meta-cell">{{ chip("heart", "green", "", ".26in") }}{{ field("Focus this week:") }}</div>
+    <div class="meta-cell">{{ chip("calendar", "structure", "", ".26in") }}{{ field("Week of:") }}</div>
+    <div class="meta-cell">{{ chip("users", "structure", "", ".26in") }}{{ field("Our family goal:") }}</div>
+    <div class="meta-cell">{{ chip("heart", "structure", "", ".26in") }}{{ field("Focus this week:") }}</div>
   </div>
 
   <div class="famtime-label">{{ ico("calendar", "ico c") }} Weekly Family Time Plan</div>
@@ -38,19 +38,21 @@
   <table class="tbl famtime-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.navy }}">Day</th>
-        <th style="background:{{ p.teal }}">Family Time Activity</th>
-        <th style="background:{{ p.green }}">Time</th>
-        <th style="background:{{ p.orange }}">Who's Involved</th>
-        <th style="background:{{ p.purple }}">Notes</th>
+        <th style="background:{{ p.structure }}">Day</th>
+        <th style="background:{{ p.structure }}">Family Time Activity</th>
+        <th style="background:{{ p.structure }}">Time</th>
+        <th style="background:{{ p.structure }}">Who's Involved</th>
+        <th style="background:{{ p.structure }}">Notes</th>
       </tr>
     </thead>
     <tbody>
+      {% set weekend = weekend_flags(cfg.sunday_first) %}
       {% for name in day_names(cfg.sunday_first) %}
       <tr>
         <td class="daytag">
-          {% set colour = ["teal", "green", "orange", "pink", "purple", "teal", "green"][loop.index0] %}
-          <span class="pill" style="background:{{ p[colour] }}">{{ name[:3]|upper }}</span>
+          {% set key = "weekend" if weekend[loop.index0] else "structure" %}
+          <span class="pill" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
+                style="background:{{ p[key] }};color:{{ p[key ~ '-on'] }}">{{ name[:3]|upper }}</span>
           <span>{{ name }}</span>
         </td>
         <td></td><td></td><td></td><td></td>
@@ -60,15 +62,15 @@
   </table>
 
   <div class="grid cols-3 famtime-bottom">
-    <div class="card has-tab" style="--c:{{ p.teal }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("bulb") }} Family Time Ideas</div>
-      {{ checklist(items=ideas, colour="teal", dotted=false) }}
+      {{ checklist(items=ideas, colour="structure", dotted=false) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("heart") }} Family Time Priorities</div>
-      {{ numbered(5, "pink", hollow=true) }}
+      {{ numbered(5, "structure", hollow=true) }}
     </div>
-    <div class="card has-tab" style="--c:{{ p.green }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("star") }} Monthly Family Tradition</div>
       <p class="tradition-lead">This month, we plan to:</p>
       {{ lines(5, solid=true) }}

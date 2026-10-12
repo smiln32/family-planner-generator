@@ -941,3 +941,36 @@
                        tan(atan2(var(--cf-h, 9999) * var(--k), var(--cf-ln)))));
 }
 .lk-cover .cf-left .cf-text { --cf-al: 0; }
+
+/* ==========================================================================
+   Colour roles (Carla, 2026-10-12; _config/design-system.md, colours.py)
+   One structure colour for the banners and write-on labels of every look,
+   the weekend accent only for the two weekend days, and the season colour
+   for the month number (set inline in look_monthly.html). The look's own
+   textures and cover art keep their colours.
+   ========================================================================== */
+.design-editorial .banner, .design-swiss .banner, .design-nordic .banner,
+.design-almanac .banner { color: var(--c-structure); }
+.design-retro .banner, .design-coastal .banner { background: var(--c-structure); color: var(--c-structure-on); }
+.design-cottage .banner { background: color-mix(in srgb, var(--c-structure) 16%, var(--paper)); color: var(--c-structure); }
+.design-midcentury .page-footer .txt { color: var(--c-structure); }
+
+.lk-month:not(.lkm-bauhaus) .lkm-label,
+.lkm-swiss .lkm-note:last-child .lkm-label,
+.lkm-gazette .lkm-note:last-child .lkm-label { color: var(--c-structure); }
+.lkm-retro .lkm-label { background: var(--c-structure); color: var(--c-structure-on); }
+.lkm-coastal .lkm-kicker { color: var(--c-structure); }
+
+/* Day-of-week headers: weekdays in the structure colour (where the look sets
+   them on a bar, the bar stays), the weekend days in the weekend accent. */
+.lk-month:not(.lkm-bauhaus):not(.lkm-farmhouse) .lkm-dow span:not(.lkm-we) { color: var(--c-structure); }
+.lk-month .lkm-dow span.lkm-we { color: var(--c-weekend); }
+.lkm-farmhouse .lkm-dow span.lkm-we, .lkm-bauhaus .lkm-dow span.lkm-we { background: var(--c-weekend); color: var(--c-weekend-on); }
+.lk-month .lkm-cell b.lkm-we { color: var(--c-weekend); }
+
+/* A card headed by a weekend day (the example gratitude page) takes the
+   weekend accent: as text where the look sets its tabs as text, as the fill
+   where it sets them on a bar. */
+:is(.design-nordic, .design-swiss, .design-gazette, .design-almanac) .card-tab.we { color: var(--c-weekend); }
+:is(.design-farmhouse, .design-deco) .card-tab.we { background: var(--c-weekend); color: var(--c-weekend-on); }
+:is(.design-nordic, .design-swiss, .design-gazette, .design-almanac, .design-farmhouse, .design-deco) .card-tab.we .ico { fill: currentColor; }

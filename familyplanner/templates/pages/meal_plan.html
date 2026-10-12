@@ -1,19 +1,16 @@
 {# title: Weekly Meal Planning Sheet #}
 {% from "macros.html" import divider, footer, ico, chip, field, lines, page_title with context %}
 {% from "art.html" import house_family with context %}
-{# Each day keeps its own tint and glyph wherever week_starts puts it. #}
-{% set day_style = {
-  "Monday": ("#FDECEF", "sun"), "Tuesday": ("#FDF1E6", "sun"), "Wednesday": ("#FDF8E2", "sun"),
-  "Thursday": ("#EAF6EC", "sun"), "Friday": ("#E7F2FB", "sun"),
-  "Saturday": ("#EFEAF7", "moon"), "Sunday": ("#F7EAF2", "moon"),
-} %}
+{# Weekdays carry a sun in the structure colour, the weekend a moon in the
+   weekend accent, each on a light wash of its colour, wherever week_starts
+   puts them. #}
 
 <section class="page meal-page">
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Weekly Meal") }}
-      <div class="banner" style="--banner-bg:{{ p.teal }};font-size:13pt">Planning Sheet</div>
+      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:13pt">Planning Sheet</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Bowl of vegetables">
@@ -36,18 +33,20 @@
         <th class="corner"></th>
         {% for label, colour in [("Breakfast", "orange"), ("Lunch", "green"),
                                  ("Dinner", "teal"), ("Snacks", "purple"), ("Notes", "pink")] %}
-        <th style="background:{{ p[colour] }}">{{ label }}</th>
+        <th style="background:{{ p.structure }}">{{ label }}</th>
         {% endfor %}
       </tr>
     </thead>
     <tbody>
+      {% set weekend = weekend_flags(cfg.sunday_first) %}
       {% for name in day_names(cfg.sunday_first) %}
-      {% set tint, glyph = day_style[name] %}
+      {% set key = "weekend" if weekend[loop.index0] else "structure" %}
       <tr>
-        <td class="daycell" style="background:{{ tint }}">
-          <span class="dayname">{{ name[:3]|upper }}</span>
-          <svg class="ico dayglyph" style="fill:{{ p.orange if glyph == 'sun' else p.blue }}">
-            <use href="#i-{{ glyph }}"/></svg>
+        <td class="daycell{% if weekend[loop.index0] %} we{% endif %}" style="--c:{{ p[key] }};background:var(--c-wash)">
+          <span class="dayname" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
+                style="color:{{ p[key] }}">{{ name[:3]|upper }}</span>
+          <svg class="ico dayglyph" style="fill:{{ p[key] }}">
+            <use href="#i-{{ 'moon' if weekend[loop.index0] else 'sun' }}"/></svg>
         </td>
         <td></td><td></td><td></td><td></td><td></td>
       </tr>
@@ -56,14 +55,14 @@
   </table>
 
   <div class="grid cols-2 meal-bottom">
-    <div class="card has-tab" style="--c:{{ p.green }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("cart") }} Grocery List</div>
       <div class="grocery-cols">
         {% for col in range(2) %}
         <div class="grocery-col">
           {% for _ in range(6) %}
           <div class="row">
-            <svg class="ico bullet" style="fill:{{ p.green }}"><use href="#i-check"/></svg>
+            <svg class="ico bullet" style="fill:{{ p.structure }}"><use href="#i-check"/></svg>
             <span class="dot-line"></span>
           </div>
           {% endfor %}
@@ -71,7 +70,7 @@
         {% endfor %}
       </div>
     </div>
-    <div class="card has-tab" style="--c:{{ p.pink }}">
+    <div class="card has-tab" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("heart") }} Notes &amp; Reminders</div>
       {{ lines(6) }}
     </div>
