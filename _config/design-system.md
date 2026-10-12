@@ -32,7 +32,7 @@ Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green
 
 ### Four axes (Phase 1, 2026-10-12)
 
-Pages, chrome, colours and type resolve independently through the existing keys: `pages` (checked at plan time in `render.plan_pages`, against the templates that exist), `design`, `theme` plus `palette`, and `fonts`. Config checks them in the order design, theme, palette, fonts; checking is separate from resolving. Known limitation: the layouts `02a` to `12c` and the retired looks set some palette tokens on their body classes in `planner.css`, so a theme reaches their colour roles (`--c-*`) and the tokens the templates read, but not every piece of their chrome. CSS was left as it is in Phase 1.
+Pages, chrome, colours and type resolve independently through the existing keys: `pages` (checked at plan time in `render.plan_pages`, against the templates that exist), `design`, `theme` plus `palette`, and `fonts`. Config checks them in the order design, theme, palette, fonts; checking is separate from resolving. Known limitation: `planner.css` redefines palette tokens on the body classes `.design-02`, `.design-06`, `.design-11` and `.design-12` (the layouts `02a` to `12c`) and on the retired looks' classes `.design-03`, `-04`, `-05`, `-09` and `-13` to `-17`, and sets the layout frame tokens (`--lx-*`) to literal hex on `.design-02/06/11/12 .page.lx`, so a theme reaches the colour roles (`--c-*`) and the tokens the templates read, but not that chrome; inventory and recommendation in `HANDOFF.md`, "Phase 2 handoff". CSS was left as it is in Phase 1.
 
 ## Colour roles
 

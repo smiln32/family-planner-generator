@@ -9,6 +9,46 @@
 - Caveat for old files: a `family.yaml` that copied the old example and still says `theme: linen` prints the same colours (linen names no tokens) but takes the `theme:linen` season picks instead of the look's own. Delete the line to get the look as designed.
 - Docs updated: `_config/design-system.md`, `config.example.yaml`, `CONTEXT.md`, `stages/02-customize/CONTEXT.md`, README, `setup/questionnaire.md`. Tests: `tests/test_four_axis.py` added; `tests/test_colour_source.py`, `test_looks.py`, `test_layouts.py`, `test_editor_ui.py` updated. Not pushed; see the commit on `four-axis`.
 
+## Phase 2 handoff: chrome catalog (not started)
+
+Phase 1 result: the four axes resolve apart (`pages`, `design`, `theme` + `palette`, `fonts`), `config.resolve_palette` is the one source of the printed colours, `book.html` writes the twelve tokens and the `--c-*` roles on `:root`, and a theme recolours any design. What it did not do: touch the CSS. Phase 2 is a catalog of genuinely different chrome (headers, borders, decoration, spacing, page-specific treatments) that any palette can colour. Phase 3 (coordinated style presets) and Phase 4 (visual verification) come after it. Phase 2 is not planned in detail here; the audit below is its starting point.
+
+### Where CSS fixes colours per design
+
+Audited at `aa9fdd9`. `familyplanner/static/planner.css` redefines palette tokens inside body-class rules. The class is `design-{{ look.base }}` (`templates/book.html:48`; `designs.parts` makes `02a` base `02`), so one rule covers a layout family and its retired parent. Because the rule sits on `<body>`, every `var(--token)` inside the page reads the class value, not the theme's value on `:root`. `looks.css` has no such rule, so the thirteen looks are not affected; nor are `blank` and the retired `original`, `07`, `08`, `10`. No rule anywhere defines a `--c-*` role outside `:root` (`planner.css:21-22` only alias `--c-on`). `static/ui/ui.css` sets tokens on `:root` for the editor's own chrome and is not in the book.
+
+| Body class | Design ids | `planner.css` | Tokens overridden | What it affects |
+|---|---|---|---|---|
+| `.design-02` | `02a`, `02b`, `02c` (offered); retired `02` | 1021-1025 | all 12 (`#111111` each, `--paper: #ffffff`) | every `var(--token)` in the body: month-grid dates `.cal-cell .n` (289), day names `.dayname` (797), the layout frame default `--lx-frame: var(--navy)` (2103, 2177) |
+| `.design-06` | `06a`, `06b`, `06c` (offered); retired `06` | 1173-1176 | `--paper --ink --navy --rule --teal` | same elements; the other seven tokens still come from `:root` |
+| `.design-11` | `11a`, `11b`, `11c` (offered); retired `11` | 1593-1597 | all 12 | same as `.design-02` |
+| `.design-12` | `12a`, `12b`, `12c` (offered); retired `12` | 1681-1685 | all 12 | same as `.design-02` |
+| `.design-02/06/11/12 .page.lx, .design-NN.layout .page` | the twelve layouts | 2114, 2115, 2116, 2117 | the layout frame tokens `--lx-ink --lx-line --lx-frame --lx-cal-line --lx-mark --lx-mark-ink`, as literal hex (02 `#111`; 06 `#1A2744`/`#A7C4E0`; 11 `#1B365D`/`#D5DBE4`; 12 `#5C4033`/`#E8D4D0`/`#D4C0E0`) | every layout box border, header bar, calendar grid line and mark on the month, weekly and daily sheets; this layer would still fix the chrome if the token rows above were removed |
+| `.design-03` | retired `03` | 1054-1058 | 11 (all but `--brown`) | not offered |
+| `.design-04` | retired `04` | 1094-1098 | 11 (all but `--brown`) | not offered |
+| `.design-05` | retired `05` | 1138-1142 | 11 (all but `--brown`) | not offered |
+| `.design-09` | retired `09` | 1226-1228 | `--navy --teal --pink --paper --ink` | not offered |
+| `.design-13` | retired `13` | 1739-1743 | all 12 | not offered |
+| `.design-14` | retired `14` | 1798-1802 | all 12 | not offered |
+| `.design-15` | retired `15` | 1909-1913 | 11 (all but `--brown`) | not offered |
+| `.design-16` | retired `16` | 1969-1973 | all 12 | not offered |
+| `.design-17` | retired `17` | 2027-2031 | all 12 | not offered |
+
+Raw hex in design-scoped chrome rules (not counting the token lines above): `02` 19 (13 under `.design-02*`, 6 under `.box-02*`), `06` 24 (13 + 11 under `.box-06*`), `11` 36 (13 + 23 under `.d11-*` and `.box-11*`), `12` 34 (14 + 20 under `.d12-*` and `.box-12*`). Examples: `planner.css:1044` `.design-02 .card-tab, .banner, .vm-tag` (`#111` on `#fff`); `2229` `.box-02a :is(.lx-hd, .card-tab, .card-head) { background: #111; color: #fff }`; `1189` `.design-06 .banner, .card-tab` (`#c23b3b`); `2237` `.box-06a :is(.lx-box, .card)` (`#C23B3B`); `1609` `.design-11 .card-tab, .banner, .vm-tag` (`#1B365D` on `#fff`); `1632` `.d11-rule { background: #1B365D }`; `1695` `.design-12 .card { border: 1.5px solid #E8B4BE; background: #FFFBF7 }`; `1690` `.design-12 .masthead h1.display` (`#C46A78`). Retired-only classes: `03` 8, `04` 10, `05` 5, `07` 1, `09` 5, `10` 3, `13` 6, `14` 8, `15` 8, `16` 7, `17` 4; `13`, `14` and `16` also keep nth-child colour cycles. `looks.css` adds only look-private extras (`--gold`, `--butter: #F2C94C` at 568, `--gold: #C9A464` at 636, `--sun: #E8A86E` at 687); the three fixed ones match the hex in `colours.PICKS`.
+
+Checked on a build (`python planner.py build --design 02a --theme adventure --only months --html-only -o <scratch>`): the HTML's `:root` has `--navy: #3D4A3C` (adventure) and `--c-structure: #3D4A3C`, the body is `<body class="design-02 design-02a layout box-02a">`, and the inlined CSS still holds `.design-02 { --navy: #111111; ... }`. The body-class rule wins inside the page: it is more specific than `:root` and custom properties inherit, so the month-grid dates (`.cal-cell .n { color: var(--navy) }`) print `#111111`, while the tabs and banners that read `--c-structure` print the theme's green. The same build with `--design coastal` gives `:root --navy: #3D4A3C`, `<body class="design-coastal lk">` and no look-scoped token rule, so the theme reaches every `var(--navy)` on the page.
+
+### Recommendation
+
+Resolve this through semantic colour roles, not per-design token overrides.
+
+1. Move every per-design colour decision out of the `planner.css` body-class rules into the design's palette in `designs.LOOK_PALETTES` (so `config.resolve_palette` sees it; the 02, 06, 11 and 12 entries already hold most of these values). Chrome that needs more than the twelve tokens (the `--lx-*` frame set, Beautiful day's `#C46A78` title, Executive desk's `#7A8798` slate) becomes named roles computed in `colours.roles` beside `structure`, `weekend` and the seasons, with per-design picks in `colours.PICKS` (a token name, so a `palette:` block still reaches it, or a hex).
+2. CSS then reads only `:root` tokens and `--c-*` roles, never a literal. The `--lx-*` set at `planner.css:2103` and `2177` already does this for the neutral default; the four overrides at `2114-2117` go.
+3. A test that no CSS rule outside `:root` defines a palette token or a `--c-*` role, and that no design-scoped rule (`.design-*`, `.box-*`, `.d02-` to `.d12-`, `.lk*`) uses a raw hex for chrome. The scan in the audit above is the shape of it.
+4. Order of work: the offered layouts `02`, `06`, `11`, `12` first (`.design-02` first, since it is all one colour); the retired looks last or never.
+
+Still-open owner questions: see items 1 to 5 under "State on 2026-10-12 (earlier: colour system)" below; nothing here changes them.
+
 ## State on 2026-10-12 (earlier: colour system)
 
 - Branch `colour-system` holds the colour rule, the design-review fixes and the page-fit work below, on top of `main` (`7ca491e`, PRs #1 to #8 merged). The owner pushed it on 2026-10-12; **no pull request is open yet**. Next: open one (`https://github.com/smiln32/family-planner-generator/compare/main...colour-system?expand=1`), wait for CI (about 6 to 10 minutes), then the owner merges. `main` is unchanged here and on GitHub.
@@ -312,5 +352,6 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 8. Open, optional: try the editor on a real phone. (Layout `06b`'s tilted tape tabs stay as designed; Carla decided on 2026-10-11, see "Looks".)
 9. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
+10. Phase 2 (chrome catalog) starts from "Phase 2 handoff: chrome catalog" near the top of this file; do not start it without the owner's go.
 
 > FIRST TURN: read the referenced docs ONE AT A TIME (no parallel tool calls, no batched reads). Parallel reads on the first turn can wedge a new session; sequential reads avoid it.
