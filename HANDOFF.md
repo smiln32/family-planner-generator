@@ -2,10 +2,17 @@
 
 ## State on 2026-10-12
 
-- Branch `colour-system` (local, not pushed) holds the colour rule and the page-fit work below, on top of `main` (`7ca491e`, PRs #1 to #8 merged). `main` is unchanged here and on GitHub.
+- Branch `colour-system` holds the colour rule, the design-review fixes and the page-fit work below, on top of `main` (`7ca491e`, PRs #1 to #8 merged). The owner pushed it on 2026-10-12; **no pull request is open yet**. Next: open one (`https://github.com/smiln32/family-planner-generator/compare/main...colour-system?expand=1`), wait for CI (about 6 to 10 minutes), then the owner merges. `main` is unchanged here and on GitHub.
 - `python -m pytest`: 778 passed, 0 skipped (675 on `main`). The two new browser tests add about 35 seconds.
 - Earlier: the owner reviewed layout `06b` on 2026-10-11 and keeps its tilted tape-tab headings; the cover spots and the Cottage and Retro changes were approved on 2026-10-10.
-- Open questions for the owner: whether How to Use and Belongs To (two-line title pages, not mastheads) should also be one colour on one line; the very small long titles in the retired `original` look at 5.5x8; and the points marked **For Carla** in the two sections below.
+- The owner liked the colour result on 2026-10-12 ("much better") and added a standing rule: pages may vary between designs as long as each page type covers the same basic information (`_config/design-system.md`, "Variety between designs").
+- An independent design review ran after the first colour pass; its must-fix and should-fix items are done (12 tabs in the structure colour, 12 weekend contrast, no stray health-quote yellow, 11 weekend and seasons, clearer seasons in 06, 12, nordic, coastal, gazette, almanac, editorial and linen, one-line tabs in the layouts). `tests/test_colour_roles.py` now checks tab and banner fills, weekend contrast, season spacing and stray fills.
+- Open questions for the owner, none blocking the merge:
+  1. **Cover question (unanswered).** Looking at layout `06b`'s Family Time and Annual Family Calendar pages she wrote: "The cover image for this planner would be better replacing this image." Ask which she means: (a) the annual calendar page should use the layout's cover design, (b) the cover should be replaced by the annual calendar, or (c) something else. Do not guess.
+  2. **Coordinator decisions awaiting her look:** brick weekend `#9A4A3A` for layouts 11a to 11c; sand summer `#D4B98C` for Coastal; no season colours in Swiss and the 02 layouts (season icons carry the meaning); Bauhaus keeps its red month-page art as a look exception.
+  3. **Shortened tab labels** so tabs fit on one line: "Family Traditions" (was "Monthly Family Tradition"), "Appointments" (was "Appointments & Reminders"), "Utilities & Services", "Supplies On Hand", "Meat & Seafood", "Strengthening Our Values", "Wellness Goals", and on blank/original month pages "Family Events" and "Do Together".
+  4. **Small books:** worksheets at 5.5x8 are scaled to about 62% of letter (6x9 about 68%), so most body text is under 5.5pt. A larger size would need a small-page layout per worksheet.
+  5. Older: whether How to Use and Belongs To (two-line title pages) should also be one colour on one line; the very small long titles in the retired `original` look at 5.5x8.
 
 ## Colour rule, 2026-10-12 (branch `colour-system`)
 
@@ -287,7 +294,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. The colour rule and page-fit work is on the local branch `colour-system` (see the top), not pushed. Everything before it is merged into `main` (PRs #1 to #8).
+1. Read this file, then `git status`. The colour rule and page-fit work is on branch `colour-system`, pushed but with no pull request yet (see the top). Everything before it is merged into `main` (PRs #1 to #8). Ask the owner the cover question in "State" first.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
