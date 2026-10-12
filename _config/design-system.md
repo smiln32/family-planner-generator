@@ -32,7 +32,7 @@ Colour is twelve tokens on the palette (`navy`, `teal`, `pink`, `orange`, `green
 
 ### Four axes (Phase 1, 2026-10-12)
 
-Pages, chrome, colours and type resolve independently through the existing keys: `pages` (checked at plan time in `render.plan_pages`, against the templates that exist), `design`, `theme` plus `palette`, and `fonts`. Config checks them in the order design, theme, palette, fonts; checking is separate from resolving. Phase 1 left one limitation, that `planner.css` fixed the layouts' chrome colours on their body classes; resolved in Phase 2 step 1 (commit "chrome: layouts read colour roles, not fixed CSS colours" on `chrome-catalog`, 2026-10-12): the layouts `02a` to `12c` read the palette tokens and the chrome roles below from `:root`, `tests/test_css_tokens.py` guards it, and only the retired looks' classes (`.design-03`, `-04`, `-05`, `-09`, `-13` to `-17`) still carry their own token blocks.
+Pages, chrome, colours and type resolve independently through the existing keys: `pages` (checked at plan time in `render.plan_pages`, against the templates that exist), `design`, `theme` plus `palette`, and `fonts`. Config checks them in the order design, theme, palette, fonts; checking is separate from resolving. Phase 1 left one limitation, that `planner.css` fixed the layouts' chrome colours on their body classes; resolved in Phase 2 step 1 (commit `bf3c78c` on `chrome-catalog`, 2026-10-12): the layouts `02a` to `12c` read the palette tokens and the chrome roles below from `:root`, `tests/test_css_tokens.py` guards it, and only the retired looks' classes (`.design-03`, `-04`, `-05`, `-09`, `-13` to `-17`) still carry their own token blocks.
 
 ## Colour roles
 
