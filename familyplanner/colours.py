@@ -21,9 +21,36 @@ Every role also gets an `-on` colour for text set on it (white or the
 palette's ink), with a contrast of at least 4.5:1; where neither reaches
 that, the role colour is darkened toward the ink until white does.
 
+Chrome roles (Phase 2 step 1, 2026-10-12). Carla's rule: "when a theme is
+selected it must also control the colours used for frames, marks, borders
+and decorative accents. Chrome controls their shape and placement, not fixed
+colours." So the layout chrome in `planner.css` reads five more roles
+instead of fixed hex colours:
+
+5. Frame: box borders and the cover's year and mini-calendar letters.
+6. Mark: the accent of a sheet (School notebook's red margin line, Beautiful
+   day's sage dashes, every other word of a tinted cover title), with
+   `mark-on` for text set on it.
+7. Title: the colour of a design's display titles (Beautiful day's rose
+   script).
+8. Trim: a second border colour (Beautiful day's sage page border).
+9. Line: calendar grid and write-on lines where they differ from `rule`.
+
+A family that names none of these gets `structure` for frame, mark and
+title and the palette's `rule` for trim and line. They print as picked:
+frame, trim and line are borders, and mark and title are the design's own
+display colours (titles keep their colour, like the covers), so none of
+them is darkened. Precedence: when a theme is named, every role, chrome
+roles included, comes from the theme's picks and these defaults on the
+merged palette (design palette < theme < `palette:` block); the design
+family's picks are used only when no theme is named (render.colour_roles).
+A pick that is a token name follows a `palette:` override; a hex pick is
+the design's default only.
+
 The renderer passes these to the templates (as `p.structure`, `p.weekend`,
 `p.winter`, ...) and to the CSS as custom properties (`--c-structure`,
-`--c-structure-on`, `--c-weekend`, ...). See `_config/design-system.md`.
+`--c-structure-on`, `--c-weekend`, ... `--c-frame`, `--c-mark`,
+`--c-mark-on`, ...). See `_config/design-system.md`.
 """
 
 from __future__ import annotations
@@ -39,6 +66,15 @@ MONTH_SEASON: dict[int, str] = {
 }
 
 ROLES: tuple[str, ...] = ("structure", "weekend") + SEASONS
+
+# The chrome roles the layout CSS reads (frames, marks, titles, borders and
+# lines), and what each falls back to when a family's picks do not name it.
+CHROME_ROLES: tuple[str, ...] = ("frame", "mark", "title", "trim", "line")
+CHROME_DEFAULTS: dict[str, str] = {
+    "frame": "structure", "mark": "structure", "title": "structure",
+    "trim": "rule", "line": "rule",
+}
+ALL_ROLES: tuple[str, ...] = ROLES + CHROME_ROLES
 
 # Palette tokens each season tries first, in order: blues for winter, greens
 # for spring, warm golds and pinks for summer, browns and rusts for autumn.
@@ -78,15 +114,23 @@ PICKS: dict[str, dict[str, str]] = {
     "gazette": {"winter": "blue", "spring": "#7E9DBC", "summer": "#D4BE96", "autumn": "brown"},
     "coastal": {"winter": "blue", "spring": "green", "summer": "#D4B98C", "autumn": "brown"},
     # Boxed records is black and white only: a grey weekend and four greys.
+    # Its frames, marks and lines are all its ink, so no chrome pick is needed.
     "02": {"weekend": "#707070", "seasons": "off"},
-    "06": {"winter": "blue", "spring": "rule", "summer": "#E6A5A5", "autumn": "#6E3140"},
+    # School notebook: pale blue frames (its rule) and a red margin line.
+    "06": {"winter": "blue", "spring": "rule", "summer": "#E6A5A5", "autumn": "#6E3140",
+           "frame": "rule", "mark": "red"},
     # Executive desk is navy and slate only. Its weekend is one muted brick
     # that suits the navy, and its seasons an even ramp of its blue-greys.
+    # Its calendar grid is a shade darker than its rule.
     "11": {"weekend": "#9A4A3A", "winter": "#3E4D66", "spring": "#9CA8BB",
-           "summer": "#D5DBE4", "autumn": "#687790"},
-    # Beautiful day's card frames are its pink, so summer is its peach.
+           "summer": "#D5DBE4", "autumn": "#687790", "line": "#C8CED8"},
+    # Beautiful day's card frames are its pink, so summer is its peach. Its
+    # cover year and mini-calendar letters are its lilac (blue), its marks
+    # and dashed frames its sage (green), its script titles a rose that is
+    # not a token, and its page border a second sage.
     "12": {"weekend": "red", "winter": "purple", "spring": "#5A7C55", "summer": "#E8C4B8",
-           "autumn": "#957F75"},
+           "autumn": "#957F75", "frame": "blue", "mark": "green", "title": "#C46A78",
+           "trim": "#C9D4B8"},
 }
 
 # A named theme (themes.PRESETS) is keyed here as "theme:<name>". Its picks
@@ -94,7 +138,9 @@ PICKS: dict[str, dict[str, str]] = {
 # retired looks with no theme (they print in `linen`); see
 # render.colour_roles. The weekend is worked out (the theme's red unless it
 # is too close to the titles) unless named. A pick is a token name, so a
-# config `palette:` block still reaches it, or a hex colour.
+# config `palette:` block still reaches it, or a hex colour. No theme names
+# a chrome role, so with a theme every frame, mark and title is the theme's
+# structure colour and every trim and line its rule (CHROME_DEFAULTS).
 _TOKENS = {"winter": "blue", "spring": "green", "summer": "orange", "autumn": "brown"}
 PICKS.update({f"theme:{name}": dict(_TOKENS) for name in (
     "linen", "classic", "amber", "berry", "bold", "citrus", "forest", "pastel", "poppy")})
@@ -212,17 +258,18 @@ def _resolve(spec: str, palette: dict[str, str]) -> str:
 
 
 def roles(palette: dict[str, str], family: str = "") -> dict[str, str]:
-    """The six colour roles and their `-on` text colours for a palette.
+    """The colour roles (ALL_ROLES) and their `-on` text colours for a palette.
 
     `family` is a look id (`editorial`), a layout's parent look (`06` for
-    06a to 06c) or `theme:<name>` for Blank and the retired looks. Those have
-    their seasons chosen by hand in `PICKS`; any other palette gets them
-    worked out by `_pick()`.
+    06a to 06c) or `theme:<name>` for Blank and the retired looks, and for
+    any design when a theme is named. Those have their seasons and chrome
+    roles chosen by hand in `PICKS`; any other palette gets the seasons
+    worked out by `_pick()` and the chrome roles from CHROME_DEFAULTS.
     """
     ink, paper = palette["ink"], palette["paper"]
     structure = readable(palette["navy"], ink)
     weekend, seasons = _pick(palette, structure)
-    pick = PICKS.get(family)
+    pick = PICKS.get(family) or {}
     if pick:
         if "weekend" in pick:
             weekend = _text_safe(_resolve(pick["weekend"], palette), paper)
@@ -231,6 +278,15 @@ def roles(palette: dict[str, str], family: str = "") -> dict[str, str]:
         else:
             seasons = {s: readable(_resolve(pick[s], palette), ink) for s in SEASONS}
     out = {"structure": structure, "weekend": weekend, **seasons}
+    # Chrome roles print as picked (see the module docstring): a token name
+    # resolves against the palette, a hex is the design's own, and a role no
+    # pick names is the structure colour or the palette's rule.
+    for role in CHROME_ROLES:
+        if role in pick:
+            out[role] = _resolve(pick[role], palette)
+        else:
+            fallback = CHROME_DEFAULTS[role]
+            out[role] = out[fallback] if fallback in out else palette[fallback]
     for name in list(out):
         out[f"{name}-on"] = on_colour(out[name], ink)
     return out

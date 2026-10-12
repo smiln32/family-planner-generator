@@ -1017,20 +1017,20 @@ body {
 .index-dots { flex: 1 1 auto; }
 
 /* --- look presets (body.design-*) ---------------------------------------
-   Each look is a visual language, not a one-line tweak. Templates are shared. */
-.design-02 {
-  --navy: #111111; --teal: #111111; --pink: #111111; --orange: #111111;
-  --green: #111111; --purple: #111111; --blue: #111111; --red: #111111;
-  --brown: #111111; --ink: #111111; --paper: #ffffff; --rule: #111111;
-}
-.design-02 .page { background: #fff; }
+   Each look is a visual language, not a one-line tweak. Templates are shared.
+   The layout families (02, 06, 11, 12) set no colour of their own here: their
+   palette is designs.LOOK_PALETTES and their chrome colours are the roles
+   book.html writes on :root (--c-frame, --c-mark, --c-title, --c-trim,
+   --c-line; colours.py), so a theme recolours every frame, mark and line.
+   The retired looks (03 to 05, 09, 13 to 17) keep their own token blocks. */
+.design-02 .page { background: var(--paper); }
 .design-02 .display, .design-02 .script {
   font-family: var(--font-body) !important;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-style: normal;
-  color: #111 !important;
+  color: var(--c-title) !important;
 }
 .design-02 .mark, .design-02 .art, .design-02 .cover-scene,
 .design-02 .cover-side, .design-02 .cover-feet, .design-02 .divider,
@@ -1039,16 +1039,16 @@ body {
   grid-template-columns: 1fr;
 }
 .design-02 .card, .design-02 .tbl, .design-02 .focus-strip {
-  border: 1px solid #111; border-radius: 0; background: #fff;
+  border: 1px solid var(--c-frame); border-radius: 0; background: var(--paper);
 }
 .design-02 .card-tab, .design-02 .banner, .design-02 .vm-tag {
-  background: #111; color: #fff; border-radius: 0;
+  background: var(--c-structure); color: var(--c-structure-on); border-radius: 0;
   position: static; display: block; text-align: center;
   margin: -0.13in -0.13in 0.1in; padding: 0.06in;
 }
 .design-02 .banner::before, .design-02 .banner::after { display: none; }
 .design-02 .card.has-tab { padding-top: 0.13in; }
-.design-02 .dot-line, .design-02 .solid-line { border-color: #111; }
+.design-02 .dot-line, .design-02 .solid-line { border-color: var(--c-line); }
 
 /* 3: Botanical (sage washes, florals, rounded modules) */
 .design-03 {
@@ -1169,16 +1169,12 @@ body {
   opacity: 0.55; pointer-events: none;
 }
 
-/* 6: School notebook */
-.design-06 {
-  --paper: #FFFDF5; --ink: #1a2744; --navy: #1a2744; --rule: #A7C4E0;
-  --teal: #C23B3B;
-}
+/* 6: School notebook (ruled paper with a red margin line: the mark) */
 .design-06 .page {
-  background-color: #FFFDF5;
+  background-color: var(--paper);
   background-image:
-    linear-gradient(#c23b3b 0 0),
-    repeating-linear-gradient(#FFFDF5, #FFFDF5 0.27in, #A7C4E0 0.27in, #A7C4E0 calc(0.27in + 1px));
+    linear-gradient(var(--c-mark) 0 0),
+    repeating-linear-gradient(var(--paper), var(--paper) 0.27in, var(--rule) 0.27in, var(--rule) calc(0.27in + 1px));
   background-size: 1.4px 100%, 100% 100%;
   background-position: 0.85in 0, 0 0;
   background-repeat: no-repeat, repeat;
@@ -1187,7 +1183,7 @@ body {
 .design-06 .masthead, .design-06 .cover-body { grid-template-columns: 1fr; }
 .design-06 .card { background: transparent; border: none; border-radius: 0; }
 .design-06 .banner, .design-06 .card-tab {
-  background: transparent; color: #c23b3b;
+  background: transparent; color: var(--c-mark);
   border-radius: 0; padding-left: 0;
 }
 .design-06 .banner::before, .design-06 .banner::after { display: none; }
@@ -1590,31 +1586,28 @@ body {
 }
 
 /* 11: Executive desk */
-.design-11 {
-  --navy: #1B365D; --teal: #5A7394; --pink: #5A7394; --orange: #8A93A3;
-  --green: #5A7394; --purple: #4A5A72; --blue: #5A7394; --red: #4A5568;
-  --brown: #333333; --ink: #1B365D; --paper: #ffffff; --rule: #D5DBE4;
-}
-.design-11 .page, .design-11 .cover-page { background: #fff; }
+.design-11 .page, .design-11 .cover-page { background: var(--paper); }
 .design-11 .display, .design-11 .script {
   font-family: var(--font-body) !important; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 0.08em; font-style: normal; color: #1B365D !important;
+  text-transform: uppercase; letter-spacing: 0.08em; font-style: normal; color: var(--c-title) !important;
 }
 .design-11 .mark, .design-11 .art, .design-11 .divider,
 .design-11 .chip, .design-11 .page-footer .sprig { display: none !important; }
 .design-11 .masthead, .design-11 .masthead.no-art { grid-template-columns: 1fr; }
 .design-11 .card, .design-11 .tbl, .design-11 .focus-strip {
-  border: 1px solid #D5DBE4; border-radius: 0; background: #fff;
+  border: 1px solid var(--rule); border-radius: 0; background: var(--paper);
 }
 .design-11 .card-tab, .design-11 .banner, .design-11 .vm-tag {
-  background: #1B365D; color: #fff; border-radius: 0;
+  background: var(--c-structure); color: var(--c-structure-on); border-radius: 0;
   position: static; display: block; text-align: left;
   margin: -0.13in -0.13in 0.1in; padding: 0.055in 0.1in; letter-spacing: 0.12em;
 }
 .design-11 .banner::before, .design-11 .banner::after { display: none; }
 .design-11 .card.has-tab { padding-top: 0.13in; }
-.design-11 .dot-line, .design-11 .solid-line { border-color: #C8CED8; }
-.daily-11 { color: #1B365D; gap: 0.06in; font-family: var(--font-body); }
+.design-11 .dot-line, .design-11 .solid-line { border-color: var(--c-line); }
+/* The retired look's daily cover (.daily-11, .d11-*): its navy and grid
+   lines read the roles; its slate greys stay its own. */
+.daily-11 { color: var(--ink); gap: 0.06in; font-family: var(--font-body); }
 .d11-head { display: flex; justify-content: space-between; align-items: flex-end; }
 .d11-head h1 {
   font-size: 26pt; letter-spacing: 0.04em; text-transform: uppercase;
@@ -1629,20 +1622,20 @@ body {
   font-size: 8pt; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
 }
 .d11-date i { width: 1.7in; height: 0.34in; background: #EEF1F5; border: 1px solid #D0D6DE; }
-.d11-rule { height: 0.055in; background: #1B365D; }
+.d11-rule { height: 0.055in; background: var(--c-structure); }
 .d11-prio { display: flex; flex-direction: column; gap: 0.04in; }
 .d11-prio-label { display: flex; align-items: center; gap: 0.08in; }
 .d11-ico {
   width: 0.22in; height: 0.22in; border-radius: 50%;
-  background: #1B365D; color: #fff;
+  background: var(--c-structure); color: var(--c-structure-on);
   display: inline-flex; align-items: center; justify-content: center; flex: none;
 }
-.d11-ico .ico { width: 0.12in; height: 0.12in; fill: #fff; }
+.d11-ico .ico { width: 0.12in; height: 0.12in; fill: var(--c-structure-on); }
 .d11-prio h2 { letter-spacing: 0.14em; }
 .d11-prio ol { display: flex; gap: 0.14in; list-style: none; counter-reset: n; padding: 0; }
 .d11-prio li {
   flex: 1; display: flex; align-items: center; gap: 0.08in;
-  border-bottom: 1px solid #1B365D; min-height: 0.3in;
+  border-bottom: 1px solid var(--c-structure); min-height: 0.3in;
 }
 .d11-prio li::before {
   content: counter(n); counter-increment: n;
@@ -1650,9 +1643,9 @@ body {
 }
 .d11-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 0.1in; flex: 1; min-height: 0; }
 .d11-sched, .d11-stack { display: flex; flex-direction: column; min-height: 0; }
-.d11-sched { border: 1.5px solid #C8CED8; }
+.d11-sched { border: 1.5px solid var(--c-line); }
 .d11-sched h2, .d11-stack h2 {
-  background: #1B365D; color: #fff; padding: 0.05in 0.08in; gap: 0.07in;
+  background: var(--c-structure); color: var(--c-structure-on); padding: 0.05in 0.08in; gap: 0.07in;
 }
 .d11-stack h2 { background: #5A7394; }
 .d11-notes h2 { background: #3A414C; }
@@ -1667,35 +1660,33 @@ body {
   padding: 0 0.08in; border-right: 1px solid #D8DCE3;
 }
 .d11-stack { gap: 0.08in; }
-.d11-stack section { border: 1.5px solid #C8CED8; display: flex; flex-direction: column; min-height: 0; }
+.d11-stack section { border: 1.5px solid var(--c-line); display: flex; flex-direction: column; min-height: 0; }
 .d11-stack .d-checks, .d11-stack .d-dots, .d11-stack .d-lines { padding: 0.04in 0.1in; }
 .d11-notes { flex: 1.35; }
 .d11-notes .d-dotsheet { opacity: 0.28; }
 .d11-foot {
   display: flex; align-items: center; justify-content: center; gap: 0.18in;
-  letter-spacing: 0.12em; font-size: 8pt; font-weight: 800; color: #1B365D;
+  letter-spacing: 0.12em; font-size: 8pt; font-weight: 800; color: var(--c-structure);
 }
-.d11-foot span { flex: 1; max-width: 1.6in; height: 1px; background: #1B365D; }
+.d11-foot span { flex: 1; max-width: 1.6in; height: 1px; background: var(--c-structure); }
 
-/* 12: Beautiful Day cottagecore */
-.design-12 {
-  --navy: #5C4033; --teal: #8FAE8A; --pink: #E8B4BE; --orange: #E8C4B8;
-  --green: #8FAE8A; --purple: #D4C0E0; --blue: #C4B8B0; --red: #C46A78;
-  --brown: #5C4033; --ink: #5C4033; --paper: #FBF7F2; --rule: #E8D4D0;
-}
-.design-12 .page, .design-12 .cover-page { background: #FBF7F2; }
+/* 12: Beautiful Day cottagecore. The pink card frames and page border are the
+   palette's pink; the page border's sage is the trim role, the script titles
+   the title role. */
+.design-12 .page, .design-12 .cover-page { background: var(--paper); }
 .design-12 .page {
-  box-shadow: inset 0 0 0 1.5px #E8B4BE, inset 0 0 0 4px #FBF7F2, inset 0 0 0 5.5px #C9D4B8;
+  box-shadow: inset 0 0 0 1.5px var(--pink), inset 0 0 0 4px var(--paper), inset 0 0 0 5.5px var(--c-trim);
 }
 .design-12 .masthead h1.display:not(.page-title), .design-12 .headings > .display:last-child:not(.page-title) {
-  font-family: var(--font-script); text-transform: none; letter-spacing: 0; font-weight: 400; color: #C46A78 !important;
+  font-family: var(--font-script); text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--c-title) !important;
 }
 .design-12 .mark, .design-12 .art { display: none !important; }
 .design-12 .masthead, .design-12 .masthead.no-art { grid-template-columns: 1fr; }
-.design-12 .card { border: 1.5px solid #E8B4BE; border-radius: 0.04in; background: #FFFBF7; }
+.design-12 .card { border: 1.5px solid var(--pink); border-radius: 0.04in; background: #FFFBF7; }
 .design-12 .banner, .design-12 .card-tab { background: var(--c-structure); color: var(--c-structure-on); border-radius: 0; }
 .design-12 .banner::before, .design-12 .banner::after { display: none; }
-.daily-12 { color: #5C4033; position: relative; z-index: 2; gap: 0.08in; }
+/* The retired look's daily cover (.daily-12, .d12-*) reads the same roles. */
+.daily-12 { color: var(--ink); position: relative; z-index: 2; gap: 0.08in; }
 .d12-flora { position: absolute; pointer-events: none; z-index: 0; }
 .d12-flora-tl { top: -0.08in; left: -0.12in; width: 1.45in; }
 .d12-flora-tr { top: -0.04in; right: -0.1in; width: 1.25in; }
@@ -1708,31 +1699,31 @@ body {
 }
 .d12-head h1 {
   font-family: var(--font-script); font-size: 38pt; font-weight: 400;
-  color: #5C4033; line-height: 0.95; text-transform: none;
+  color: var(--ink); line-height: 0.95; text-transform: none;
 }
 .d12-date { font-size: 8pt; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.06in; }
-.d12-date i { display: inline-block; width: 2.1in; border-bottom: 1.5px dotted #5C4033; }
+.d12-date i { display: inline-block; width: 2.1in; border-bottom: 1.5px dotted var(--ink); }
 .d12-top3 {
-  border: 1.5px solid #E8B4BE; padding: 0.08in 0.12in; position: relative; z-index: 1;
+  border: 1.5px solid var(--pink); padding: 0.08in 0.12in; position: relative; z-index: 1;
 }
 .d12-top3 .d12-num { flex-direction: row; gap: 0.12in; }
 .d12-top3 .d12-num li { min-height: 0.32in; }
-.d12-top3 .d12-num li::before { background: #8FAE8A; }
+.d12-top3 .d12-num li::before { background: var(--c-mark); }
 .d12-cols { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 0.1in; flex: 1; min-height: 0; position: relative; z-index: 1; }
 .d12-sched, .d12-stack { display: flex; flex-direction: column; min-height: 0; gap: 0.08in; }
-.d12-sched { border: 1.5px solid #8FAE8A; background: #fff; }
+.d12-sched { border: 1.5px solid var(--c-mark); background: #fff; }
 .daily-12 h2 {
-  background: #C9D4B8; color: #5C4033; justify-content: center;
+  background: var(--c-trim); color: var(--ink); justify-content: center;
   padding: 0.05in 0.12in; width: 100%;
   clip-path: polygon(2% 18%, 98% 8%, 100% 82%, 0 92%);
 }
-.d12-stack section:first-child h2, .d12-care h2 { background: #E8B4BE; }
-.d12-stack section { background: #fff; border: 1.5px solid #E8B4BE; display: flex; flex-direction: column; min-height: 0; }
-.d12-sched { border-color: #8FAE8A; }
+.d12-stack section:first-child h2, .d12-care h2 { background: var(--pink); }
+.d12-stack section { background: #fff; border: 1.5px solid var(--pink); display: flex; flex-direction: column; min-height: 0; }
+.d12-sched { border-color: var(--c-mark); }
 .d12-stack .d-checks, .d12-stack .d12-num, .d12-stack .d12-hearts { padding: 0 0.1in; }
 .d12-prompt { font-size: 7.5pt; font-style: italic; padding: 0.06in 0.1in 0; }
 .d12-pad { flex: 1; min-height: 0.5in; }
-.d12-notes { flex: 0.9; border-color: #8FAE8A !important; }
+.d12-notes { flex: 0.9; border-color: var(--c-mark) !important; }
 .d12-care { flex: 1.05; }
 
 /* 13: Boho earth */
@@ -2096,12 +2087,15 @@ body {
    stacked bands, lx-c sidebar. --u is 1/300 of the page width (capped for
    letter) so every size keeps the approved proportions; on the smaller,
    taller-in-proportion pages it is also kept to 1/458 of the height (the
-   letter cap's share of a letter page), so a sheet fits its height too. Colours stay the
-   parent look's; box-* sets the box style. */
+   letter cap's share of a letter page), so a sheet fits its height too. The
+   colours are the palette tokens and the chrome roles on :root (--c-frame,
+   --c-mark, --c-line; colours.py), so a theme recolours them; a design sets
+   only the shape tokens (--lx-mark-r, --lx-cb-r, --lx-lstyle) and box-* sets
+   the box style. */
 .page.lx {
   --u: min(calc(var(--page-w) / 300), calc(var(--page-h) / 458), 0.024in);
-  --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--navy);
-  --lx-cal-line: var(--rule); --lx-mark: var(--navy); --lx-mark-ink: #fff;
+  --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--c-frame);
+  --lx-cal-line: var(--c-line); --lx-mark: var(--c-mark); --lx-mark-ink: var(--c-mark-on);
   --lx-mark-r: 50%; --lx-cb-r: 0; --lx-lstyle: solid; --lx-paper: var(--paper);
   padding: calc(16 * var(--u)) calc(14 * var(--u)) calc(12 * var(--u));
   gap: calc(9 * var(--u));
@@ -2111,10 +2105,9 @@ body {
   font-size: calc(7 * var(--u));
   line-height: 1.2;
 }
-.design-02 .page.lx, .design-02.layout .page { --lx-ink: #111; --lx-line: #111; --lx-frame: #111; --lx-cal-line: #111; --lx-mark: #111; --lx-mark-r: 0; --lx-paper: #fff; }
-.design-06 .page.lx, .design-06.layout .page { --lx-ink: #1A2744; --lx-line: #A7C4E0; --lx-frame: #A7C4E0; --lx-cal-line: #A7C4E0; --lx-mark: #C23B3B; --lx-paper: #FFFDF5; background-image: none; }
-.design-11 .page.lx, .design-11.layout .page { --lx-ink: #1B365D; --lx-line: #D5DBE4; --lx-frame: #1B365D; --lx-cal-line: #C8CED8; --lx-mark: #1B365D; --lx-paper: #fff; }
-.design-12 .page.lx, .design-12.layout .page { --lx-ink: #5C4033; --lx-line: #E8D4D0; --lx-frame: #D4C0E0; --lx-cal-line: #E8D4D0; --lx-mark: #8FAE8A; --lx-mark-ink: #5C4033; --lx-cb-r: calc(2 * var(--u)); --lx-lstyle: dotted; --lx-paper: #FBF7F2; }
+.design-02 .page.lx, .design-02.layout .page { --lx-mark-r: 0; }
+.design-06 .page.lx, .design-06.layout .page { background-image: none; }
+.design-12 .page.lx, .design-12.layout .page { --lx-cb-r: calc(2 * var(--u)); --lx-lstyle: dotted; }
 
 .lx-top { flex: none; display: flex; align-items: flex-end; justify-content: space-between; gap: calc(8 * var(--u)); }
 .lx-b .lx-top { flex-direction: column; align-items: center; text-align: center; gap: calc(3 * var(--u)); }
@@ -2174,8 +2167,8 @@ body {
    the card edge, mirroring each style's .lx-bd padding below. */
 .layout .page {
   --u: min(calc(var(--page-w) / 300), calc(var(--page-h) / 458), 0.024in);
-  --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--navy);
-  --lx-cal-line: var(--rule); --lx-mark: var(--navy); --lx-mark-ink: #fff;
+  --lx-ink: var(--ink); --lx-line: var(--rule); --lx-frame: var(--c-frame);
+  --lx-cal-line: var(--c-line); --lx-mark: var(--c-mark); --lx-mark-ink: var(--c-mark-on);
   --lx-mark-r: 50%; --lx-cb-r: 0; --lx-lstyle: solid; --lx-paper: var(--paper);
   --bd-pad: calc(5 * var(--u)) calc(8 * var(--u));
   --hd-margin: calc(-5 * var(--u)) calc(-8 * var(--u)) calc(4 * var(--u));
@@ -2225,16 +2218,19 @@ body {
 .box-plain :is(.lx-box, .card) { border: 1px solid var(--rule); }
 .box-plain :is(.lx-hd, .card-tab, .card-head) { background: var(--navy); color: #fff; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
 
-.box-02a :is(.lx-box, .card) { border: 1.2px solid #111; background: #fff; overflow: hidden; }
-.box-02a :is(.lx-hd, .card-tab, .card-head) { background: #111; color: #fff; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
-.box-02b :is(.lx-box, .card) { border: 3px double #111; }
-.box-02b :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-6 * var(--u)); left: 50%; transform: translateX(-50%); background: #fff; padding: 0 calc(6 * var(--u)); }
+.box-02a :is(.lx-box, .card) { border: 1.2px solid var(--lx-frame); background: var(--paper); overflow: hidden; }
+.box-02a :is(.lx-hd, .card-tab, .card-head) { background: var(--c-structure); color: var(--c-structure-on); padding: calc(2 * var(--u)) calc(7 * var(--u)); }
+.box-02b :is(.lx-box, .card) { border: 3px double var(--lx-frame); }
+/* A heading that sits on the frame line masks it with the paper colour. */
+.box-02b :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-6 * var(--u)); left: 50%; transform: translateX(-50%); background: var(--lx-paper); padding: 0 calc(6 * var(--u)); }
 .box-02b .lx-bd { padding: calc(9 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
 .box-02c :is(.lx-box, .card), .box-11b :is(.lx-box, .card) { border-top: 2px solid var(--lx-frame); }
 .box-02c :is(.lx-hd, .card-tab, .card-head), .box-11b :is(.lx-hd, .card-tab, .card-head) { padding-top: calc(3 * var(--u)); color: var(--lx-frame); }
 .box-02c .lx-bd, .box-11b .lx-bd { padding: calc(3 * var(--u)) 0 0; }
 
-.box-06a :is(.lx-box, .card) { background: linear-gradient(90deg, transparent calc(17 * var(--u)), #C23B3B calc(17 * var(--u)), #C23B3B calc(calc(17 * var(--u)) + 1px), transparent calc(calc(17 * var(--u)) + 1px)), #fff; border: 1px solid #A7C4E0; border-radius: calc(3 * var(--u)); }
+/* Index cards stay white on the notebook's cream paper; the margin line is
+   the mark and the frame the frame role (the look's pale blue rule). */
+.box-06a :is(.lx-box, .card) { background: linear-gradient(90deg, transparent calc(17 * var(--u)), var(--lx-mark) calc(17 * var(--u)), var(--lx-mark) calc(calc(17 * var(--u)) + 1px), transparent calc(calc(17 * var(--u)) + 1px)), #fff; border: 1px solid var(--lx-frame); border-radius: calc(3 * var(--u)); }
 .box-06a :is(.lx-hd, .card-tab, .card-head) { font-family: var(--font-script); font-weight: 400; font-size: calc(11 * var(--u)); line-height: 1.1; letter-spacing: 0; text-transform: none; padding: calc(2 * var(--u)) calc(8 * var(--u)) 0 calc(23 * var(--u)); }
 /* This heading sits in the card's flow, so on a small page it can wrap
    instead of running out of its card. */
@@ -2245,17 +2241,17 @@ body {
 .box-06b :is(.lx-box, .card) { --tape: color-mix(in srgb, var(--c-structure) 16%, #fff); background: #f6f5f4; border: 1px solid #d7d4cf; border-radius: calc(3 * var(--u)); }
 .box-06b :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-6 * var(--u)); left: calc(10 * var(--u)); transform: rotate(-2deg); background: var(--tape); padding: calc(2 * var(--u)) calc(10 * var(--u)); }
 .box-06b .lx-bd { padding: calc(11 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
-.box-06c :is(.lx-box, .card) { background: #fff; border: 1px solid #A7C4E0; border-radius: calc(3 * var(--u)); }
-.box-06c :is(.lx-hd, .card-tab, .card-head) { border-bottom: 1.5px solid #1A2744; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
+.box-06c :is(.lx-box, .card) { background: #fff; border: 1px solid var(--lx-frame); border-radius: calc(3 * var(--u)); }
+.box-06c :is(.lx-hd, .card-tab, .card-head) { border-bottom: 1.5px solid var(--c-structure); padding: calc(2 * var(--u)) calc(7 * var(--u)); }
 .box-06c .lx-bd { padding: calc(4 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
 
-.box-11a :is(.lx-box, .card) { border: 1.2px solid var(--lx-frame); border-radius: calc(2 * var(--u)); background: #fff; overflow: hidden; }
-.box-11a :is(.lx-hd, .card-tab, .card-head) { background: var(--lx-frame); color: #fff; padding: calc(2 * var(--u)) calc(7 * var(--u)); }
+.box-11a :is(.lx-box, .card) { border: 1.2px solid var(--lx-frame); border-radius: calc(2 * var(--u)); background: var(--paper); overflow: hidden; }
+.box-11a :is(.lx-hd, .card-tab, .card-head) { background: var(--lx-frame); color: var(--c-frame-on); padding: calc(2 * var(--u)) calc(7 * var(--u)); }
 .box-11c :is(.lx-box, .card) { border: 1px solid var(--lx-frame); border-radius: calc(2 * var(--u)); }
-.box-11c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-5 * var(--u)); left: calc(8 * var(--u)); background: #fff; color: var(--lx-frame); padding: 0 calc(5 * var(--u)); }
+.box-11c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-5 * var(--u)); left: calc(8 * var(--u)); background: var(--lx-paper); color: var(--lx-frame); padding: 0 calc(5 * var(--u)); }
 .box-11c .lx-bd { padding: calc(8 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)); }
 
-.box-12a :is(.lx-box, .card), .box-12b :is(.lx-box, .card) { --tone: #E8B4BE; }
+.box-12a :is(.lx-box, .card), .box-12b :is(.lx-box, .card) { --tone: var(--pink); }
 .box-12a :is(.lx-box, .card) { border: 1.2px solid var(--tone); border-radius: calc(12 * var(--u)); background: #fff; }
 /* The pill headings are the structure colour (Carla's colour rule); the
    frames keep the pink. */
@@ -2265,8 +2261,8 @@ body {
 .box-12b :is(.lx-hd, .card-tab, .card-head), .box-12c :is(.lx-hd, .card-tab, .card-head) { font-family: var(--font-script); font-weight: 400; font-size: calc(12 * var(--u)); line-height: 1.1; letter-spacing: 0; text-transform: none; }
 .box-12b :is(.lx-hd, .card-tab, .card-head) { padding: calc(4 * var(--u)) calc(10 * var(--u)) 0; }
 .box-12b .lx-bd { padding: calc(2 * var(--u)) calc(10 * var(--u)) calc(7 * var(--u)); }
-.box-12c :is(.lx-box, .card) { border: 1.2px dashed #8FAE8A; border-radius: calc(12 * var(--u)); background: #fff; }
-.box-12c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: 50%; transform: translateX(-50%); background: #FBF7F2; padding: 0 calc(6 * var(--u)); }
+.box-12c :is(.lx-box, .card) { border: 1.2px dashed var(--lx-mark); border-radius: calc(12 * var(--u)); background: #fff; }
+.box-12c :is(.lx-hd, .card-tab, .card-head) { position: absolute; top: calc(-7 * var(--u)); left: 50%; transform: translateX(-50%); background: var(--lx-paper); padding: 0 calc(6 * var(--u)); }
 
 /* --- colour roles in the layouts (Carla, 2026-10-12) ------------------------
    Numbered badges are the structure colour, like every badge. A day of the

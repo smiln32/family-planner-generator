@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import threading
 import urllib.request
 from http.server import ThreadingHTTPServer
@@ -286,6 +287,94 @@ def test_blank_roles_use_linen_picks_without_a_theme():
     cfg.design = "blank"
     cfg = config.validate(cfg)
     assert render.colour_roles(cfg) == colours.roles(cfg.palette, "theme:linen")
+
+
+# --- chrome roles: a theme reaches the layout chrome (Phase 2 step 1) ---------
+
+# The colours the layouts were drawn with, as planner.css fixed them before
+# the chrome read the roles (frame, mark, title, trim, line). With no theme
+# the roles must still be exactly these.
+CHROME_TODAY = {
+    "02a": {"frame": "#111111", "mark": "#111111", "title": "#111111",
+            "trim": "#111111", "line": "#111111"},
+    "06a": {"frame": "#A7C4E0", "mark": "#C23B3B", "title": "#1A2744",
+            "trim": "#A7C4E0", "line": "#A7C4E0"},
+    "11a": {"frame": "#1B365D", "mark": "#1B365D", "title": "#1B365D",
+            "trim": "#D5DBE4", "line": "#C8CED8"},
+    "12a": {"frame": "#D4C0E0", "mark": "#8FAE8A", "title": "#C46A78",
+            "trim": "#C9D4B8", "line": "#E8D4D0"},
+}
+
+
+def _roles(design, theme="", palette_set=None):
+    cfg = config.load(None)
+    cfg.design, cfg.theme, cfg.palette_set = design, theme, dict(palette_set or {})
+    cfg = config.validate(cfg)
+    return render.colour_roles(cfg), cfg.palette
+
+
+@pytest.mark.parametrize("design", list(CHROME_TODAY))
+def test_chrome_roles_without_a_theme_are_the_drawn_colours(design):
+    roles, _ = _roles(design)
+    assert {role: roles[role] for role in colours.CHROME_ROLES} == CHROME_TODAY[design]
+    for role in colours.CHROME_ROLES:
+        assert roles[f"{role}-on"] in (colours.WHITE, _base(design)["ink"])
+    assert roles["mark-on"] == ("#5C4033" if design == "12a" else "#FFFFFF")
+
+
+@pytest.mark.parametrize("design", list(CHROME_TODAY))
+def test_theme_reaches_the_layout_chrome(design):
+    """With a theme every chrome role is the theme's: frame, mark and title
+    its structure colour, trim and line its rule on the merged palette."""
+    roles, palette = _roles(design, "adventure")
+    assert roles["structure"] == "#3D4A3C"
+    assert roles["frame"] == roles["mark"] == roles["title"] == "#3D4A3C"
+    assert roles["trim"] == roles["line"] == palette["rule"]
+    assert roles["mark-on"] == roles["frame-on"] == "#FFFFFF"
+    assert all(roles[role] != CHROME_TODAY[design][role] for role in ("frame", "mark", "title"))
+    goal, _ = _roles(design, "goal")
+    assert goal["frame"] == goal["mark"] == goal["title"] == "#1A1A2E"
+    # A `palette:` block moves the token the theme's picks resolve against.
+    picked, _ = _roles(design, "adventure", {"navy": "#123456", "rule": "#ABCDEF"})
+    assert picked["frame"] == picked["mark"] == picked["title"] == "#123456"
+    assert picked["trim"] == picked["line"] == "#ABCDEF"
+
+
+def test_palette_block_reaches_a_token_named_chrome_pick():
+    roles, _ = _roles("06a", "", {"rule": "#ABCDEF", "red": "#654321"})
+    assert roles["frame"] == "#ABCDEF" and roles["line"] == "#ABCDEF"
+    assert roles["mark"] == "#654321"
+    roles, _ = _roles("12a", "", {"blue": "#123456", "green": "#234567", "red": "#345678"})
+    assert roles["frame"] == "#123456" and roles["mark"] == "#234567"
+    # A hex pick is the design's own and a palette block does not move it.
+    assert roles["title"] == "#C46A78" and roles["trim"] == "#C9D4B8"
+
+
+def test_chrome_roles_default_for_every_family():
+    for family in ("", "editorial", "theme:linen", "theme:ocean", "blank"):
+        palette = config.resolve_palette("editorial", "ocean", {})
+        roles = colours.roles(palette, family)
+        assert roles["frame"] == roles["mark"] == roles["title"] == roles["structure"]
+        assert roles["trim"] == roles["line"] == palette["rule"]
+    for name in themes.names():
+        assert not set(colours.CHROME_ROLES) & set(colours.PICKS.get(f"theme:{name}", {}))
+
+
+def test_build_with_a_theme_recolours_the_layout_chrome(tmp_path):
+    assert cli.main(["build", "--design", "02a", "--theme", "adventure", "--only", "months,weekly",
+                     "--html-only", "-o", str(tmp_path)]) == 0
+    html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
+    root = {k.strip(): v.strip() for k, v in _root_vars(html).items()}
+    assert root["--navy"] == "#3D4A3C"
+    for role in ("frame", "mark", "title"):
+        assert root[f"--c-{role}"] == "#3D4A3C"
+    assert root["--c-mark-on"] == "#FFFFFF"
+    assert root["--c-line"] == root["--rule"] == "#111111"
+    # The CSS inside the book no longer fixes the layout's colours on its
+    # body class, so `.cal-cell .n { color: var(--navy) }` prints the theme.
+    assert ".design-02 {" not in html
+    assert "--lx-frame: var(--c-frame)" in html
+    assert re.search(r"\.cal-cell \.n\s*\{[^}]*color:\s*var\(--navy\)", html)
 
 
 # --- the editor's server -------------------------------------------------------

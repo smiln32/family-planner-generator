@@ -80,12 +80,15 @@ window.addEventListener('load', () => { document.fonts.ready.then(() => {
     for (const to of ['rgb(255, 255, 255)', paper]) for (let t = 0; t <= 1.0001; t += 0.02)
       if (dE(c, mixed(base, to, t)) < 3) return true;
     return false; };
-  // Colours a fill may be: the palette (as the body sees it, since a design
-  // class may set its own tokens), the roles, the look's own colours, and
-  // washes of those; or a near-neutral (paper, white, greys).
+  // Colours a fill may be: the palette (as the body sees it: the layouts
+  // read :root, a retired look's class may still set its own tokens), the
+  // roles (the six colour roles and the five chrome roles: frame, mark,
+  // title, trim, line), the look's own colours, and washes of those; or a
+  // near-neutral (paper, white, greys).
   const PALETTE = ['navy', 'teal', 'pink', 'orange', 'green', 'purple', 'blue', 'red', 'brown', 'ink', 'paper', 'rule',
                    'butter', 'gold', 'gold-lt', 'sun'].map(n => norm(body.getPropertyValue('--' + n).trim()))
-    .concat(['structure', 'weekend', 'winter', 'spring', 'summer', 'autumn'].map(role))
+    .concat(['structure', 'weekend', 'winter', 'spring', 'summer', 'autumn',
+             'frame', 'mark', 'title', 'trim', 'line'].map(role))
     .filter(c => c !== 'none');
   const allowedFill = c => chroma(c) < 6 || PALETTE.some(p => washOf(c, p));
   // The colour behind an element: its own fill or the nearest one under it.
