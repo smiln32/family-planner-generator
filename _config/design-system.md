@@ -41,6 +41,10 @@ Carla approved this rule on 2026-10-12. It holds on every page in every design (
 
 `tests/test_colour_roles.py` checks every page of every design in Chrome.
 
+## Variety between designs
+
+Carla said on 2026-10-12 that pages may differ from one design to the next. A page type (Family Values, Family Goals, Budget and so on) must cover the same basic information in every design, but its layout, extra sections and style can change from design to design; a section on one design's page need not appear on the same page in another. Variety is welcome. What stays fixed everywhere is the colour roles above and that everything fits its page.
+
 ## Cards and chrome
 
 - `.card-tab` is 8pt everywhere. A label longer than its card wraps onto a second line inside the card's width; the first line stays where a one-line tab sits and the extra line pushes the card's content down (see "Everything fits its page" in `looks.css`). Prefer a label that fits on one line.
