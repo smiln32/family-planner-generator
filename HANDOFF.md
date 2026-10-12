@@ -1,13 +1,64 @@
-# Handoff, 2026-10-11
+# Handoff, 2026-10-12
 
-## State on 2026-10-11
+## State on 2026-10-12
 
-- Everything is merged into `main` on GitHub: PR #1 (batch A fixes), #2 (editor), #3 (CI), #4 (cover options, fonts, docs), #5 (handoff), #6 (budget donut and small-page budget fit) and #7 (one-colour one-line titles, cover lettering fit, centred badge icons). `main` is the only branch, here and on GitHub.
-- `python -m pytest`: 675 passed, 0 skipped, locally and in CI (Windows and Linux, Python 3.10 and 3.12). CI now takes about 6 to 10 minutes because of the browser tests.
-- The owner reviewed layout `06b` on 2026-10-11 and keeps its tilted tape-tab headings.
-- The owner approved the cover spots on all thirteen looks, the Cottage gingham and Retro sunset cover changes, and the level Retro sunset inside pages (all 2026-10-10).
-- The six unused font files (`inter-400/700/800`, `poppins-600/700`, `gloria-hallelujah-400`) were deleted on 2026-10-11 with the owner's OK. They were never tracked.
-- Open questions for the owner: whether How to Use and Belongs To (two-line title pages, not mastheads) should also be one colour on one line; the very small long titles in the retired `original` look at 5.5x8 were left as they are.
+- Branch `colour-system` (local, not pushed) holds the colour rule and the page-fit work below, on top of `main` (`7ca491e`, PRs #1 to #8 merged). `main` is unchanged here and on GitHub.
+- `python -m pytest`: 778 passed, 0 skipped (675 on `main`). The two new browser tests add about 35 seconds.
+- Earlier: the owner reviewed layout `06b` on 2026-10-11 and keeps its tilted tape-tab headings; the cover spots and the Cottage and Retro changes were approved on 2026-10-10.
+- Open questions for the owner: whether How to Use and Belongs To (two-line title pages, not mastheads) should also be one colour on one line; the very small long titles in the retired `original` look at 5.5x8; and the points marked **For Carla** in the two sections below.
+
+## Colour rule, 2026-10-12 (branch `colour-system`)
+
+Carla said the colours inside the worksheets were haphazard: in a layout like `06b` the Family Time header cells went navy, red, navy, red; the day pills alternated; card tabs differed; the annual calendar's month bars ran red, red, navy, navy, red, red, blue and so on, with matching borders. **Carla approved this colour rule on 2026-10-12.** It now holds on every page of all 27 designs (13 looks, 12 layouts, blank, original). The rule is in `_config/design-system.md` ("Colour roles"); the code is `familyplanner/colours.py`, wired in by `render.colour_roles` and `render.month_key`.
+
+1. **Structure**: one colour per design (its title colour, palette `navy`) for every table header, card tab or heading, section label, banner, badge and numbered circle. No alternating colour lists are left in the templates (`[...][loop.index0 % n]`, per-day lists, per-row chips), and the nth-child colour cycles in the CSS are gone (Executive desk's every-other tab, the `06b` tape colours, the `12a`/`12b` card tones; each now has one).
+2. **Weekend**: one accent per design (palette `red`, darkened only where text needs it) for Saturday and Sunday labels, pills, weekend columns and dates everywhere: worksheets, the month grids of every look and layout, the weekly and daily sheets, the annual calendar. Weekdays are the structure colour. The accent is used for nothing else on a worksheet; totals sit on a light wash of the structure colour. Exceptions, written down in `colours.PICKS`: Almanac's red is almost its oxblood title colour, so its weekend is its ochre (`orange`); Boxed records has no colour, so its weekend is a mid grey. Farmhouse prints its titles and month names in the same barn red as its weekend (titles were left alone).
+3. **Seasons**: winter (Dec, Jan, Feb), spring (Mar to May), summer (Jun to Aug), autumn (Sep to Nov), four colours from each design's own palette, hand-picked per look, layout family and theme in `colours.PICKS` (tints or shades of the palette where it has too few colours; an algorithm only for a custom palette). Used on the annual calendar's month boxes, the contents and tab-rail month entries, and the month accents that exist (the Editorial and Swiss month numbers; Blank and original's script line and month art). A month's `accent` is now `season` by default; a palette name still works for Blank and the retired looks. Text on every role colour is white or the ink at 4.5:1 or better.
+4. Neutral fills stay. The budget donut keeps its category colours (a chart). Covers, page titles, fonts, textures and cover art are unchanged.
+
+The colours chosen:
+
+| Design | Structure | Weekend | Winter | Spring | Summer | Autumn |
+|---|---|---|---|---|---|---|
+| editorial | `#1B1A17` | `#B9402A` | `#3D4A5C` | `#5E6B4E` | `#9A6B3F` | `#7A3B2E` |
+| midcentury | `#1F5B5A` | `#A74925` | `#2F6F8A` | `#647C39` | `#DDA23A` | `#7A5230` |
+| nordic | `#3A3A37` | `#8B5C4A` | `#6C767C` | `#717868` | `#C7A288` | `#7A6455` |
+| farmhouse | `#2E2B28` | `#8E2F25` | `#3E4C5A` | `#5E6B4A` | `#976C38` | `#6E5238` |
+| deco | `#131B2D` | `#8C3A3A` | `#6B7589` | `#3B2E4F` | `#B8975A` | `#6B5434` |
+| swiss | `#111111` | `#D12E1A` | `#474747` | `#919191` | `#BDBDBD` | `#6B6B6B` |
+| retro | `#5A3420` | `#B84428` | `#4E6E6A` | `#7A7A32` | `#D99A2B` | `#8C7163` |
+| bauhaus | `#16161A` | `#B34232` | `#2446A0` | `#7B8FC6` | `#F2C94C` | `#5A5048` |
+| almanac | `#5E1A20` | `#85652A` | `#3A4658` | `#4A5A3A` | `#C9A464` | `#8A5A3A` |
+| terracotta | `#5B2E3A` | `#A44A30` | `#6A7680` | `#71755D` | `#E8A86E` | `#7A4E36` |
+| cottage | `#3F5A47` | `#A35D55` | `#5E7981` | `#607C60` | `#CBAE85` | `#7A6450` |
+| gazette | `#181715` | `#8A2E2E` | `#2F5D8A` | `#7E9DBC` | `#A9A396` | `#4A4740` |
+| coastal | `#1E3354` | `#B9523D` | `#557A9B` | `#2F7A7A` | `#C9BFB2` | `#7A6A58` |
+| 02a to 02c | `#111111` | `#707070` | `#333333` | `#A3A3A3` | `#CCCCCC` | `#525252` |
+| 06a to 06c | `#1A2744` | `#C23B3B` | `#A7C4E0` | `#4A6FA5` | `#E6A5A5` | `#6E3140` |
+| 11a to 11c | `#1B365D` | `#4A5A72` | `#333333` | `#667792` | `#CDD3DD` | `#A6B0C0` |
+| 12a to 12c | `#5C4033` | `#92646B` | `#D4C0E0` | `#76775E` | `#E8B4BE` | `#876F64` |
+| blank, original (linen) | `#5C4A3A` | `#9E5B4D` | `#7C7568` | `#A6A283` | `#C9956A` | `#8A6B52` |
+
+**For Carla:** Executive desk (`11a`-`11c`) is navy and slate only, so its slate weekend is quiet next to the navy. Swiss grid and Boxed records have grey seasons. School notebook's summer and autumn are a pink and a maroon made from its red. Where a look had used its red or another accent for its banners (Editorial, Swiss, Nordic, Almanac, Retro, Coastal) or the Retro month labels, those are now the structure colour.
+
+`tests/test_colour_roles.py` prints every worksheet and the twelve months of every design at letter and checks the computed colours: structure elements are one colour, weekend labels are the accent and weekday ones are not, the accent appears nowhere else (art, titles and footers aside), and the annual calendar's months follow the seasons (four distinct, none the weekend accent). It failed on `main` (54 of 54) and passes now.
+
+## Every page fits, 2026-10-12 (branch `colour-system`)
+
+Carla saw Family Time's third card ("Monthly Family Tradition") run off the right edge of a letter page in a layout. A browser check of every page (all worksheets and months, not covers) in all 27 designs at letter, 5.5x8 and 6x9 found:
+
+- **Letter:** card tabs longer than their cards running over the next card or off the page (Family Time, Grocery, Health, Home Maintenance, Vacation, Values, Emergency, School in many looks and layouts); in-flow tabs widening their grid column so the last card left the page; Bauhaus Emergency tabs 0.02in past the margins; the `11a` Emergency checklist cut off; the `11b`/`12b` month goals and the `12b` weekly second lines hanging out of their boxes; the layout month habit numbers wider than their columns; the day letters over the health tracker dots wider than their boxes.
+- **5.5x8 and 6x9:** most worksheets (tables and three-card rows off the right, last rows and footers off the bottom), and the layout daily and weekly sheets in many designs. Only the budget page (fixed in PR #6) fitted everywhere.
+
+Fixes, in `static/looks.css` ("Everything fits its page", "Small pages") with small changes in `planner.css`, `render.py` and `book.html`:
+
+- Grid columns are `minmax(0, 1fr)`. A card tab longer than its card wraps inside the card's width. Tabs that hang over the card edge are now in the card's flow, pulled up by negative margins to exactly where they hung (`--pt`, `--pl`, `--tt`, `--tl`, `--tab-line`), so a one-line tab does not move and an extra line pushes the content down, never into the row above. The same for the hanging headings of the layout boxes (not the layout covers). The budget page's own small-page tab lift (PR #6) is folded into this, so its wrapped Expenses Breakdown tab now pushes down too.
+- Emergency plan row: at least 1.28in, grows when needed. Layout B month: the goals row keeps its three lines. `12b` weekly day boxes: smaller pads. Month habit numbers at 4.5 units. Health day letters: wider boxes at the same pitch.
+- **Small pages:** a letter-laid worksheet is laid out at letter width and scaled (`zoom: --page-zoom`, `render.page_zoom`), its margins kept at their printed size. Layout sheets use `--u = min(width / 300, height / 458, 0.024in)`. Covers, look and layout months and the budget page are not scaled.
+- **For Carla:** on the small sizes the worksheet type is now about 62% (5.5x8) or 68% (6x9) of letter (9pt body prints about 5.6pt or 6.1pt), like a letter page shrunk to fit; the budget page keeps its larger type. Before, the same pages ran off the paper. Larger type on small books would need a small layout for each worksheet.
+- Letter pages that fitted are unchanged: pixel checks against the colour-only commit show only sub-pixel anti-aliasing differences there; the pages with a fix changed only where the fix is.
+
+`tests/test_page_fit.py` checks every page of all 27 designs at letter and 11 designs at both small sizes (49 cases, about 20 seconds): boxes inside the margins, contents inside their cards, tabs no wider than their cards and not climbing above them, nothing off the page, no text out of its box. The full 81-case matrix was run with a scratch script and passes. On `main`, 44 of the 49 test cases failed.
 
 ## Titles, cover lettering and badge icons, 2026-10-11 (merged as PR #7)
 
@@ -164,13 +215,13 @@ Family Success Planner is an ICM factory (`CLAUDE.md` → `CONTEXT.md` → stage
 | ICM conformance | Done 2026-09-25, checked against `_core/CONVENTIONS.md` in github.com/RinDig/Interpretable-Context-Methodology. Stage contracts have no Routing sections (they pointed forward); stage 03 has an Audit; duplicate reference files removed; templates followed for Layer 0/1 and the questionnaire; no em dashes; launcher renamed from `Start Planner.bat` |
 | ICM deviations kept on purpose | Stage folders use `01-` (the conventions and reference repo do; the paper shows `01_`). `familyplanner/` has no hyphen (Python package). `README.md` is over 200 lines (human doc, agents do not load it). Built PDFs keep the `<year>-<family>-Family-Planner` name |
 | Editor audit (`/impeccable audit`) | Scored 12/20 before fixes. Fixed: `--muted` now `#6A655C` (4.8:1+), error toast on new `--error` `#96564E` (5.6:1), page-list names are real buttons beside the checkbox with `aria-current`, "Add a person", `.linky` and `.palette-undo` on new `--teal-deep` (5.2:1). Detector reports no low-contrast text now. Remaining items below |
-| Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Meal plan and gratitude key each day's tint/glyph by name; the others keep their decorative colour runs positional |
+| Week order on weekly pages | Done 2026-09-26. Meal plan, chores, health tracker, school, family time and the example gratitude page follow `week_starts` via `day_names`/`day_initials(cfg.sunday_first)`. No template has a fixed day order now. Since 2026-10-12 every day label takes the structure colour, or the weekend accent on Saturday and Sunday, wherever the week starts (see "Colour rule") |
 | Palette colour editor | Reworked 2026-10-02 so each look owns its colours and Undo restores cleared replacements (see the October section). Unit and API tests cover it (`tests/test_colour_source.py`); **not exercised by hand since the rework** |
 | Theme presets | Reworked 2026-09-28 so each named theme (`citrus`, `ocean`, `poppy`, `meadow`, `linen`, `amber`, `forest`) actually matches its name; `slate` renamed to `blues`. See "Session 2026-09-28" above. Not hand-checked in the UI yet; do that alongside item 5 below |
 | Typeface sets | 52 since 2026-09-30 (40 on 2026-09-29, plus twelve for the new looks), font files in the repo with licences since 2026-10-10 (`fonts --all` refreshes them). `terracotta` renamed `boho-brush` on 2026-10-09 (old name still accepted). TYPE picker not hand-checked end to end |
 | Thirteen looks (`editorial` to `coastal`) | In `main` since 2026-09-30, owner-approved designs. Cover and January built and checked for all thirteen; owner checked them in the editor |
 | Planner layouts `02a`–`12c` | In since 2026-09-30 from the owner's export, with Weekly Plan and Daily Plan sheets and a boxed monthly page. Built and eyeballed for four of the twelve at letter size; see "the design export" above for what is not checked |
-| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09; typed text has length limits since 2026-10-09. The whole suite is 675 tests as of 2026-10-11, all passing, and runs in CI on Windows and Linux |
+| Security pass (validators, local API guard, clean CLI errors) | Done. Bad request bodies get 400 or 413 since 2026-10-09; typed text has length limits since 2026-10-09. The whole suite is 778 tests as of 2026-10-12 on `colour-system` (675 on `main`), all passing, and runs in CI on Windows and Linux |
 | Privacy: run outputs untracked, history rewritten, GitHub repo recreated | Done 2026-09-24. Repo still **private**. 2026-09-26: local reflogs expired and `gc --prune=now --aggressive` run; name and `family.yaml` greps across all objects and commits are empty, no dangling objects. This is the only clone on the machine. A GitHub Support purge request was drafted but not sent; send it only if the repo is going public |
 | Looks 02–17 design quality | **Retired 2026-09-30.** Replaced by the thirteen looks. `original` and `02`–`17` live in `designs.LEGACY`: still valid in a config, not offered in the picker, never finished |
 | Local book build | A run was rebuilt on 2026-09-26 after the week-order fix. Its files are local only |
@@ -223,7 +274,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. It should be clean, on `main`, matching `origin/main`. All work is merged (PRs #1 to #7); see "State on 2026-10-11" at the top.
+1. Read this file, then `git status`. The colour rule and page-fit work is on the local branch `colour-system` (see the top), not pushed. Everything before it is merged into `main` (PRs #1 to #8).
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
