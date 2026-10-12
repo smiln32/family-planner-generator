@@ -11,8 +11,8 @@
 
 Carla said the colours inside the worksheets were haphazard: in a layout like `06b` the Family Time header cells went navy, red, navy, red; the day pills alternated; card tabs differed; the annual calendar's month bars ran red, red, navy, navy, red, red, blue and so on, with matching borders. **Carla approved this colour rule on 2026-10-12.** It now holds on every page of all 27 designs (13 looks, 12 layouts, blank, original). The rule is in `_config/design-system.md` ("Colour roles"); the code is `familyplanner/colours.py`, wired in by `render.colour_roles` and `render.month_key`.
 
-1. **Structure**: one colour per design (its title colour, palette `navy`) for every table header, card tab or heading, section label, banner, badge and numbered circle. No alternating colour lists are left in the templates (`[...][loop.index0 % n]`, per-day lists, per-row chips), and the nth-child colour cycles in the CSS are gone (Executive desk's every-other tab, the `06b` tape colours, the `12a`/`12b` card tones; each now has one).
-2. **Weekend**: one accent per design (palette `red`, darkened only where text needs it) for Saturday and Sunday labels, pills, weekend columns and dates everywhere: worksheets, the month grids of every look and layout, the weekly and daily sheets, the annual calendar. Weekdays are the structure colour. The accent is used for nothing else on a worksheet; totals sit on a light wash of the structure colour. Exceptions, written down in `colours.PICKS`: Almanac's red is almost its oxblood title colour, so its weekend is its ochre (`orange`); Boxed records has no colour, so its weekend is a mid grey. Farmhouse prints its titles and month names in the same barn red as its weekend (titles were left alone).
+1. **Structure**: one colour per design (its title colour, palette `navy`) for every table header, card tab or heading, section label, banner, badge and numbered circle. No alternating colour lists are left in the templates (`[...][loop.index0 % n]`, per-day lists, per-row chips), and the nth-child colour cycles in the CSS that the 27 designs use are gone (Executive desk's every-other tab, the `06b` tape colours, the `12a`/`12b` card tones; each now has one). Cycles are left only in the CSS of the retired looks `13`, `14` and `16`, which are not offered and which no layout builds on.
+2. **Weekend**: one accent per design (palette `red`, darkened only where text needs it) for Saturday and Sunday labels, pills, weekend columns and dates everywhere: worksheets, the month grids of every look and layout, the weekly and daily sheets, the annual calendar. Weekdays are the structure colour. The accent is used for nothing else on a worksheet; totals sit on a light wash of the structure colour. Exceptions, written down in `colours.PICKS`: Almanac's red is almost its oxblood title colour, so its weekend is its ochre (`orange`); Boxed records has no colour, so its weekend is a mid grey; Executive desk's red is a slate next to its navy, so its weekend is a muted brick. The weekend is darkened to 5.3:1 on paper, so it reads 4.5:1 or better on light cells and washes too. Farmhouse prints its titles and month names in the same barn red as its weekend (titles were left alone).
 3. **Seasons**: winter (Dec, Jan, Feb), spring (Mar to May), summer (Jun to Aug), autumn (Sep to Nov), four colours from each design's own palette, hand-picked per look, layout family and theme in `colours.PICKS` (tints or shades of the palette where it has too few colours; an algorithm only for a custom palette). Used on the annual calendar's month boxes, the contents and tab-rail month entries, and the month accents that exist (the Editorial and Swiss month numbers; Blank and original's script line and month art). A month's `accent` is now `season` by default; a palette name still works for Blank and the retired looks. Text on every role colour is white or the ink at 4.5:1 or better.
 4. Neutral fills stay. The budget donut keeps its category colours (a chart). Covers, page titles, fonts, textures and cover art are unchanged.
 
@@ -20,26 +20,39 @@ The colours chosen:
 
 | Design | Structure | Weekend | Winter | Spring | Summer | Autumn |
 |---|---|---|---|---|---|---|
-| editorial | `#1B1A17` | `#B9402A` | `#3D4A5C` | `#5E6B4E` | `#9A6B3F` | `#7A3B2E` |
-| midcentury | `#1F5B5A` | `#A74925` | `#2F6F8A` | `#647C39` | `#DDA23A` | `#7A5230` |
-| nordic | `#3A3A37` | `#8B5C4A` | `#6C767C` | `#717868` | `#C7A288` | `#7A6455` |
+| editorial | `#1B1A17` | `#AA3B26` | `#3D4A5C` | `#5E6B4E` | `#9A6B3F` | `#5C4A3C` |
+| midcentury | `#1F5B5A` | `#984322` | `#2F6F8A` | `#647C39` | `#DDA23A` | `#7A5230` |
+| nordic | `#3A3A37` | `#7C5342` | `#6C767C` | `#627358` | `#C7A288` | `#7A6455` |
 | farmhouse | `#2E2B28` | `#8E2F25` | `#3E4C5A` | `#5E6B4A` | `#976C38` | `#6E5238` |
 | deco | `#131B2D` | `#8C3A3A` | `#6B7589` | `#3B2E4F` | `#B8975A` | `#6B5434` |
-| swiss | `#111111` | `#D12E1A` | `#474747` | `#919191` | `#BDBDBD` | `#6B6B6B` |
-| retro | `#5A3420` | `#B84428` | `#4E6E6A` | `#7A7A32` | `#D99A2B` | `#8C7163` |
-| bauhaus | `#16161A` | `#B34232` | `#2446A0` | `#7B8FC6` | `#F2C94C` | `#5A5048` |
-| almanac | `#5E1A20` | `#85652A` | `#3A4658` | `#4A5A3A` | `#C9A464` | `#8A5A3A` |
-| terracotta | `#5B2E3A` | `#A44A30` | `#6A7680` | `#71755D` | `#E8A86E` | `#7A4E36` |
-| cottage | `#3F5A47` | `#A35D55` | `#5E7981` | `#607C60` | `#CBAE85` | `#7A6450` |
-| gazette | `#181715` | `#8A2E2E` | `#2F5D8A` | `#7E9DBC` | `#A9A396` | `#4A4740` |
-| coastal | `#1E3354` | `#B9523D` | `#557A9B` | `#2F7A7A` | `#C9BFB2` | `#7A6A58` |
-| 02a to 02c | `#111111` | `#707070` | `#333333` | `#A3A3A3` | `#CCCCCC` | `#525252` |
-| 06a to 06c | `#1A2744` | `#C23B3B` | `#A7C4E0` | `#4A6FA5` | `#E6A5A5` | `#6E3140` |
-| 11a to 11c | `#1B365D` | `#4A5A72` | `#333333` | `#667792` | `#CDD3DD` | `#A6B0C0` |
-| 12a to 12c | `#5C4033` | `#92646B` | `#D4C0E0` | `#76775E` | `#E8B4BE` | `#876F64` |
-| blank, original (linen) | `#5C4A3A` | `#9E5B4D` | `#7C7568` | `#A6A283` | `#C9956A` | `#8A6B52` |
+| swiss | `#111111` | `#C02A18` | `#111111` | `#111111` | `#111111` | `#111111` |
+| retro | `#5A3420` | `#A73E24` | `#4E6E6A` | `#7A7A32` | `#D99A2B` | `#8C7163` |
+| bauhaus | `#16161A` | `#A53D2E` | `#2446A0` | `#7B8FC6` | `#F2C94C` | `#5A5048` |
+| almanac | `#5E1A20` | `#7A5C27` | `#3A4658` | `#4A5A3A` | `#C9A464` | `#6E4A33` |
+| terracotta | `#5B2E3A` | `#9A452D` | `#6A7680` | `#71755D` | `#E8A86E` | `#7A4E36` |
+| cottage | `#3F5A47` | `#95554E` | `#5E7981` | `#607C60` | `#CBAE85` | `#7A6450` |
+| gazette | `#181715` | `#8A2E2E` | `#2F5D8A` | `#7E9DBC` | `#D4BE96` | `#4A4740` |
+| coastal | `#1E3354` | `#A84B38` | `#557A9B` | `#2F7A7A` | `#D4B98C` | `#7A6A58` |
+| 02a to 02c | `#111111` | `#6A6A6A` | `#111111` | `#111111` | `#111111` | `#111111` |
+| 06a to 06c | `#1A2744` | `#BD3A3A` | `#4A6FA5` | `#A7C4E0` | `#E6A5A5` | `#6E3140` |
+| 11a to 11c | `#1B365D` | `#9A4A3A` | `#3E4D66` | `#9CA8BB` | `#D5DBE4` | `#687790` |
+| 12a to 12c | `#5C4033` | `#855B62` | `#D4C0E0` | `#5A7C55` | `#E8C4B8` | `#876F64` |
+| blank, original (linen) | `#5C4A3A` | `#8F5245` | `#5E6266` | `#A6A283` | `#C9956A` | `#8A6B52` |
 
-**For Carla:** Executive desk (`11a`-`11c`) is navy and slate only, so its slate weekend is quiet next to the navy. Swiss grid and Boxed records have grey seasons. School notebook's summer and autumn are a pink and a maroon made from its red. Where a look had used its red or another accent for its banners (Editorial, Swiss, Nordic, Almanac, Retro, Coastal) or the Retro month labels, those are now the structure colour.
+**For Carla (coordinator decisions after the design review, pending her look):** Executive desk (`11a`-`11c`) gets a muted brick weekend (`#9A4A3A`) and an even blue-grey season ramp; Swiss grid and Boxed records do not tint their months at all (all month bars and numbers in the structure colour; the snowflake, sprout, sun and leaf icons carry the season); Coastal's summer is a sand (`#D4B98C`). School notebook's summer and autumn are a pink and a maroon made from its red. Where a look had used its red or another accent for its banners (Editorial, Swiss, Nordic, Almanac, Retro, Coastal) or the Retro month labels, those are now the structure colour.
+
+### Design review fixes, 2026-10-12
+
+An independent design review found these; all are fixed on the branch.
+
+- Beautiful day (`12a`-`12c`): the pill tabs and banners were its pink, which was also its summer colour, so the design had two structure colours. Tabs and banners are now the structure brown with white text; weekend tabs the weekend colour with white text (the old weekend text on pink read 2.75:1). The card frames keep the pink; summer is now its peach (`#E8C4B8`), spring a green (`#5A7C55`).
+- The health tracker's tagline had a stray yellow fill in every design; it is now a light wash of the structure colour.
+- Seasons spread further apart where they were close: School notebook (winter `#4A6FA5`, spring `#A7C4E0`), Nordic spring `#627358`, Gazette summer sand `#D4BE96`, Almanac autumn `#6E4A33`, Editorial autumn `#5C4A3C` (away from the red weekend), linen winter `#5E6266`. Every pair of a design's seasons is at least delta E 15 apart.
+- Tabs on one line: the layout books' worksheet tabs are about 8pt at letter (they were set at the month sheets' 12pt, and 19 to 21pt in the script layouts), the `06b` tape pads less at the sides, Deco and Almanac space their tab letters 0.06em instead of 0.2em, and the longest labels are shorter: "Family Traditions" (was Monthly Family Tradition), "Appointments" (Appointments & Reminders), "Utilities & Services" (Utility & Service Providers), "Supplies On Hand" (Supplies To Keep On Hand), "Meat & Seafood" (Meat, Poultry & Seafood), "Strengthening Our Values" (Ways To Strengthen Our Values), "Wellness Goals" (Family Wellness Goals), and on the Blank and original month pages "Family Events" and "Do Together". At letter only Deco's "Household & Cleaning" still wraps; at 5.5x8 the budget page's "Expenses Breakdown" (not scaled) wraps in five designs and "Household & Cleaning" in Deco and Beautiful day A.
+- Small pages: zoomed worksheets in a layout book used a second, smaller layout unit on top of the zoom; they now use the letter unit. The annual calendar's dates print at 5.5pt or more, and the health tracker's column notes (under 4pt) are left out at the small sizes. Most other worksheet text still prints at about 62% (5.5x8) or 68% (6x9) of its letter size.
+- The budget donut starts in the structure colour.
+- Bauhaus keeps its red, blue and butter shapes and Plan/Make/Do blocks on its month pages: they are the look's art (see `_config/design-system.md`).
+- `tests/test_colour_roles.py` now also checks that tab, banner and header fills are the structure colour or a wash of it, that weekend text reads 4.5:1 on what is behind it, that a design's four seasons are at least delta E 15 apart (Swiss grid and Boxed records: all the structure colour), and that no fill on a page is outside the palette, the roles, the look's own colours or a wash of one. Run against the branch before these fixes it fails 39 of 54.
 
 `tests/test_colour_roles.py` prints every worksheet and the twelve months of every design at letter and checks the computed colours: structure elements are one colour, weekend labels are the accent and weekday ones are not, the accent appears nowhere else (art, titles and footers aside), and the annual calendar's months follow the seasons (four distinct, none the weekend accent). It failed on `main` (54 of 54) and passes now.
 
