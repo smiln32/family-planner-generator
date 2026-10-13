@@ -19,7 +19,7 @@
 - Inline styles moved to classes, pixel-identical for every other design: page title colour, banner sizes, meal-plan day cells, budget and vacation total bars.
 - `render.py`: `rc` in the templates, recipe classes and `:root` tokens, the recipe's font cuts (`CSS_FILES` adds `recipes.css`).
 
-**Commits (local):** `1b0949c` (recipes and compositions), `44af7c6` (tests), `dd2ba65` (Mid-century family time balance), `1c4eda6` (Farmhouse helper face), `32f2432` (small-page body text), then the docs commit that adds this block.
+**Commits (local):** `1b0949c` (recipes and compositions), `44af7c6` (tests), `dd2ba65` (Mid-century family time balance), `1c4eda6` (Farmhouse helper face), `32f2432` (small-page body text), `69537ae` (docs: this block), `959f7b7` (QA fixes), `19d1bdb` (owner's look fixes), then the docs commit that updates this block.
 
 **Verification**
 - Full suite: 1627 passed, 0 skipped (baseline 1557). New `tests/test_recipes.py`; `test_chrome_variants.py` encodes only the recipe's content exception; `test_css_tokens.py` checks `recipes.css`; `test_four_axis.py` and `test_icon_centring.py` follow the new compositions.
@@ -48,7 +48,8 @@
 
 **What to do on resume**
 1. `git status`; confirm branch `chrome-catalog`, clean; run the full suite once.
-2. Independent visual QA of the samples folder, then the owner's look. Apply what she asks, re-prove (24 designs pixel-identical, trio counts equal to Blank apart from the recorded exception, page fit, colour rules), commit.
+2. Independent visual QA and the owner's first look are done and fixed. Next: the owner approves the regenerated samples (`phase2-trio-final/`). Apply anything more she asks, re-prove (24 designs pixel-identical, trio counts equal to Blank apart from the recorded exception, page fit, colour rules), commit.
+2a. The Smith 2027 run outputs are stale: the PDF/HTML and review notes (Oct 1) predate the Oct 2 family.yaml edit and all of Phase 2. Rebuild (stage 03) and re-review (stage 04) once the trio is approved. The older `phase2-step2-samples/` and `phase2-step4-samples/` are superseded by `phase2-trio-final/`; delete them only with the owner's OK.
 3. Push and the PR only on her explicit yes for that push.
 4. Next (not started): give other designs a recipe one at a time, only after her look.
 
