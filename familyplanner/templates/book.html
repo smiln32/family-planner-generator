@@ -45,7 +45,7 @@
 {% endif %}
 </style>
 </head>
-<body class="{% if page_zoom < 1 %}small-page {% endif %}design-{{ look.base }}{% if look.base in looks %} lk{% endif %}{% if look.layout %} design-{{ cfg.design }} layout box-{{ look.box }}{% endif %}">
+<body class="{% if page_zoom < 1 %}small-page {% endif %}design-{{ look.base }}{% if look.base in looks %} lk{% endif %}{% if look.layout %} design-{{ cfg.design }} layout box-{{ look.box }}{% endif %}{% if chrome_classes %} {{ chrome_classes }}{% endif %}">
 {% include "icons.html" %}
 {% for body in bodies %}
 {{ body|safe }}

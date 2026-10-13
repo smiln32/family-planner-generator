@@ -142,6 +142,7 @@ python planner.py build --fonts italics  # different typefaces
 
 python planner.py pages              # list what would be built
 python planner.py themes             # list the colour presets
+python planner.py chrome             # every design's component treatments (--current, --diff)
 python planner.py typefaces          # list the typeface sets
 python planner.py months             # per-month colours, motifs and taglines
 python planner.py init               # write a starter family.yaml

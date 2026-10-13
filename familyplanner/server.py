@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from . import config, designs, render, themes, typefaces
+from . import chrome, config, designs, render, themes, typefaces
 from .config import Config, ConfigError
 from .render import RenderError
 
@@ -343,7 +343,10 @@ class Handler(BaseHTTPRequestHandler):
                  # looks (they start from linen). A theme goes over either.
                  "palette": designs.look_palette(name) or None,
                  # How this cover treats the cover settings (see _cover_kind).
-                 "cover": _cover_kind(name)}
+                 "cover": _cover_kind(name),
+                 # The chrome catalog's summary (chrome.py); not shown yet.
+                 "chrome": {"family": chrome.get(name).family,
+                            "character": chrome.get(name).character}}
                 for name in designs.names()
             ],
             # The design open now may be a retired look the picker no longer

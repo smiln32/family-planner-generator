@@ -19,7 +19,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 from markupsafe import escape
 
-from . import calendars, colours, config, designs, themes, typefaces
+from . import calendars, chrome, colours, config, designs, themes, typefaces
 from .config import Config
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -268,10 +268,16 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
         bodies.append(_decorate(rendered, cfg, nav, page))
 
     width_in, height_in = cfg.page_inches
+    # The design's chrome catalog entry (chrome.py). The body carries its
+    # intended spec as `c-<field>-<value>` classes; no stylesheet reads them
+    # yet (Phase 2 step 3). None for a retired look without an entry.
+    spec = chrome.for_design(cfg.design)
     return shell.render(
         cfg=cfg,
         roles=roles,
         look=look,
+        chrome=spec,
+        chrome_classes=spec.body_classes() if spec else "",
         pages=pages,
         bodies=bodies,
         css=(STATIC_DIR / "planner.css").read_text(encoding="utf-8")

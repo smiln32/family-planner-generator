@@ -42,7 +42,8 @@ def test_look_book_renders(cfg, look):
     cfg.design = look
     cfg.pages = ["cover", "january", "budget", "chores"]
     html = render.render_html(cfg, render.plan_pages(cfg))
-    assert f'<body class="design-{look} lk">' in html
+    # The chrome catalog's `c-*` classes follow (tests/test_chrome_catalog.py).
+    assert f'<body class="design-{look} lk c-corners-' in html
     assert f'class="page lk-cover lkc-{look}"' in html
     assert f'class="page lk-month lkm-{look}"' in html
     assert '<svg class="cover-scene"' not in html   # the retired house cover is gone

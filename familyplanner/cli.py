@@ -6,7 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, config, designs, render, themes, typefaces
+from . import __version__, chrome, config, designs, render, themes, typefaces
 from .config import Config, ConfigError
 from .render import RenderError
 
@@ -198,6 +198,43 @@ def cmd_themes(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_chrome(args: argparse.Namespace) -> int:
+    """The chrome catalog as a table: each design's intended component
+    treatments (`--current`: what it prints today; `--diff`: only the
+    fields where the two differ)."""
+    fields = list(chrome.VOCAB)
+    if args.diff:
+        print("Chrome catalog: intended -> current, where they differ:")
+        print()
+        for entry in chrome.CATALOG.values():
+            gap = entry.gap()
+            if gap:
+                changes = "  ".join(f"{k}: {want} (now {now})" for k, (want, now) in gap.items())
+            else:
+                changes = "as it prints today"
+            print(f"  {entry.id:<11} {changes}")
+        print()
+        print("Editorial, Farmhouse and Mid-century are the owner-approved trio; the")
+        print("other intended values follow the override audit and await her look.")
+        return 0
+    which = "current" if args.current else "intended"
+    print(f"Chrome catalog ({which} component treatments):")
+    print()
+    head = f"  {'ID':<11} {'LABEL':<20} {'FAMILY':<17} {'STATUS':<8}" + "".join(
+        f" {f.replace('_', ' ').upper():<14}" for f in fields)
+    print(head)
+    for entry in chrome.CATALOG.values():
+        spec = entry.current if args.current else entry.components
+        row = f"  {entry.id:<11} {entry.label:<20} {entry.family:<17} {entry.status:<8}" + "".join(
+            f" {getattr(spec, f):<14}" for f in fields)
+        print(row)
+    print()
+    print("The catalog is familyplanner/chrome.py; the contract is _config/chrome-catalog.md.")
+    print("  python planner.py chrome --current   what each design prints today")
+    print("  python planner.py chrome --diff      only where intended and current differ")
+    return 0
+
+
 def cmd_init(args: argparse.Namespace) -> int:
     target = Path(args.path)
     if target.exists() and not args.force:
@@ -325,6 +362,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     tf = sub.add_parser("typefaces", help="list the built-in typeface sets")
     tf.set_defaults(func=cmd_typefaces)
+
+    ch = sub.add_parser("chrome", help="list every design's chrome component treatments")
+    ch.add_argument("--current", action="store_true",
+                    help="what each design prints today instead of the intended treatment")
+    ch.add_argument("--diff", action="store_true",
+                    help="only the fields where intended and current differ")
+    ch.set_defaults(func=cmd_chrome)
 
     i = sub.add_parser("init", help="write a starter config file")
     i.add_argument("path", nargs="?", default="family.yaml")

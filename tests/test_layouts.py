@@ -34,7 +34,8 @@ def test_layout_book_renders(cfg, design):
     assert slugs.index("weekly") < slugs.index("daily") < slugs.index("january")
     html = render.render_html(cfg, pages)
     base = design[:2]
-    assert f'<body class="design-{base} design-{design} layout box-{design}">' in html
+    # The chrome catalog's `c-*` classes follow (tests/test_chrome_catalog.py).
+    assert f'<body class="design-{base} design-{design} layout box-{design} c-corners-' in html
     assert html.count(f"box-{design} lx-") == 15  # cover, weekly, daily, twelve months
     assert 'class="page lx lx-' in html and "lx-cover" in html
     assert 'class="famcover' not in html      # the parent look's cover is gone
