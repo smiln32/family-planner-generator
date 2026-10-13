@@ -542,7 +542,9 @@ FARMHOUSE_RECIPE = Recipe(
         "label": _t("display", 8, 700, 0.1, "upper"),
         "field": _t("display", 8.5, 600),
         "body": _t("body", 9.5, 400, leading=1.3),
-        "helper": _t("script", 8.5, 400, italic=True, leading=1.3),
+        # Small helper lines in the body face's italic, so they stay readable
+        # in any typeface set (a set's script face may be a handwriting one).
+        "helper": _t("body", 8.5, 400, italic=True, leading=1.3),
         "numeral": _t("display", 11, 700, leading=1.0),
         "cal_month": _t("display", 8.5, 700, 0.12, "upper", leading=1.0),
         "cal_date": _t("display", 10.5, 600, leading=1.0),
