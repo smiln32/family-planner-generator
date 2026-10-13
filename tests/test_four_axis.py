@@ -541,7 +541,11 @@ def test_the_other_axes_still_take_effect_on_a_refined_design(tmp_path, design):
     elegant = typefaces.resolve("elegant")
     assert elegant.display in root["--font-display"] and elegant.body in root["--font-body"]
     assert html.count('<section class="page') == 3
-    assert 'class="page chores-page"' in html and 'class="page annual-page"' in html
+    assert 'class="page chores-page"' in html
+    # The annual calendar is the recipe's composition (chrome.Recipe.layouts),
+    # whatever the theme, palette and typeface set.
+    layout = chrome.get(design).active_recipe.calendar
+    assert f'class="page annual-page rx-page lay-{layout}"' in html
     body = html.split('<body class="', 1)[1].split('"', 1)[0].split()
     assert [c for c in body if c.startswith("c-")] == chrome.get(design).components.classes()
     # No theme, own fonts, every page: the same chrome classes.

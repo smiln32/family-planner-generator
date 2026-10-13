@@ -8,6 +8,12 @@ table row and cell, check box and numbered mark, and every heading and label,
 that Blank's have (Blank is the untouched reference); the calendars must
 print the same dates; and every text the variants set on a fill must read at
 4.5:1 with no theme and with each theme.
+
+The one exception is the owner-approved content exception a recipe records
+(chrome.Recipe.omit; 2026-10-13: Mid-century's Emergency page leaves out the
+Family Emergency Plan). Blank's page marks each omittable section with
+data-section="<id>", and only that section is taken out of Blank's counts
+and labels before comparing; everything else must still equal Blank.
 """
 
 from __future__ import annotations
@@ -26,6 +32,8 @@ WORKSHEETS = ["family_time", "emergency", "vacation", "chores", "annual_calendar
 LABEL_CLASSES = {"card-tab", "card-head", "label", "famtime-label", "maint-label", "emg-head",
                  "mini-head", "banner", "pill", "caps", "hl-q", "appt-head", "page-title",
                  "th-fill", "rowlabel", "area-name", "slotcell", "dayname"}
+VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source",
+        "track", "wbr"}
 
 
 def _page_html(design: str, slug: str, theme: str = "") -> str:
@@ -44,14 +52,21 @@ def _page_html(design: str, slug: str, theme: str = "") -> str:
 class _Counter(HTMLParser):
     """Counts the write-on surfaces and collects the label texts of a page."""
 
-    def __init__(self):
+    def __init__(self, skip: tuple[str, ...] = ()):
         super().__init__()
         self.counts = {"lines": 0, "rows": 0, "cells": 0, "checks": 0, "nums": 0}
         self.labels: set[str] = set()
         self._open: list[tuple[str, bool]] = []   # (tag, collects text)
         self._text: list[list[str]] = []
+        # Sections (data-section ids) left out of the count, and the depth of
+        # the open tags inside a skipped one.
+        self._skip, self._skipping = skip, 0
 
     def handle_starttag(self, tag, attrs):
+        if self._skipping or dict(attrs).get("data-section") in self._skip:
+            if tag not in VOID:
+                self._skipping += 1
+            return
         classes = set((dict(attrs).get("class") or "").split())
         if classes & {"dot-line", "solid-line"}:
             self.counts["lines"] += 1
@@ -69,10 +84,15 @@ class _Counter(HTMLParser):
             self._text.append([])
 
     def handle_data(self, data):
+        if self._skipping:
+            return
         for buf in self._text:
             buf.append(data)
 
     def handle_endtag(self, tag):
+        if self._skipping:
+            self._skipping -= 1
+            return
         while self._open:
             open_tag, collects = self._open.pop()
             if collects:
@@ -83,10 +103,15 @@ class _Counter(HTMLParser):
                 break
 
 
-def _measure(design: str, slug: str) -> _Counter:
-    counter = _Counter()
+def _measure(design: str, slug: str, skip: tuple[str, ...] = ()) -> _Counter:
+    counter = _Counter(skip)
     counter.feed(_page_html(design, slug))
     return counter
+
+
+def _omitted(design: str, slug: str) -> tuple[str, ...]:
+    """The sections the design's recipe leaves out of this page (owner-approved)."""
+    return chrome.get(design).active_recipe.omit.get(slug, ())
 
 
 def _texts(html: str, pattern: str) -> list[str]:
@@ -99,10 +124,29 @@ def _texts(html: str, pattern: str) -> list[str]:
 @pytest.mark.parametrize("slug", WORKSHEETS)
 @pytest.mark.parametrize("design", TRIO)
 def test_writing_space_and_labels_equal_blanks(design, slug):
-    ours, blank = _measure(design, slug), _measure("blank", slug)
+    ours, blank = _measure(design, slug), _measure("blank", slug, _omitted(design, slug))
     assert ours.counts == blank.counts, slug
     assert ours.labels == blank.labels, slug
     assert ours.counts["lines"] > 0 and ours.labels
+
+
+def test_the_only_content_exception_is_midcenturys_family_plan():
+    """Owner-approved, 2026-10-13: Mid-century's Emergency page has no Family
+    Emergency Plan; every other design keeps it. The exception is the recipe's,
+    and it takes out exactly that section (its heading, three fields, three
+    write-on lines) and nothing else."""
+    omits = {d: chrome.get(d).active_recipe.omit for d in chrome.names()}
+    assert {d: o for d, o in omits.items() if o} == {"midcentury": {"emergency": ("family_plan",)}}
+    full, cut = _measure("blank", "emergency"), _measure("blank", "emergency", ("family_plan",))
+    assert full.labels - cut.labels == {"family emergency plan", "meeting place (near home):",
+                                        "meeting place (outside neighborhood):",
+                                        "notes / special instructions:"}
+    assert full.counts["lines"] - cut.counts["lines"] == 3
+    assert 'data-section="family_plan"' not in _page_html("midcentury", "emergency")
+    for design in [d for d in designs.names() if d != "midcentury"]:
+        html = _page_html(design, "emergency")
+        assert html.count('data-section="family_plan"') == 1, design
+        assert "Family Emergency Plan" in html, design
 
 
 @pytest.mark.parametrize("design", TRIO)

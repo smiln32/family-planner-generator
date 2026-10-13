@@ -25,7 +25,7 @@ import pytest
 from familyplanner import colours, config
 from familyplanner.render import STATIC_DIR
 
-FILES = ["planner.css", "chrome.css", "looks.css"]
+FILES = ["planner.css", "chrome.css", "looks.css", "recipes.css"]
 
 TOKENS = tuple(f"--{name}" for name in config.DEFAULT_PALETTE)
 ROLE_PROPS = tuple(f"--c-{role}" for role in colours.ALL_ROLES) + tuple(

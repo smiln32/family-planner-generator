@@ -124,6 +124,10 @@ def test_icons_are_centred_in_their_badges(design, pages, size, measured):
 
 
 def test_emergency_contacts_have_badges():
-    # The layouts on looks 02 and 11 hide badges by design; every other design shows them.
-    html = _document("editorial", ["emergency"], "letter")
+    # The layouts on looks 02 and 11 hide badges by design; every design on the
+    # default Emergency composition shows them (Blank here). A recipe with
+    # `icons: none` and its own composition prints none (Editorial, 2026-10-13).
+    html = _document("blank", ["emergency"], "letter")
     assert html.count('class="chip') >= 20
+    html = _document("editorial", ["emergency"], "letter")
+    assert 'class="chip' not in html.split("<body", 1)[1]
