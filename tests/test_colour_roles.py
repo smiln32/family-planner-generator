@@ -98,14 +98,17 @@ window.addEventListener('load', () => { document.fonts.ready.then(() => {
   const name = el => el.tagName.toLowerCase() + '.' + (el.getAttribute('class') || '').trim().split(/\s+/).join('.')
     + (el.textContent.trim() ? ' "' + el.textContent.trim().replace(/\s+/g, ' ').slice(0, 20) + '"' : '');
   const STRUCT = ['.tbl thead tr:first-child th:not(.corner):not([data-day])', '.card-tab:not([data-day])',
-    '.card-head', '.lx-hd:not([data-day])', '.banner', '.chip', '.famtime-label', '.maint-label',
+    '.card-head', '.lx-hd:not([data-day])', '.banner:not(.rx-cont)', '.chip', '.famtime-label', '.maint-label',
     '.ye-head > span', '.vm-tag', '.howto-title', '.num', '.lx-num', '.dates-label .script',
     '.lk-month:not(.lkm-bauhaus) .lkm-label', '.mini th[data-day="weekday"]'].join(',');
+  // (.rx-cont is the rest of a composed page title, set as a banner span: a title, not a banner.)
   const ART = '.art, .mark, .mark-lg, .crest, .belongs-foot, .values-foot, .heart-tree, .divider, '
     + '.page-footer, .pie, .pie-key, .masthead h1, .pt-fit, .belongs-top, .howto-top, .lkm-orn, .lkm-band, '
     // Page titles keep their colour (Farmhouse sets its titles and month
-    // names in the barn red that is also its weekend accent).
-    + '.lkm-name';
+    // names in the barn red that is also its weekend accent), every part of
+    // a title: the rest of a long composed title and the year over Family
+    // Goals (owner's direction, 2026-10-13: titles print in barn red).
+    + '.lkm-name, .masthead .rx-cont, .masthead .year-tint';
   const DAY = '[data-day="weekend"], .we, .lx-we, .lkm-we';
   const out = [];
   for (const sec of document.querySelectorAll('section.page')) {

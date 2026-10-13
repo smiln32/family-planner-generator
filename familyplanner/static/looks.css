@@ -380,6 +380,11 @@
 
 .design-farmhouse .display { font-weight: 700; }
 .design-farmhouse .masthead h1.display { color: var(--red); }
+/* Every part of a Farmhouse title prints in barn red: the rest of a long
+   composed title ("Calendar") and the year over Family Goals too. The
+   italic second voice keeps its own colour. */
+.design-farmhouse.rx .rx-page .rx-mast .rx-cont,
+.design-farmhouse .goals-page .masthead .year-tint.year-plain:not(.year-blank) { color: var(--red); }
 .design-farmhouse .banner { border-radius: 0; background: var(--ink); }
 .design-farmhouse .card { border: 1.4px solid var(--ink); border-radius: 0; }
 .design-farmhouse .card-tab { border-radius: 0; background: var(--ink); top: -0.11in; }

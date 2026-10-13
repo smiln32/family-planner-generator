@@ -152,7 +152,12 @@
   font-style: var(--t-cal-month-style); line-height: var(--t-cal-month-lh);
 }
 .rx .rx-page .rx-cal .mini .mini-head .ico { display: none; }
-.rx .rx-page .rx-cal .mini table { flex: 1 1 auto; width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+/* Every month's date rows are one height, as if each month had six weeks:
+   the table takes its weeks' share (--wk of 6, set by kit.html) of the room
+   under the weekday row, and an empty foot takes the rest, so the date rows
+   of months side by side line up. */
+.rx .rx-page .rx-cal .mini table { flex: var(--wk, 6) 1 0.2in; width: 100%; height: auto; border-collapse: collapse; table-layout: fixed; }
+.rx .rx-page .rx-cal .mini::after { content: ""; flex: calc(6 - var(--wk, 6)) 1 0; }
 .rx .rx-page.annual-page .rx-cal .mini :is(th, td) { padding: 0; text-align: center; vertical-align: middle; }
 .rx .rx-page.annual-page .rx-cal .mini th {
   height: 0.2in; color: var(--c-structure);
@@ -192,7 +197,7 @@
 .rx .rx-page .rx-dir > .emg-head, .rx .rx-page .rx-dir > .rx-dr { display: grid; column-gap: var(--s2); align-items: end; }
 .rx .rx-page .rx-dir-3 > * { grid-template-columns: 1.3in minmax(0, 1fr) minmax(0, 1fr); }
 .rx .rx-page .rx-dir-2 > * { grid-template-columns: 1.3in minmax(0, 1fr); }
-.rx .rx-page .rx-dir-f > * { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); }
+.rx .rx-page .rx-dir-f > * { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr); }
 .rx .rx-page .rx-dir > .emg-head {
   margin: 0; padding-bottom: 0.04in; border-bottom: 1pt solid var(--c-structure); text-align: left;
   color: var(--c-structure); font-family: var(--t-label-font); font-size: var(--t-label-size);
@@ -321,18 +326,37 @@
 .rx .lay-department .card.rx-blk.rx-rail > .card-tab.rx-sec { white-space: normal; }
 .rx .lay-department .rx-ledger col.c-act { width: 30%; }
 .rx .lay-department .rx-ledger col.c-who { width: 1.3in; }
-.rx .lay-department .rx-stack { display: flex; flex-direction: column; margin-top: var(--s3); }
-.rx .lay-department .rx-stack .field {
-  flex: none; flex-direction: column; align-items: stretch; justify-content: space-between; height: 0.55in;
-  padding: 0.06in 0 0; border-bottom: 0.5pt solid var(--c-line);
+/* The rail's write-on fields: the label above its own ruled writing room,
+   the full rail wide; one line for the week, two for the goal and the focus.
+   The field's one write-on line is the room's foot; the line above it is
+   drawn, so the page keeps the default page's write-on lines. The pitch is
+   at least 0.24in as printed on a small page. A grid, so the macro's inline
+   flex does not spread the rail's spare room between a line and the next
+   label; the spare room stays under the last field. */
+.rx .lay-department .rx-stack {
+  display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; row-gap: 0.2in; margin-top: var(--s3);
+  --rx-pitch: max(0.32in, calc(0.24in / var(--page-zoom)));
 }
-.rx .lay-department .rx-stack .field .solid-line { display: none; }
+.rx .lay-department .rx-stack .field {
+  flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0;
+  min-height: 0; padding: 0; --rx-lines: 1;
+}
+.rx .lay-department .rx-stack .field + .field { --rx-lines: 2; }
+.rx .lay-department .rx-stack .field .solid-line {
+  display: block; flex: none; position: relative; min-width: 0; margin: 0;
+  height: calc(var(--rx-lines) * var(--rx-pitch)); border-bottom: 0.5pt solid var(--c-line);
+}
+.rx .lay-department .rx-stack .field + .field .solid-line::before {
+  content: ""; position: absolute; left: 0; right: 0; top: calc(var(--rx-pitch) - 0.5pt);
+  border-top: 0.5pt solid var(--c-line);
+}
 .rx .lay-department .rx-stack .field .label,
 .rx .lay-department .rx-home .field .label {
   font-family: var(--t-label-font); font-size: var(--t-label-size); font-weight: var(--t-label-weight);
   letter-spacing: var(--t-label-track); text-transform: var(--t-label-case);
 }
 .rx .lay-department .rx-ledger td:first-child { font-family: var(--t-section-font); font-style: var(--t-section-style); font-size: calc(var(--t-section-size) * 0.85); }
+.rx .lay-department .rx-ledger :is(td, th) + :is(td, th) { border-left: 0.5pt solid var(--c-line); }
 .rx .lay-department .rx-ledger .rx-sep { border-left: 0.5pt solid var(--c-structure); padding-left: 0.08in; }
 .rx .lay-department .rx-cols3 { display: grid; grid-template-columns: 1.6fr 2fr 1.9fr; column-gap: var(--s3); }
 .rx .lay-department .rx-ideas .checklist .row { flex: none; height: 0.32in; }
@@ -447,6 +471,7 @@
 .rx .lay-band .rx-ledger td { height: 0.44in; border-bottom: 0; padding: 0 0.08in; }
 .rx .lay-band .rx-ledger.rx-striped tbody tr:nth-child(odd) td { background: color-mix(in srgb, var(--c-structure) 7%, var(--paper)); }
 .rx .lay-band .rx-ledger td:first-child { padding-left: 0.1in; border-right: 0.75pt solid var(--c-line); font-weight: 600; }
+.rx .lay-band .rx-ledger :is(td, th) + :is(td, th) { border-left: 0.75pt solid var(--c-line); }
 .rx .lay-band .rx-pair { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--s3); margin-top: var(--s4); }
 .rx .lay-band .rx-stackcol { display: flex; flex-direction: column; gap: var(--s3); min-height: 0; }
 .rx .lay-band .rx-lead { margin: 0 0 var(--s1); }
@@ -692,6 +717,10 @@ body.rx.r-motif-shapes .page:not(.lk-cover):not(.lk-month)::after { content: non
    directory's column heads may wrap rather than run past their column. */
 .small-page .rx .rx-page .rx-dir > .emg-head, .small-page.rx .rx-page .rx-dir > .emg-head { letter-spacing: 0.02em; }
 .small-page.rx .rx-page .rx-dir > .emg-head span { white-space: normal; }
+/* The family contact list keeps its heads on one line: a narrower name
+   column, untracked heads. */
+.small-page.rx .rx-page .rx-dir-f > * { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 1.1fr); }
+.small-page.rx .rx-page .rx-dir-f > .emg-head { letter-spacing: 0; }
 
 /* --- 8. Text colour policy `structure` (Mid-century: no ink text) ----------
    Text the shared CSS sets in the ink token reads the recipe's text colour;
@@ -717,6 +746,7 @@ body.rx.r-motif-shapes .page:not(.lk-cover):not(.lk-month)::after { content: non
 .small-page.rx .rx-page .rx-ledger th { white-space: normal; }
 .small-page.rx .rx-page .checklist .row { white-space: normal; max-height: none; }
 .small-page.rx .rx-page .checklist .row .solid-line { min-width: 0.15in; }
+.small-page.rx .lay-department .rx-ideas .checklist .row { height: auto; min-height: 0.32in; }
 .small-page.rx .rx-page :is(.rx-nm, .rx-nm em, .rx-tall .field .label) { white-space: normal; }
 .small-page.rx .rx-page .rx-dr { max-height: none; }
 .small-page.rx .rx-page .rx-ownrent { flex-wrap: wrap; row-gap: 0.02in; }

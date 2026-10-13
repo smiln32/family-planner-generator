@@ -2,7 +2,7 @@
 
 ## Phase 2 step 5 (2026-10-13): the owner's trio directions are built (branch `chrome-catalog`)
 
-**Status:** implemented and automatically verified; awaiting independent visual QA and the owner's approval of the built pages. Commits up to `89325ce` are pushed (the "not pushed" notes below were written before that push); the step 5 commits below are local, not pushed.
+**Status:** implemented and automatically verified; independent visual QA done and its findings fixed ("QA fixes" below); awaiting the owner's approval of the built pages. Commits up to `89325ce` are pushed (the "not pushed" notes below were written before that push); the step 5 commits below are local, not pushed.
 
 **The owner's decisions (2026-10-13; they replace the pending questions of the parked step 4 block)**
 - Editorial: Family Time = "Department page"; Annual Calendar = "Broadsheet"; Emergency = "Department page".
@@ -25,6 +25,16 @@
 - Full suite: 1627 passed, 0 skipped (baseline 1557). New `tests/test_recipes.py`; `test_chrome_variants.py` encodes only the recipe's content exception; `test_css_tokens.py` checks `recipes.css`; `test_four_axis.py` and `test_icon_centring.py` follow the new compositions.
 - Pixel proof: 504 page pairs of the 24 other designs (letter, 100 dpi), max difference 0.
 - Render, inspect, correct: three cycles on cover, annual_calendar, january, family_time, emergency, chores, year_goals, meal_plan, vacation (110 dpi) and 300 dpi crops of the three composed pages; every other worksheet of the trio rendered and inspected once; measured in Chrome (fit, colour rules, titles, print minimums, ink text, contrast, empty bands) at letter, 5.5x8 and 6x9.
+
+**QA fixes (2026-10-13, after the independent visual QA of the samples)**
+- Editorial Family Time rail: "Week of", "Our family goal" and "Focus this week" each print their label above their own ruled writing room, the full rail wide (one line for the week, two for the goal and the focus, 0.32in pitch, at least 0.24in as printed on small pages). The extra line is drawn, so the write-on line counts stay equal to Blank's. Cause: the `field` macro's inline `flex:1` overrode the rail's field height.
+- Farmhouse: every part of a title prints in barn red: the rest of a long composed title ("Calendar") and the year over Family Goals (`looks.css`). Editorial and Mid-century already print the title and its rest in one colour, so they are unchanged.
+- Editorial and Mid-century week tables: hairline column rules in the line colour (`--c-line`); Editorial's structure rule before Notes stays.
+- Annual calendars (all three): every month's date rows are one height, as if each month had six weeks (`--wk` on each month tile in `compose/kit.html`, an empty foot takes the rest), so date rows line up across a tier. Largest text-only empty band at letter: Editorial 3.9%, Farmhouse 5.3%, Mid-century 3.3%.
+- Family Contact List (Emergency): "Phone number" and the other heads print on one line at letter, 5.5x8 and 6x9 (columns rebalanced; on small pages a narrower name column and untracked heads). The Emergency Contacts table's "Phone number" still wraps on Farmhouse and Mid-century small pages, as the small-page rule allows (unchanged).
+- Also fixed: Editorial Family Time Ideas items no longer overlap on 5.5x8 (rows grow to hold a wrapped item).
+- `tests/test_colour_roles.py`: the page-title exception (titles may print in Farmhouse's barn red, its weekend accent) now covers every part of a title (`.masthead .rx-cont`, `.masthead .year-tint`), and `.rx-cont` is no longer checked as a structure-coloured banner.
+- Re-proved: full suite 1627 passed, 0 skipped; pixel proof on 11 other designs (blank, swiss, coastal, deco, nordic, gazette, cottage, 02a, 06b, 11c, 12a) x 7 pages (cover, family_time, emergency, annual_calendar, year_goals, january, chores; 85 pairs incl. layout weekly sheets), max difference 0. Samples regenerated in `stages/04-review/output/phase2-trio-final/`.
 
 **Samples for the owner:** `stages/04-review/output/phase2-trio-final/` (gitignored), `INDEX.md` lists every file: same-content sheets (one made-up family, theme `classic`, fonts `elegant`), before/after sheets per design, 300 dpi print-scale crops.
 

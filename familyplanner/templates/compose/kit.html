@@ -82,7 +82,8 @@
      "snowflake": "snowflake"} %}
 {% macro month(month, month_number) %}
 {% set key = month_key(month, month_number) %}
-<div class="mini" data-season="{{ key }}" data-n="{{ '%02d' % month_number }}" style="--c:{{ p[key] }};--c-on:{{ p[key ~ '-on'] if (key ~ '-on') in p else '#fff' }}">
+{% set weeks = compact_grid(cfg.year, month_number, cfg.sunday_first) %}
+<div class="mini" data-season="{{ key }}" data-n="{{ '%02d' % month_number }}" style="--c:{{ p[key] }};--c-on:{{ p[key ~ '-on'] if (key ~ '-on') in p else '#fff' }};--wk:{{ weeks|length }}">
   <div class="mini-head">{{ ico(motif_icon.get(month.motif, "heart")) }} <span class="rx-mn">{{ month.name|upper }}</span></div>
   <table>
     <thead><tr>
@@ -92,7 +93,7 @@
       {% endfor %}
     </tr></thead>
     <tbody>
-      {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
+      {% for week in weeks %}
       <tr>
         {% for day in week %}
         <td{% if day.weekend %} class="we"{% if day.number %} data-day="weekend"{% endif %}{% endif %}>{{ day.number or "" }}</td>
