@@ -735,8 +735,11 @@ body.rx.r-motif-shapes .page:not(.lk-cover):not(.lk-month)::after { content: non
    (tests/test_recipes.py). */
 .rx .page .health-tbl .blurb { font-size: 6.5pt; }
 .rx .page :is(.appt-head span, .week-head span) { font-size: max(6.5pt, calc(6.5pt / var(--page-zoom))); }
-.small-page.rx .page :is(.hl-q, .maint-tbl td, .howto-body, .index-lede, .values-q, .values-note p, .vm-tag,
-  .total-bar, .total-box, .slotcell span, .vm-blurb) { font-size: calc(6.6pt / var(--page-zoom)); }
+.small-page.rx .page :is(.vm-tag, .total-bar, .total-box, .slotcell span) { font-size: calc(6.6pt / var(--page-zoom)); }
+/* Body and list text: 7pt. */
+.small-page.rx .page :is(.hl-q, .maint-tbl td, .howto-body, .index-lede, .values-q, .values-note p, .vm-blurb) {
+  font-size: calc(7pt / var(--page-zoom));
+}
 .small-page.rx .page :is(.index-num, .index-title) { font-size: calc(6.6pt / var(--page-zoom)); }
 /* The tracker's day letters keep their pitch over the dots on a small page:
    each letter gets the whole pitch (box and gap), centred where it was. */
