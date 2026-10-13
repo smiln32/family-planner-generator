@@ -492,8 +492,10 @@ def test_build_without_a_theme_prints_the_look_and_no_note(capsys, tmp_path):
 # day pill on a month grid is a light wash of the structure colour
 # (planner.css `.cal-cell .n.pill`: 4% structure in white, the --c-wash
 # recipe; 4% is the strongest wash on which the poppy and citrus navies, at
-# 4.6:1 on bare paper, still read), and two muted labels (`.emg-name em`,
-# `.index-lede`) print in the structure colour. Text on the pill (a weekday in
+# 4.6:1 on bare paper, still read), the chores tracker's day initials sit on
+# the same wash (`.chores-tbl .day-head th`, since Phase 2 step 4; a wash in
+# the paper colour, even 2%, falls under 4.5:1 on the poppy theme), and two
+# muted labels (`.emg-name em`, `.index-lede`) print in the structure colour. Text on the pill (a weekday in
 # navy, a weekend day in the weekend accent) and the muted labels on paper
 # must read at 4.5:1 for every design, with no theme and with each theme.
 PILL_WASH = 0.04

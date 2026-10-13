@@ -717,7 +717,11 @@ body {
 
 .chores-page .masthead { margin-bottom: 0.16in; }
 .chores-tbl { flex: 1 1 auto; --row-h: 0.44in; margin-bottom: 0.2in; }
-.chores-tbl .day-head th { padding: 0.02in 0; font-size: 8pt; background: #F1F4F8; }
+/* The day initials sit on the same light structure wash as the month grid's
+   day pill (4% in white: the strongest wash on which every design's and
+   theme's weekday and weekend initials still read at 4.5:1; a wash in the
+   paper colour falls under that on the poppy theme). */
+.chores-tbl .day-head th { padding: 0.02in 0; font-size: 8pt; background: color-mix(in srgb, var(--c-structure) 4%, #fff); }
 .chores-tbl thead tr:first-child th { border-radius: 0; }
 .chores-tbl thead tr:first-child th:first-child { border-radius: 0.07in 0 0 0; }
 .chores-tbl thead tr:first-child th:last-child { border-radius: 0 0.07in 0 0; }
@@ -780,7 +784,7 @@ body {
   display: block; font-weight: 600; font-size: 5.9pt;
   text-transform: none; letter-spacing: 0; opacity: 0.92; margin-top: 0.02in;
 }
-.health-tbl .day-head th { background: #fff; padding: 0.03in 0.02in; }
+.health-tbl .day-head th { background: var(--paper); padding: 0.03in 0.02in; }
 .health-tbl td { padding: 0.03in 0.04in; vertical-align: middle; }
 .member-cell { display: flex; align-items: center; gap: 0.06in; min-width: 1.05in; }
 .member-name { font-size: 8pt; font-weight: 700; color: var(--navy); }
