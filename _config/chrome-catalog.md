@@ -1,6 +1,6 @@
 # Chrome catalog
 
-The contract for the chrome axis (`design`). Phase 2 step 3, 2026-10-12; step 4 (the variants that print it), 2026-10-13.
+The contract for the chrome axis (`design`). Phase 2 step 3, 2026-10-12; step 4 (the variants that print it), 2026-10-13; step 5 (recipes: composition, type scale, text colour, content exceptions), 2026-10-13.
 
 ## What it is
 
@@ -52,6 +52,51 @@ One line per field; values in order.
 `approved` (on `Chrome`) decides which spec prints. The owner approved the intended specs of Editorial, Farmhouse and Mid-century on 2026-10-12 (`approved=True` in their entries; they print since step 4, 2026-10-13). A design whose intended spec is what it prints already (Coastal, `06b`, `06c`, `12a`, Blank, `original`) has nothing to approve and counts as approved. Every other design's intended values follow the override audit's findings and await her look; until she approves one it renders as today (`active` is `current`), pixel for pixel. To approve a design: set `approved=True` on its entry, check that `chrome.css` has a block for every value its spec needs, render it and look.
 
 Step 4 also refined the vocabulary: `strip` gained `framed` (a square 1.4px frame in the frame colour) and `boxed` now means only the shared rounded box; Farmhouse, the classic family (Deco, Almanac, Bauhaus) and the `02` and `11` layouts carry `framed` as their intended strip.
+
+## Recipes (Phase 2 step 5, 2026-10-13)
+
+The fourteen fields above say what a component looks like. A recipe says what they cannot: proportion, hierarchy and arrangement. It is an optional `Recipe` on `Chrome` (`chrome.py`), with closed vocabularies like `Components`, validated at import; a value outside them fails with a message that names the allowed values (an unknown layout id: "unknown layout id 'x' for family_time; choose one of default, department, recipe, band").
+
+- `active_recipe` is the design's recipe once the design is `approved`, else `DEFAULT_RECIPE`. The default recipe adds no class, no token and no font, so a design without a recipe prints exactly as before (pixel proof below).
+- `render.render_html` passes it to the templates as `rc`, writes its classes on the body (`rx rx-<id> r-title-* r-text-* r-icons-* r-motif-* r-sections-*`) and its tokens on `:root`, and embeds the font cuts its type scale asks for (`Recipe.font_needs`). `static/recipes.css` (loaded last) holds everything the classes and tokens select.
+
+| Field | Values | Meaning |
+|---|---|---|
+| `layouts` | page type to composition id (`LAYOUT_VARIANTS`) | `family_time`: `default`, `department`, `recipe`, `band`; `annual_calendar`: `default`, `broadsheet`, `recipe`, `shapegrid`; `emergency`: `default`, `department`, `recipe`, `shapegrid`. A page type not named prints `default`. `Recipe.calendar` is the annual calendar's id |
+| `title_area` | `masthead`, `nameplate`, `centred`, `shapegrid` | How the masthead of every default-composition worksheet is set: today's; ears with the kicker over a left title (Editorial); a centred title with an italic second voice (Farmhouse); a left title beside three shapes (Mid-century) |
+| `text` | `ink`, `structure` | The text colour: the ink token, or the structure role (Mid-century: no ink text). A role, so a theme recolours it |
+| `icons` | `disc`, `bare`, `none` | Row and strip icons: today's filled discs, a bare icon in the structure colour, or none |
+| `motif` | `none`, `ticking`, `shapes` | The page's one motif: the ticking band under the masthead (it replaces the top-edge ticks), or the cover's shapes (they replace the corner circle) |
+| `sections` | `default`, `rules`, `frames`, `blocks` | How the default compositions draw their cards, table heads, numerals and totals: as today; open under rules; double-rule frames with the heading set into the top rule; tinted blocks |
+| `type` | role to `TypeRole(face, size, weight, tracking, case, italic, leading)` | The type scale at letter. Roles: `kicker`, `title`, `deck`, `section`, `index`, `label`, `field`, `body`, `helper`, `numeral`, `cal_month`, `cal_date`, `cal_weekday`, `footer`; roles not named come from `BASE_TYPE`. Faces are roles (`display`, `script`, `body`), so `fonts:` still changes them. Weights are 400, 600, 700 or 800 (the bundled cuts; no face has a 500) |
+| `space` | seven steps in inches | `--s1` to `--s7` (1, 2, 3, 4, 6, 8, 12 sixteenths by default) |
+| `print_min` | role to pt | Printed minimums; never under `PRINT_MINIMUMS` |
+| `omit` | page type to section ids (`OMITTABLE`) | Owner-approved content exceptions. Only `emergency: family_plan` exists |
+| `kicker` | a short plain line | The design's kicker over a title ("The home edition", "the family plan") |
+
+**Compositions.** `templates/compose/<page>-<layout>.html`, built from the shared macros (`field`, `checklist`, `numbered`, `lines`, `footer`) and the parts in `compose/kit.html` (masthead forms, section heads, day names, shapes, the month tile, the dates card) and `compose/emergency-kit.html` (the Emergency sections). A composition keeps every write-on line, row, cell, check box, numbered mark and label of the default page (`tests/test_chrome_variants.py`) and the same month tiles and dates, and is selected by its page class (`lay-<id>`), never by a design name, so any design may pick it. `default` is the page template as it was; the page template includes the composition when the recipe names another (`family_time.html`, `annual_calendar.html`, `emergency.html`).
+
+**Type and print minimums.** Each role prints as `--t-<role>-font`, `-size`, `-weight`, `-track`, `-case`, `-style`, `-lh` and the class `.t-<role>`. A size token is `max(letter size, minimum / --page-zoom)`, so a role never prints under its minimum on 5.5x8 or 6x9. Adopted minimums (2026-10-13 audit, part B; pt as printed): calendar date 6.5, weekday initial 6, table head and column label 6.5, field label 6.5, section label 7.5, body 7, tracked caps 6.5, footer 6.5, helper 6. The default compositions' small text that the shared CSS fixes in points is floored the same way in `recipes.css` ("Print minimums on the default compositions").
+
+**Text colour policy.** `text: structure` sets `--t-text` to the structure role, and every text the shared CSS prints in ink reads it; a look's light accent text (Mid-century's cover kicker, its month band kicker) is deepened or lightened from the palette to read at 4.5:1. Checked in Chrome on every page (`tests/test_recipes.py`).
+
+**Content exceptions.** A template marks an omittable section with `data-section="<id>"` (the default Emergency page marks its family plan). A composition leaves it out when `rc.omits(page, id)`. `tests/test_chrome_variants.py` takes exactly that section out of Blank's counts and labels before comparing, and `tests/test_recipes.py` checks that only Mid-century omits it.
+
+**The three recipes (owner's decisions, 2026-10-13).**
+
+| | Editorial | Farmhouse | Mid-century |
+|---|---|---|---|
+| Family Time | `department` (Department page) | `recipe` (Recipe card) | `band` (band and tinted blocks, carrying the shape-grid shapes) |
+| Annual Calendar | `broadsheet` (Broadsheet) | `recipe` | `shapegrid` (Shape grid) |
+| Emergency | `department` | `recipe` | `shapegrid`, without the Family Emergency Plan |
+| Title area, sections | `nameplate`, `rules` | `centred`, `frames` | `shapegrid`, `blocks` |
+| Text, icons, motif | ink, none, none | ink, bare, ticking | structure (no ink text), bare, shapes |
+
+The month pages and covers keep their owner-approved designs; the recipe adds only the text-colour fixes above to them.
+
+**Pixel proof.** Before any edit and after, the 24 other designs (cover, family_time, emergency, annual_calendar, chores, january, year_goals, meal_plan, weekly, daily, then budget, grocery, health_tracker, school_activities, home_maintenance, vacation, year_end, example_gratitude, index, reading_log) at letter 100 dpi: 504 page pairs, Pillow difference 0 on every pair, including the inline styles moved to classes (page title colour, banner sizes, meal-plan day cells, total bars).
+
+**Approval.** The trio's recipes print because the owner chose their directions; the built pages await independent visual QA and her approval (`stages/04-review/output/phase2-trio-final/`). Another design gets a recipe only after her look: add a `Recipe` to its entry, pick compositions from `LAYOUT_VARIANTS` (or add a shared one), render, measure and look.
 
 ## Defects
 

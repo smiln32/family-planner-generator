@@ -1,13 +1,52 @@
 # Handoff, 2026-10-13
 
-## Parked on 2026-10-13: Phase 2 step 4 awaiting the owner's review (branch `chrome-catalog`, not pushed)
+## Phase 2 step 5 (2026-10-13): the owner's trio directions are built (branch `chrome-catalog`)
 
-**Why parked:** the owner stopped the session to resume later; nothing is broken.
+**Status:** implemented and automatically verified; awaiting independent visual QA and the owner's approval of the built pages. Commits up to `89325ce` are pushed (the "not pushed" notes below were written before that push); the step 5 commits below are local, not pushed.
+
+**The owner's decisions (2026-10-13; they replace the pending questions of the parked step 4 block)**
+- Editorial: Family Time = "Department page"; Annual Calendar = "Broadsheet"; Emergency = "Department page".
+- Farmhouse: "Recipe card" for Family Time, Annual Calendar and Emergency.
+- Mid-century: no black text anywhere (every text uses the design's colour roles, at 4.5:1); the "Shape grid" shapes on all pages, sized as each page needs; Family Time = the "Band and arches" composition (band, tinted blocks) carrying the shape-grid shapes; Annual Calendar = Shape grid; Emergency = Shape grid with the "Family Emergency Plan" section removed (owner-approved content exception, Mid-century only; every other design keeps it).
+- Section arrangement may now differ per design on these pages (the earlier locked decision "section ORDER is the same for all designs" is lifted for the compositions she chose).
+- Farmhouse titles print in barn red, as the docs said (the inline title colour that overrode it is now a class).
+- The step 4 questions (approve the three languages; keep the faint chores/health day-head tint; give Editorial's annual calendar more vertical presence) are answered by these directions: the annual calendars of all three now fill the page (largest empty band 2.9% to 5.6% of the page height, letter).
+
+**What was built**
+- `familyplanner/chrome.py`: an optional `Recipe` on `Chrome` (layouts per page type, title area, text colour policy, icons, motif, section language, type scale with print minimums, spacing, content exceptions, kicker), closed vocabularies validated at import; `DEFAULT_RECIPE` adds nothing; `EDITORIAL_RECIPE`, `FARMHOUSE_RECIPE`, `MIDCENTURY_RECIPE`. Contract: `_config/chrome-catalog.md`, "Recipes".
+- `templates/compose/`: shared compositions (`family_time-department|recipe|band`, `annual_calendar-broadsheet|recipe|shapegrid`, `emergency-department|recipe|shapegrid`) built from the shared macros and `kit.html` / `emergency-kit.html`; any design may pick them. The three page templates include the composition the recipe names.
+- `static/recipes.css` (loaded last): the type roles, the compositions, and the trio's default pages (title area, icons, section language, ticking band, shapes, text colour, print-minimum floors, small-page fixes).
+- Inline styles moved to classes, pixel-identical for every other design: page title colour, banner sizes, meal-plan day cells, budget and vacation total bars.
+- `render.py`: `rc` in the templates, recipe classes and `:root` tokens, the recipe's font cuts (`CSS_FILES` adds `recipes.css`).
+
+**Commits (local):** `1b0949c` (recipes and compositions), `44af7c6` (tests), `dd2ba65` (Mid-century family time balance), `1c4eda6` (Farmhouse helper face), `32f2432` (small-page body text), then the docs commit that adds this block.
+
+**Verification**
+- Full suite: 1627 passed, 0 skipped (baseline 1557). New `tests/test_recipes.py`; `test_chrome_variants.py` encodes only the recipe's content exception; `test_css_tokens.py` checks `recipes.css`; `test_four_axis.py` and `test_icon_centring.py` follow the new compositions.
+- Pixel proof: 504 page pairs of the 24 other designs (letter, 100 dpi), max difference 0.
+- Render, inspect, correct: three cycles on cover, annual_calendar, january, family_time, emergency, chores, year_goals, meal_plan, vacation (110 dpi) and 300 dpi crops of the three composed pages; every other worksheet of the trio rendered and inspected once; measured in Chrome (fit, colour rules, titles, print minimums, ink text, contrast, empty bands) at letter, 5.5x8 and 6x9.
+
+**Samples for the owner:** `stages/04-review/output/phase2-trio-final/` (gitignored), `INDEX.md` lists every file: same-content sheets (one made-up family, theme `classic`, fonts `elegant`), before/after sheets per design, 300 dpi print-scale crops.
+
+**What to do on resume**
+1. `git status`; confirm branch `chrome-catalog`, clean; run the full suite once.
+2. Independent visual QA of the samples folder, then the owner's look. Apply what she asks, re-prove (24 designs pixel-identical, trio counts equal to Blank apart from the recorded exception, page fit, colour rules), commit.
+3. Push and the PR only on her explicit yes for that push.
+4. Next (not started): give other designs a recipe one at a time, only after her look.
+
+**Known limits (recorded, not fixed)**
+- The month pages and covers keep their approved designs; on Mid-century the month pages carry the January band's arches, not the shape-grid shapes, and its cover and month kickers were only recoloured for contrast.
+- On Editorial, a few owner-approved cover and summer month-page texts read under 4.5:1 (the season colour and the cover's red); the 4.5:1 rule was set for Mid-century.
+- With `fonts:` set to a set whose script face is a handwriting face (for example `elegant`, Great Vibes), Farmhouse's second voice and footer print in that face, by the four-axis rule.
+
+## Parked on 2026-10-13: Phase 2 step 4 (superseded by step 5 above)
+
+**Why parked:** the owner stopped the session to resume later. She has since answered (step 5 above).
 
 **What this is:** Phase 2 (chrome catalog) of the four-axis plan. Phase 1 (`four-axis`, PR #10) is merged into `main`. Phase 2 steps 1 to 4 are done on `chrome-catalog`: layouts and shared chrome read colour roles (steps 1-2), the catalog exists and drives rendering (step 3), and the three approved designs (Editorial, Farmhouse, Mid-century) print their catalog spec (step 4). The owner has NOT yet reviewed the step 4 samples; nothing may expand to other designs until she does.
 
 **Where everything lives**
-- Branch `chrome-catalog` from `main` (`ece7dbc`); commits `bf3c78c`, `c9a0d5b` (step 1), `385df55`, `7d29ba4` (step 2), `41d814b`, `3b77779` (step 3), `1cb709d`, `8e46730`, `0be8d60` (step 4). Not pushed.
+- Branch `chrome-catalog` from `main` (`ece7dbc`); commits `bf3c78c`, `c9a0d5b` (step 1), `385df55`, `7d29ba4` (step 2), `41d814b`, `3b77779` (step 3), `1cb709d`, `8e46730`, `0be8d60` (step 4), `89325ce` (handoff). Pushed up to `89325ce`.
 - Catalog: `familyplanner/chrome.py` (source of truth), `_config/chrome-catalog.md` (contract), `python planner.py chrome --diff`.
 - Variants: `familyplanner/static/chrome.css` (keyed to the `c-*` body classes), template branches in `templates/macros.html` and `templates/pages/annual_calendar.html`.
 - Samples for the owner: `stages/04-review/output/phase2-step4-samples/` (gitignored; nine per-page sheets, three before/after sheets, `OVERVIEW.png`) and step 2's `stages/04-review/output/phase2-step2-samples/`.
@@ -22,8 +61,8 @@
 | Step 1, layouts read roles | done, `bf3c78c` |
 | Step 2, shared chrome reads roles | done, `385df55`; owner saw samples, no objection recorded |
 | Step 3, chrome catalog | done, `41d814b` |
-| Step 4, trio prints its spec | done, `8e46730`; **awaiting owner review** |
-| Owner answers pending | (1) approve the three languages; (2) keep the faint chores/health day-head tint on all designs; (3) fix Editorial's open annual calendar, which leaves wide empty bands between month rows (coordinator's pick: yes, give the months more vertical presence) |
+| Step 4, trio prints its spec | done, `8e46730`; superseded by step 5 |
+| Owner answers | given 2026-10-13 as the trio directions; built in step 5 (see the top of this file) |
 | Next batch (other designs) | not started; stays unapproved until the owner looks |
 | Push / PR for Phase 2 | not done; needs the owner's yes |
 
@@ -34,14 +73,10 @@
 - Shared components stay reusable: catalog-driven variants, never duplicated templates.
 - Defects `.layout .banner` and Bauhaus chip alternation are recorded and deferred (see "Defects recorded").
 - Step 2's strip border is option A (full frame colour); option B (45% wash) is one line (`--c-strip`) if the owner prefers it.
-- Section ORDER on worksheets is still the same for all designs (template-level); changing arrangement is a scope extension the owner must decide.
+- Section ORDER on worksheets is still the same for all designs (template-level); changing arrangement is a scope extension the owner must decide. (Lifted 2026-10-13 for the trio's chosen compositions; see step 5.)
 
-**What to do on resume (Phase 2)**
-1. `git status`; confirm branch `chrome-catalog` at `0be8d60`, clean. Run the full suite once.
-2. Ask the owner the three pending answers above (point her at the step 4 samples folder). Do not expand to other designs before she answers.
-3. If she approves: apply any change she asks for (Editorial calendar bands first if she says yes), re-prove (unapproved designs zero pixel delta, trio writing-space counts equal to Blank, page fit), commit, then offer the push and PR commands (push and PR are hers).
-4. Only after that: the recommended next batch (step 4 section below) one design at a time, each marked `approved` only after she looks at its samples.
-5. Keep the sub-agent ownership / coordinator verification model and the eight-heading reports.
+**What to do on resume (Phase 2)**: superseded; follow "What to do on resume" in the step 5 block at the top.
+- Keep the sub-agent ownership / coordinator verification model and the eight-heading reports.
 
 ## State on 2026-10-12: four axes, Phase 1 (branch `four-axis`)
 
