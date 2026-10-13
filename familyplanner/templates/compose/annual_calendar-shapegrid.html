@@ -1,0 +1,20 @@
+{# Annual calendar, "shape grid": a title block beside the four seasons as
+   the cover's shapes, then the twelve months open on the page, three across
+   and four down, filling it, each month name keyed by its season's shape
+   over a rule in the season's colour; the important dates as an open block.
+   Picked by Mid-century's recipe. #}
+{% from "macros.html" import footer with context %}
+{% from "compose/kit.html" import head, month, dates, shapes, year_text with context %}
+<section class="page annual-page rx-page lay-shapegrid">
+  {{ head("shapegrid", "Annual Family", cont="Calendar", deck=year_text(),
+          shapes_html=shapes([("q", "c-winter"), ("c", "c-spring"), ("a", "c-summer"), ("s", "c-autumn")],
+                             ".62in", "rx-head-shapes")) }}
+
+  <div class="rx-cal rx-cal-3x4">
+    {% for m in cfg.months %}{{ month(m, loop.index) }}{% endfor %}
+  </div>
+
+  {{ dates() }}
+
+  {{ footer("A whole year of memories, together.") }}
+</section>

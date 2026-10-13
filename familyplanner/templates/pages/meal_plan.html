@@ -10,7 +10,7 @@
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Weekly Meal") }}
-      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:13pt">Planning Sheet</div>
+      <div class="banner b-13" style="--banner-bg:{{ p.structure }}">Planning Sheet</div>
       {{ divider() }}
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Bowl of vegetables">
@@ -42,10 +42,9 @@
       {% for name in day_names(cfg.sunday_first) %}
       {% set key = "weekend" if weekend[loop.index0] else "structure" %}
       <tr>
-        <td class="daycell{% if weekend[loop.index0] %} we{% endif %}" style="--c:{{ p[key] }};background:var(--c-wash)">
-          <span class="dayname" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
-                style="color:{{ p[key] }}">{{ name[:3]|upper }}</span>
-          <svg class="ico dayglyph" style="fill:{{ p[key] }}">
+        <td class="daycell{% if weekend[loop.index0] %} we{% endif %}">
+          <span class="dayname" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">{{ name[:3]|upper }}</span>
+          <svg class="ico dayglyph">
             <use href="#i-{{ 'moon' if weekend[loop.index0] else 'sun' }}"/></svg>
         </td>
         <td></td><td></td><td></td><td></td><td></td>

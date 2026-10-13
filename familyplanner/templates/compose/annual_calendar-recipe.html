@@ -1,0 +1,19 @@
+{# Annual calendar, "recipe card": the centred title and its italic second
+   voice over one ticking band, then the twelve months as framed tiles,
+   three across and four down, filling the page, each headed by a bar in its
+   season's colour; the dates to remember in a double-rule card. Picked by
+   Farmhouse's recipe. #}
+{% from "macros.html" import footer with context %}
+{% from "compose/kit.html" import head, month, dates, year_text with context %}
+<section class="page annual-page rx-page lay-recipe">
+  {% set yr = year_text() %}
+  {{ head("centred", "Annual Family", cont="Calendar", deck=("The year " ~ yr) if yr else "") }}
+
+  <div class="rx-cal rx-cal-3x4">
+    {% for m in cfg.months %}{{ month(m, loop.index) }}{% endfor %}
+  </div>
+
+  {{ dates() }}
+
+  {{ footer("A whole year of memories, together.") }}
+</section>

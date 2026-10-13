@@ -256,6 +256,10 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     # without an entry prints the shared defaults.
     spec = chrome.for_design(cfg.design)
     cc = spec.active if spec else chrome.SHARED
+    # The design's recipe (chrome.Recipe): its compositions per page type,
+    # type scale, text colour policy and content exceptions. A design
+    # without one prints DEFAULT_RECIPE, which changes nothing.
+    rc = spec.active_recipe if spec else chrome.DEFAULT_RECIPE
 
     bodies = []
     for page in pages:
@@ -271,6 +275,7 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
             look=look,
             own_faces=own_faces,
             cc=cc,
+            rc=rc,
             **page.context,
         )
         bodies.append(_decorate(rendered, cfg, nav, page))
@@ -285,10 +290,12 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
         pages=pages,
         bodies=bodies,
         # The shared chrome, then the catalog variants it selects by the
-        # body's `c-*` classes, then the looks on top.
+        # body's `c-*` classes, then the looks on top, then the recipe
+        # compositions and type scale (selected by the body's `rx` classes).
         css=NEWLINE.join((STATIC_DIR / name).read_text(encoding="utf-8")
-                         for name in ("planner.css", "chrome.css", "looks.css")),
-        fonts_css=_fonts_css(cfg, font_base),
+                         for name in CSS_FILES),
+        recipe_tokens=rc.tokens(),
+        fonts_css=_fonts_css(cfg, font_base, rc),
         font_display=cfg.faces.stack("display"),
         font_script=cfg.faces.stack("script"),
         font_body=cfg.faces.stack("body"),
@@ -317,7 +324,11 @@ def page_zoom(width_in: float) -> float:
     return round(min(1.0, (width_in - 2 * PAGE_PAD_SIDE_IN) / inner), 4)
 
 
-def _fonts_css(cfg: Config, font_base: str | None = None) -> str:
+CSS_FILES = ("planner.css", "chrome.css", "looks.css", "recipes.css")
+
+
+def _fonts_css(cfg: Config, font_base: str | None = None,
+               recipe: "chrome.Recipe | None" = None) -> str:
     """@font-face rules for whichever faces this build's typeface set needs.
 
     Missing files are simply skipped, so an unprovisioned checkout still
@@ -344,6 +355,25 @@ def _fonts_css(cfg: Config, font_base: str | None = None) -> str:
         uri = f"{font_base}/{path.name}" if font_base else path.resolve().as_uri()
         faces.append(
             f"@font-face{{font-family:'{family}';font-style:italic;"
+            f"font-weight:{weight};font-display:block;"
+            f"src:url('{uri}') format('woff2');}}"
+        )
+    # The cuts a recipe's type scale asks for beyond the role defaults (an
+    # Archivo 600 label, a Bodoni italic deck), in whichever typeface set
+    # this build uses, where the file is bundled. None for DEFAULT_RECIPE.
+    have = {(f, w, False) for f, w in cfg.faces.wanted()}
+    have |= {(f, w, True) for f, w in cfg.faces.wanted_italic()}
+    for role, weight, italic in (recipe.font_needs() if recipe and not recipe.is_default else []):
+        family = cfg.faces.roles[role]
+        if (family, weight, italic) in have:
+            continue
+        have.add((family, weight, italic))
+        path = font_dir / slug(family, weight, italic=italic)
+        if not path.is_file():
+            continue
+        uri = f"{font_base}/{path.name}" if font_base else path.resolve().as_uri()
+        faces.append(
+            f"@font-face{{font-family:'{family}';font-style:{'italic' if italic else 'normal'};"
             f"font-weight:{weight};font-display:block;"
             f"src:url('{uri}') format('woff2');}}"
         )

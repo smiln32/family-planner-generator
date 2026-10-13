@@ -38,7 +38,8 @@ See `_config/chrome-catalog.md` for the contract.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, replace
+import re
+from dataclasses import dataclass, field, fields, replace
 
 from . import designs
 
@@ -124,6 +125,281 @@ class Components:
         return {k: (mine[k], theirs[k]) for k in mine if mine[k] != theirs[k]}
 
 
+# --- recipes (Phase 2 step 5, 2026-10-13) -----------------------------------
+# The fourteen fields above are adjectives for components (shape). A recipe
+# adds what they cannot say: proportion, hierarchy and arrangement. It is
+# optional; a design without one prints exactly as before (DEFAULT_RECIPE
+# emits no class, no token and no extra font). See _config/chrome-catalog.md,
+# "Recipes".
+
+# Shared compositions per page type, chosen by id. `default` is today's
+# template; every other id is a named composition built from the shared
+# macros (templates/compose/<page>-<id>.html) that ANY design may pick.
+LAYOUT_VARIANTS: dict[str, tuple[str, ...]] = {
+    "family_time": ("default", "department", "recipe", "band"),
+    "annual_calendar": ("default", "broadsheet", "recipe", "shapegrid"),
+    "emergency": ("default", "department", "recipe", "shapegrid"),
+}
+
+# How the masthead of a worksheet on its default composition is set:
+# today's masthead, a left nameplate with a kicker (Editorial), a centred
+# title with an italic second voice (Farmhouse), or a title beside a row of
+# geometric shapes (Mid-century).
+TITLE_AREAS: tuple[str, ...] = ("masthead", "nameplate", "centred", "shapegrid")
+
+# Which colour text is set in: the ink token (today), or the structure role
+# (Mid-century: no black text anywhere). A role, so a theme recolours it.
+TEXT_POLICIES: tuple[str, ...] = ("ink", "structure")
+
+# Icons on worksheet rows and strips: today's filled discs, a bare line icon
+# in the structure colour, or none.
+ICONS: tuple[str, ...] = ("disc", "bare", "none")
+
+# How the sections (cards) of a worksheet on its default composition are
+# drawn: as today, open under rules (Editorial), in double-rule frames with
+# their headings set into the top rule (Farmhouse), or as tinted blocks
+# (Mid-century). Table heads and the day cells follow the same language.
+SECTIONS: tuple[str, ...] = ("default", "rules", "frames", "blocks")
+
+# The page's one decorative motif: none, the ticking band under the masthead
+# (Farmhouse), or the cover's geometric shapes (Mid-century).
+MOTIFS: tuple[str, ...] = ("none", "ticking", "shapes")
+
+# Sections a recipe may leave out, per page type. Each is an owner-approved
+# content exception, recorded in the catalog doc; templates mark the
+# section with data-section="<id>" so a test can prove what is missing.
+OMITTABLE: dict[str, tuple[str, ...]] = {
+    "emergency": ("family_plan",),
+}
+
+# The type roles a recipe sets. Each prints as CSS tokens on :root
+# (--t-<role>-font, -size, -weight, -track, -case, -style, -lh) and the
+# class .t-<role> in static/recipes.css reads them.
+TYPE_ROLES: tuple[str, ...] = (
+    "kicker", "title", "deck", "section", "index", "label", "field", "body", "helper",
+    "numeral", "cal_month", "cal_date", "cal_weekday", "footer",
+)
+FACES: tuple[str, ...] = ("display", "script", "body")
+CASES: tuple[str, ...] = ("none", "upper", "lower")
+# Weights the bundled faces are cut in (static/fonts); no face has a 500.
+WEIGHTS: tuple[int, ...] = (400, 600, 700, 800)
+
+# The adopted print minimums (pt, as printed, at any page size), from the
+# 2026-10-13 design audit, part B. On a small page a role prints at
+# max(letter size x zoom, minimum) (the --t-<role>-size tokens).
+PRINT_MINIMUMS: dict[str, float] = {
+    "kicker": 6.5, "title": 14.0, "deck": 8.0, "section": 7.5, "index": 6.5,
+    "label": 6.5, "field": 6.5, "body": 7.0, "helper": 6.0, "numeral": 7.0,
+    "cal_month": 7.0, "cal_date": 6.5, "cal_weekday": 6.0, "footer": 6.5,
+}
+
+
+@dataclass(frozen=True)
+class TypeRole:
+    """One level of a design's type scale, at letter size."""
+
+    face: str
+    size: float
+    weight: int = 400
+    tracking: float = 0.0
+    case: str = "none"
+    italic: bool = False
+    leading: float = 1.2
+
+    def __post_init__(self) -> None:
+        if self.face not in FACES:
+            raise ValueError(f"type face {self.face!r} is not one of {', '.join(FACES)}")
+        if self.weight not in WEIGHTS:
+            raise ValueError(f"type weight {self.weight} is not one of {WEIGHTS} "
+                             "(the bundled faces have no other cuts)")
+        if self.case not in CASES:
+            raise ValueError(f"type case {self.case!r} is not one of {', '.join(CASES)}")
+        if not 4 <= self.size <= 60:
+            raise ValueError(f"type size {self.size}pt is out of range")
+
+
+def _t(face: str, size: float, weight: int = 400, tracking: float = 0.0, case: str = "none",
+       italic: bool = False, leading: float = 1.2) -> TypeRole:
+    return TypeRole(face, size, weight, tracking, case, italic, leading)
+
+
+# A neutral scale every recipe starts from; a recipe names its own roles.
+BASE_TYPE: dict[str, TypeRole] = {
+    "kicker": _t("body", 7.5, 600, 0.2, "upper"),
+    "title": _t("display", 32, 400, 0.0, leading=1.0),
+    "deck": _t("display", 13, 400, italic=True, leading=1.25),
+    "section": _t("display", 12, 400, leading=1.1),
+    "index": _t("body", 7.5, 600, 0.14),
+    "label": _t("body", 7.5, 600, 0.12, "upper"),
+    "field": _t("body", 8.5, 400),
+    "body": _t("body", 9, 400, leading=1.35),
+    "helper": _t("body", 7.5, 400),
+    "numeral": _t("display", 12, 400, leading=1.0),
+    "cal_month": _t("body", 8.5, 600, 0.1, "upper", leading=1.0),
+    "cal_date": _t("body", 10, 600, leading=1.0),
+    "cal_weekday": _t("body", 7, 600, 0.08, "upper", leading=1.0),
+    "footer": _t("body", 7, 400, 0.24, "upper", leading=1.0),
+}
+
+# The spacing tokens --s1..--s7 in inches (u = 1/16in: 1, 2, 3, 4, 6, 8, 12).
+BASE_SPACE: tuple[float, ...] = (0.0625, 0.125, 0.1875, 0.25, 0.375, 0.5, 0.75)
+
+
+@dataclass(frozen=True)
+class Recipe:
+    """A design's proportion, hierarchy and arrangement (all closed vocabularies).
+
+    `layouts` maps a page type to a composition id (LAYOUT_VARIANTS); a page
+    type not named prints its default composition. `type` names the roles the
+    design sets; the rest come from BASE_TYPE. `omit` lists owner-approved
+    content exceptions (OMITTABLE).
+    """
+
+    id: str
+    layouts: dict[str, str] = field(default_factory=dict)
+    title_area: str = "masthead"
+    text: str = "ink"
+    icons: str = "disc"
+    motif: str = "none"
+    sections: str = "default"
+    type: dict[str, TypeRole] = field(default_factory=dict)
+    space: tuple[float, ...] = BASE_SPACE
+    print_min: dict[str, float] = field(default_factory=lambda: dict(PRINT_MINIMUMS))
+    omit: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # The design's own kicker line over a title (Editorial's "The home
+    # edition", from its approved cover); empty prints none.
+    kicker: str = ""
+
+    def __post_init__(self) -> None:
+        where = f"recipe {self.id!r}"
+        if not isinstance(self.layouts, dict):
+            raise ValueError(f"{where}: layouts must map a page type to a layout id")
+        for page, layout in self.layouts.items():
+            if page not in LAYOUT_VARIANTS:
+                raise ValueError(f"{where}: no layout variants for page type {page!r}; "
+                                 f"known: {', '.join(LAYOUT_VARIANTS)}")
+            if layout not in LAYOUT_VARIANTS[page]:
+                raise ValueError(f"{where}: unknown layout id {layout!r} for {page}; "
+                                 f"choose one of {', '.join(LAYOUT_VARIANTS[page])}")
+        if len(self.kicker) > 32 or not re.fullmatch(r"[A-Za-z0-9 .,&'-]*", self.kicker):
+            raise ValueError(f"{where}: the kicker is a short plain line (32 letters, digits, "
+                             "spaces or . , & ' - at most)")
+        for name, allowed in (("title_area", TITLE_AREAS), ("text", TEXT_POLICIES),
+                              ("icons", ICONS), ("motif", MOTIFS), ("sections", SECTIONS)):
+            if getattr(self, name) not in allowed:
+                raise ValueError(f"{where}: {name}={getattr(self, name)!r} is not one of "
+                                 f"{', '.join(allowed)}")
+        unknown = set(self.type) - set(TYPE_ROLES)
+        if unknown:
+            raise ValueError(f"{where}: unknown type role(s) {sorted(unknown)}")
+        for role, style in self.type.items():
+            if not isinstance(style, TypeRole):
+                raise ValueError(f"{where}: type role {role} must be a TypeRole")
+        if len(self.space) != 7 or any(not 0 < s < 1.5 for s in self.space):
+            raise ValueError(f"{where}: space needs seven steps in inches")
+        unknown = set(self.print_min) - set(TYPE_ROLES)
+        if unknown:
+            raise ValueError(f"{where}: print minimums for unknown role(s) {sorted(unknown)}")
+        for role, floor in self.print_min.items():
+            if floor < PRINT_MINIMUMS[role]:
+                raise ValueError(f"{where}: print minimum for {role} ({floor}pt) is under the "
+                                 f"adopted {PRINT_MINIMUMS[role]}pt")
+        for page, sections in self.omit.items():
+            allowed = OMITTABLE.get(page, ())
+            for section in sections:
+                if section not in allowed:
+                    raise ValueError(f"{where}: {page} section {section!r} cannot be left out; "
+                                     f"omittable: {', '.join(allowed) or 'none'}")
+        for role, style in self.scale().items():
+            floor = self.print_min.get(role, PRINT_MINIMUMS[role])
+            if style.size < floor:
+                raise ValueError(f"{where}: {role} is {style.size}pt at letter, under its "
+                                 f"{floor}pt print minimum")
+
+    @property
+    def is_default(self) -> bool:
+        return self.id == "default"
+
+    def layout(self, page: str) -> str:
+        """The composition id for a page type (`default` if the recipe names none)."""
+        return self.layouts.get(page, "default")
+
+    @property
+    def calendar(self) -> str:
+        """The annual calendar's layout id."""
+        return self.layout("annual_calendar")
+
+    def omits(self, page: str, section: str) -> bool:
+        return section in self.omit.get(page, ())
+
+    def scale(self) -> dict[str, TypeRole]:
+        """Every type role, the recipe's own over BASE_TYPE."""
+        return {**BASE_TYPE, **self.type}
+
+    def classes(self) -> list[str]:
+        """`<body>` classes; none for the default recipe, so nothing changes."""
+        if self.is_default:
+            return []
+        return ["rx", f"rx-{self.id}", f"r-title-{self.title_area}", f"r-text-{self.text}",
+                f"r-icons-{self.icons}", f"r-motif-{self.motif}", f"r-sections-{self.sections}"]
+
+    def tokens(self) -> dict[str, str]:
+        """CSS custom properties for :root (book.html); none for the default."""
+        if self.is_default:
+            return {}
+        out: dict[str, str] = {}
+        for role, s in self.scale().items():
+            key = role.replace("_", "-")
+            floor = self.print_min.get(role, PRINT_MINIMUMS[role])
+            out[f"--t-{key}-font"] = f"var(--font-{s.face})"
+            # Printed size = max(letter size x zoom, minimum): on a small page
+            # the worksheet is scaled by --page-zoom, so the floor is divided by it.
+            out[f"--t-{key}-size"] = f"max({s.size:g}pt, calc({floor:g}pt / var(--page-zoom)))"
+            out[f"--t-{key}-weight"] = str(s.weight)
+            out[f"--t-{key}-track"] = f"{s.tracking:g}em"
+            out[f"--t-{key}-case"] = {"none": "none", "upper": "uppercase",
+                                      "lower": "lowercase"}[s.case]
+            out[f"--t-{key}-style"] = "italic" if s.italic else "normal"
+            out[f"--t-{key}-lh"] = f"{s.leading:g}"
+        for i, step in enumerate(self.space, start=1):
+            out[f"--s{i}"] = f"{step:g}in"
+        out["--t-text"] = "var(--c-structure)" if self.text == "structure" else "var(--ink)"
+        # The kicker as a CSS string, for the default mastheads (recipes.css).
+        out["--rx-kicker"] = f'"{self.kicker}"'
+        return out
+
+    def font_needs(self) -> list[tuple[str, int, bool]]:
+        """(face role, weight, italic) the scale uses, de-duplicated, in role order."""
+        seen: list[tuple[str, int, bool]] = []
+        for s in self.scale().values():
+            need = (s.face, s.weight, s.italic)
+            if need not in seen:
+                seen.append(need)
+        return seen
+
+
+# Every design without a recipe of its own: today's compositions, ink text,
+# disc icons, no motif, no tokens, no extra fonts.
+DEFAULT_RECIPE = Recipe(id="default")
+
+
+def missing_font_files(recipe: Recipe, fonts_ref: str) -> list[str]:
+    """Font files a recipe needs in the design's own typeface set that are not
+    bundled in static/fonts (an empty list when all are there)."""
+    from pathlib import Path
+
+    from . import typefaces
+
+    faces = typefaces.resolve(fonts_ref)
+    font_dir = Path(__file__).resolve().parent / "static" / "fonts"
+    missing = []
+    for face, weight, italic in recipe.font_needs():
+        name = typefaces.slug(faces.roles[face], weight, italic)
+        if not (font_dir / name).is_file():
+            missing.append(name)
+    return missing
+
+
 @dataclass(frozen=True)
 class Chrome:
     """One design's chrome: its character in prose and its two specs."""
@@ -152,6 +428,8 @@ class Chrome:
     # for the trio (2026-10-12); derived for a design whose intended spec is
     # what it prints already (nothing to approve).
     approved: bool = False
+    # Proportion, hierarchy and arrangement (Recipe). None: DEFAULT_RECIPE.
+    recipe: Recipe | None = None
 
     def __post_init__(self) -> None:
         if self.family not in FAMILIES:
@@ -166,9 +444,15 @@ class Chrome:
         """The spec that prints: the intended one once approved, else today's."""
         return self.components if self.approved else self.current
 
+    @property
+    def active_recipe(self) -> Recipe:
+        """The recipe that prints: the design's own once approved, else the default."""
+        return self.recipe if (self.recipe and self.approved) else DEFAULT_RECIPE
+
     def body_classes(self) -> str:
-        """The printing spec as `<body>` classes (book.html)."""
-        return " ".join(self.active.classes())
+        """The printing spec as `<body>` classes (book.html): the component
+        classes, then the recipe's (none for the default recipe)."""
+        return " ".join(self.active.classes() + self.active_recipe.classes())
 
     def gap(self) -> dict[str, tuple[str, str]]:
         """Fields where the intended treatment differs from today's: name -> (intended, current)."""
@@ -213,6 +497,84 @@ GEOMETRIC = replace(LOOK, heads="pill")
 PLAYFUL = replace(LOOK, corners="rounded", heads="pill")
 
 
+# --- the three owner-chosen recipes (2026-10-13) -----------------------------
+# The owner's decisions on the six prototype directions: Editorial takes the
+# "Department page" for Family Time and Emergency and the "Broadsheet" for
+# the annual calendar; Farmhouse the "Recipe card" for all three; Mid-century
+# the "Shape grid" shapes on every page, the "Band and arches" composition
+# for Family Time (carrying the shapes), the shape grid for the calendar and
+# Emergency, no ink text anywhere, and Emergency without its family plan
+# section (an owner-approved content exception, Mid-century only).
+
+EDITORIAL_RECIPE = Recipe(
+    id="editorial", kicker="The home edition",
+    layouts={"family_time": "department", "annual_calendar": "broadsheet",
+             "emergency": "department"},
+    title_area="nameplate", text="ink", icons="none", motif="none", sections="rules",
+    type={
+        "kicker": _t("body", 7.5, 600, 0.2, "upper"),
+        "title": _t("display", 34, 400, 0.0, "upper", leading=0.95),
+        "deck": _t("display", 14, 400, italic=True, leading=1.25),
+        "section": _t("display", 13, 400, italic=True, leading=1.1),
+        "index": _t("body", 7.5, 600, 0.14),
+        "label": _t("body", 7.5, 600, 0.14, "upper"),
+        "field": _t("body", 8.5, 400),
+        "body": _t("body", 9, 400, leading=1.35),
+        "helper": _t("body", 7.5, 400),
+        "numeral": _t("display", 12, 400, leading=1.0),
+        "cal_month": _t("display", 12, 400, italic=True, leading=1.0),
+        "cal_date": _t("body", 10.5, 600, leading=1.0),
+        "cal_weekday": _t("body", 7.5, 600, 0.1, "upper", leading=1.0),
+        "footer": _t("body", 7, 400, 0.24, "upper", leading=1.0),
+    },
+)
+
+FARMHOUSE_RECIPE = Recipe(
+    id="farmhouse",
+    layouts={"family_time": "recipe", "annual_calendar": "recipe", "emergency": "recipe"},
+    title_area="centred", text="ink", icons="bare", motif="ticking", sections="frames",
+    type={
+        "kicker": _t("display", 8, 700, 0.18, "upper"),
+        "title": _t("display", 30, 700, 0.04, "upper", leading=1.0),
+        "deck": _t("script", 13, 400, italic=True, leading=1.3),
+        "section": _t("display", 9.5, 700, 0.16, "upper", leading=1.0),
+        "index": _t("display", 8, 700, 0.1),
+        "label": _t("display", 8, 700, 0.1, "upper"),
+        "field": _t("display", 8.5, 600),
+        "body": _t("body", 9.5, 400, leading=1.3),
+        "helper": _t("script", 8.5, 400, italic=True, leading=1.3),
+        "numeral": _t("display", 11, 700, leading=1.0),
+        "cal_month": _t("display", 8.5, 700, 0.12, "upper", leading=1.0),
+        "cal_date": _t("display", 10.5, 600, leading=1.0),
+        "cal_weekday": _t("display", 7.5, 700, 0.06, "upper", leading=1.0),
+        "footer": _t("script", 9, 400, italic=True, leading=1.0),
+    },
+)
+
+MIDCENTURY_RECIPE = Recipe(
+    id="midcentury", kicker="the family plan",
+    layouts={"family_time": "band", "annual_calendar": "shapegrid", "emergency": "shapegrid"},
+    title_area="shapegrid", text="structure", icons="bare", motif="shapes", sections="blocks",
+    omit={"emergency": ("family_plan",)},
+    type={
+        "kicker": _t("body", 8, 600, 0.18, "lower"),
+        "title": _t("display", 32, 400, -0.01, "lower", leading=1.0),
+        "deck": _t("body", 12, 400, 0.0, "lower", leading=1.25),
+        "section": _t("body", 11, 600, 0.02, "lower", leading=1.1),
+        "index": _t("body", 8, 600, 0.1),
+        "label": _t("body", 8.5, 600, 0.04, "lower"),
+        "field": _t("body", 8.5, 600, 0.04, "lower"),
+        "body": _t("body", 9, 400, leading=1.3),
+        "helper": _t("body", 8, 400),
+        "numeral": _t("body", 16, 700, leading=1.0),
+        "cal_month": _t("body", 9, 600, 0.02, "lower", leading=1.0),
+        "cal_date": _t("body", 10.5, 600, leading=1.0),
+        "cal_weekday": _t("body", 7.5, 600, 0.04, "lower", leading=1.0),
+        "footer": _t("body", 7.5, 400, 0.2, "lower", leading=1.0),
+    },
+)
+
+
 def _chrome(entry_id: str, **kw) -> Chrome:
     preset = {**designs.LEGACY, **designs.PRESETS}[entry_id]
     kw.setdefault("label", preset["label"])
@@ -235,7 +597,7 @@ _LOOKS: list[Chrome] = [
         calendar="Twelve open months: month name over a rule in the season colour, no tile box, no pill.",
         print="Rules only, no bleed; ink coverage low.",
         palette_ref="editorial", fonts_ref="home-edition", layouts=(), base="editorial",
-        status="look", approved=True,
+        status="look", approved=True, recipe=EDITORIAL_RECIPE,
         components=replace(MINIMAL, marks="text", footer="rule"),
         current=replace(LOOK, corners="square", heads="text", footer="rule"),
     ),
@@ -252,7 +614,7 @@ _LOOKS: list[Chrome] = [
         calendar="Pill month heads on rounded tiles, as today.",
         print="The corner shape runs to the trim; no other bleed.",
         palette_ref="midcentury", fonts_ref="family-plan", layouts=(), base="midcentury",
-        status="look", approved=True,
+        status="look", approved=True, recipe=MIDCENTURY_RECIPE,
         components=replace(GEOMETRIC, corners="soft", labels="lower", footer="lower",
                            ornaments="corner"),
         current=replace(LOOK, corners="soft", footer="lower", ornaments="corner"),
@@ -287,7 +649,7 @@ _LOOKS: list[Chrome] = [
         calendar="Square tiles with a bar month head.",
         print="The stripe band runs to the trim at the top.",
         palette_ref="farmhouse", fonts_ref="home-grown", layouts=(), base="farmhouse",
-        status="look", approved=True,
+        status="look", approved=True, recipe=FARMHOUSE_RECIPE,
         components=replace(CLASSIC, footer="script", ornaments="stripe", page="band"),
         current=replace(LOOK, corners="square", heads="bar", footer="script",
                         ornaments="stripe", page="band"),

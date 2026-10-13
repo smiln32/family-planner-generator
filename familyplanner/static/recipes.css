@@ -1,0 +1,749 @@
+/* ==========================================================================
+   Recipes (Phase 2 step 5, 2026-10-13)
+   A design's recipe (familyplanner/chrome.py, `Recipe`; contract in
+   _config/chrome-catalog.md, "Recipes") sets what the component catalog
+   cannot: its type scale, spacing, text colour, title area, icons, motif
+   and, per page type, a shared composition (templates/compose/). A design
+   with a recipe carries `rx` and `r-*` classes on the body element, and book.html
+   writes its scale on :root as --t-<role>-* tokens; a design without one
+   carries neither, so nothing in this sheet reaches it.
+
+   Rules:
+   - Type only from the --t-<role>-* tokens. Each size token is already
+     max(letter size, print minimum / page zoom), so a role never prints
+     under its adopted minimum on any page size.
+   - Colour only from the palette tokens and the --c-* roles
+     (tests/test_css_tokens.py). Text reads --t-text: the ink token, or the
+     structure role under `text: structure` (Mid-century).
+   - A composition is selected by its page class (`.lay-<id>`), never by a
+     design name, so any design may pick it.
+   Loaded last (render.CSS_FILES), after looks.css.
+   ========================================================================== */
+
+/* --- 1. Type roles ---------------------------------------------------------- */
+.rx .page .t-kicker { font-family: var(--t-kicker-font); font-size: var(--t-kicker-size); font-weight: var(--t-kicker-weight);
+  letter-spacing: var(--t-kicker-track); text-transform: var(--t-kicker-case); font-style: var(--t-kicker-style); line-height: var(--t-kicker-lh); }
+.rx .page .t-title { font-family: var(--t-title-font); font-size: var(--t-title-size); font-weight: var(--t-title-weight);
+  letter-spacing: var(--t-title-track); text-transform: var(--t-title-case); font-style: var(--t-title-style); line-height: var(--t-title-lh); }
+.rx .page .t-deck { font-family: var(--t-deck-font); font-size: var(--t-deck-size); font-weight: var(--t-deck-weight);
+  letter-spacing: var(--t-deck-track); text-transform: var(--t-deck-case); font-style: var(--t-deck-style); line-height: var(--t-deck-lh); }
+.rx .page .t-section { font-family: var(--t-section-font); font-size: var(--t-section-size); font-weight: var(--t-section-weight);
+  letter-spacing: var(--t-section-track); text-transform: var(--t-section-case); font-style: var(--t-section-style); line-height: var(--t-section-lh); }
+.rx .page .t-index { font-family: var(--t-index-font); font-size: var(--t-index-size); font-weight: var(--t-index-weight);
+  letter-spacing: var(--t-index-track); text-transform: var(--t-index-case); font-style: var(--t-index-style); line-height: var(--t-index-lh); }
+.rx .page .t-label { font-family: var(--t-label-font); font-size: var(--t-label-size); font-weight: var(--t-label-weight);
+  letter-spacing: var(--t-label-track); text-transform: var(--t-label-case); font-style: var(--t-label-style); line-height: var(--t-label-lh); }
+.rx .page .t-field { font-family: var(--t-field-font); font-size: var(--t-field-size); font-weight: var(--t-field-weight);
+  letter-spacing: var(--t-field-track); text-transform: var(--t-field-case); font-style: var(--t-field-style); line-height: var(--t-field-lh); }
+.rx .page .t-body { font-family: var(--t-body-font); font-size: var(--t-body-size); font-weight: var(--t-body-weight);
+  letter-spacing: var(--t-body-track); text-transform: var(--t-body-case); font-style: var(--t-body-style); line-height: var(--t-body-lh); }
+.rx .page .t-helper { font-family: var(--t-helper-font); font-size: var(--t-helper-size); font-weight: var(--t-helper-weight);
+  letter-spacing: var(--t-helper-track); text-transform: var(--t-helper-case); font-style: var(--t-helper-style); line-height: var(--t-helper-lh); }
+.rx .page .t-numeral { font-family: var(--t-numeral-font); font-size: var(--t-numeral-size); font-weight: var(--t-numeral-weight);
+  letter-spacing: var(--t-numeral-track); text-transform: var(--t-numeral-case); font-style: var(--t-numeral-style); line-height: var(--t-numeral-lh); }
+.rx .page .t-cal-month { font-family: var(--t-cal-month-font); font-size: var(--t-cal-month-size); font-weight: var(--t-cal-month-weight);
+  letter-spacing: var(--t-cal-month-track); text-transform: var(--t-cal-month-case); font-style: var(--t-cal-month-style); line-height: var(--t-cal-month-lh); }
+.rx .page .t-cal-date { font-family: var(--t-cal-date-font); font-size: var(--t-cal-date-size); font-weight: var(--t-cal-date-weight);
+  letter-spacing: var(--t-cal-date-track); text-transform: var(--t-cal-date-case); font-style: var(--t-cal-date-style); line-height: var(--t-cal-date-lh); }
+.rx .page .t-cal-weekday { font-family: var(--t-cal-weekday-font); font-size: var(--t-cal-weekday-size); font-weight: var(--t-cal-weekday-weight);
+  letter-spacing: var(--t-cal-weekday-track); text-transform: var(--t-cal-weekday-case); font-style: var(--t-cal-weekday-style); line-height: var(--t-cal-weekday-lh); }
+.rx .page .t-footer { font-family: var(--t-footer-font); font-size: var(--t-footer-size); font-weight: var(--t-footer-weight);
+  letter-spacing: var(--t-footer-track); text-transform: var(--t-footer-case); font-style: var(--t-footer-style); line-height: var(--t-footer-lh); }
+
+/* --- 2. A composed page: the shared reset ----------------------------------
+   The composition draws its own masthead, sections and rules, so the look's
+   page-edge ornaments (Farmhouse's top ticks, Mid-century's corner circle)
+   and the shared card, tab, table and calendar chrome are reset here. */
+.rx .rx-page {
+  color: var(--t-text); font-family: var(--t-body-font); font-size: var(--t-body-size);
+  line-height: var(--t-body-lh); counter-reset: rxsec rxmonth;
+  --rx-rule: 0.75pt; --rx-gap: var(--s3);
+}
+.rx .rx-page::before, .rx .rx-page::after { content: none !important; display: none !important; }
+.rx .rx-page > .rx-fixed { flex: none; }
+.rx .rx-page > .rx-grow { flex: 1 1 0; min-height: 0; }
+.rx .rx-page :is(.dot-line, .solid-line) { border-bottom: var(--rx-rule) solid var(--c-line); min-width: 0.3in; }
+
+/* Sections: a shared card with its tab as the heading, both reset. */
+.rx .rx-page .card.rx-blk {
+  position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0;
+  border: 0; border-radius: 0; background: none; padding: 0; box-shadow: none; --c: var(--c-structure);
+}
+.rx .rx-page .card.rx-blk > .card-tab.rx-sec {
+  position: static; display: flex; align-items: center; gap: var(--s2); flex: none;
+  margin: 0 0 var(--s2); padding: 0; background: none; border-radius: 0; border: 0;
+  color: var(--c-structure); white-space: nowrap; max-width: none; transform: none;
+  font-family: var(--t-section-font); font-size: var(--t-section-size); font-weight: var(--t-section-weight);
+  letter-spacing: var(--t-section-track); text-transform: var(--t-section-case);
+  font-style: var(--t-section-style); line-height: var(--t-section-lh);
+}
+.rx .rx-page .rx-key { display: none; }
+/* Numbered compositions count their sections: 01, 02 ... in the index role. */
+.rx .rx-numbered .card.rx-blk > .card-tab.rx-sec { flex-direction: column; align-items: flex-start; gap: 0.03in; }
+.rx .rx-numbered .card.rx-blk > .card-tab.rx-sec::before {
+  counter-increment: rxsec; content: counter(rxsec, decimal-leading-zero);
+  color: var(--c-structure); font-family: var(--t-index-font); font-size: var(--t-index-size);
+  font-weight: var(--t-index-weight); letter-spacing: var(--t-index-track); font-style: normal;
+  text-transform: none; line-height: 1;
+}
+
+/* Write-on fields: the label in the field role, then the rule. */
+.rx .rx-page .field { display: flex; align-items: flex-end; gap: var(--s2); min-height: 0.28in; padding-bottom: 0.03in; }
+.rx .rx-page .field .label, .rx .rx-page .own-rent .label {
+  color: var(--t-text); font-family: var(--t-field-font); font-size: var(--t-field-size);
+  font-weight: var(--t-field-weight); letter-spacing: var(--t-field-track);
+  text-transform: var(--t-field-case); font-style: var(--t-field-style); line-height: 1.2; white-space: nowrap;
+}
+.rx .rx-page .field .solid-line, .rx .rx-page .field .dot-line { flex: 1 1 auto; margin-bottom: 0.02in; }
+
+/* Check boxes, check lists, numbered lines, plain lines. */
+.rx .rx-page .check {
+  flex: none; width: 0.13in; height: 0.13in; border: 1pt solid var(--c-structure);
+  border-radius: 0; background: none;
+}
+.rx .rx-page .checklist { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; gap: 0; }
+.rx .rx-page .checklist .row {
+  display: flex; align-items: flex-end; gap: var(--s2); flex: 1 1 0.28in; max-height: 0.42in;
+  padding-bottom: 0.04in; white-space: nowrap; color: var(--t-text);
+  font-family: var(--t-body-font); font-size: var(--t-body-size); font-weight: var(--t-body-weight);
+}
+.rx .rx-page .checklist .row .check { margin-bottom: 0.01in; }
+.rx .rx-page .checklist .row .solid-line { margin-bottom: 0.02in; min-width: 0; }
+.rx .rx-page .numbered { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; }
+.rx .rx-page .numbered .row { display: flex; align-items: flex-end; gap: var(--s2); flex: 1 1 0.27in; min-height: 0.25in; max-height: 0.44in; padding-bottom: 0.03in; }
+.rx .rx-page .num, .rx .rx-page .num.hollow {
+  flex: none; width: 0.24in; height: auto; border: 0; border-radius: 0; background: none;
+  justify-content: flex-start; color: var(--c-structure);
+  font-family: var(--t-numeral-font); font-size: var(--t-numeral-size); font-weight: var(--t-numeral-weight);
+  font-style: var(--t-numeral-style); line-height: 1;
+}
+.rx .rx-page .num::after { content: none; }
+.rx .rx-page .lines { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; }
+.rx .rx-page .lines > :is(.dot-line, .solid-line) { flex: 1 1 0.25in; max-height: 0.42in; }
+
+/* The week ledger. */
+.rx .rx-page .rx-ledger { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.rx .rx-page .rx-ledger col.c-day { width: 1.05in; }
+.rx .rx-page .rx-ledger col.c-act { width: 34%; }
+.rx .rx-page .rx-ledger col.c-time { width: 0.7in; }
+.rx .rx-page .rx-ledger col.c-who { width: 19%; }
+.rx .rx-page .rx-ledger th {
+  text-align: left; vertical-align: bottom; padding: 0 0.06in 0.05in; color: var(--c-structure);
+  border-bottom: 1pt solid var(--c-structure); white-space: nowrap;
+}
+.rx .rx-page .rx-ledger th:first-child, .rx .rx-page .rx-ledger td:first-child { padding-left: 0; }
+.rx .rx-page .rx-ledger td { height: 0.47in; padding: 0 0.06in; border-bottom: var(--rx-rule) solid var(--c-line); vertical-align: middle; }
+.rx .rx-page .rx-day { color: var(--t-text); white-space: nowrap; }
+.rx .rx-page .rx-day .pill { display: none; }
+.rx .rx-page .rx-day.we { color: var(--c-weekend); }
+
+/* The calendar: twelve shared month tiles, reset, filling the page. */
+.rx .rx-page .rx-cal { flex: 1 1 0; min-height: 0; display: grid; }
+.rx .rx-page .rx-cal .mini {
+  display: flex; flex-direction: column; min-height: 0; min-width: 0;
+  border: 0; border-radius: 0; background: none; padding: 0;
+}
+.rx .rx-page .rx-cal .mini .mini-head {
+  display: flex; align-items: baseline; justify-content: flex-start; gap: var(--s1);
+  margin: 0; padding: 0 0 0.04in; border-radius: 0; background: none; color: var(--c-structure);
+  border-bottom: 1pt solid var(--c);
+  font-family: var(--t-cal-month-font); font-size: var(--t-cal-month-size); font-weight: var(--t-cal-month-weight);
+  letter-spacing: var(--t-cal-month-track); text-transform: var(--t-cal-month-case);
+  font-style: var(--t-cal-month-style); line-height: var(--t-cal-month-lh);
+}
+.rx .rx-page .rx-cal .mini .mini-head .ico { display: none; }
+.rx .rx-page .rx-cal .mini table { flex: 1 1 auto; width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+.rx .rx-page.annual-page .rx-cal .mini :is(th, td) { padding: 0; text-align: center; vertical-align: middle; }
+.rx .rx-page.annual-page .rx-cal .mini th {
+  height: 0.2in; color: var(--c-structure);
+  font-family: var(--t-cal-weekday-font); font-size: var(--t-cal-weekday-size); font-weight: var(--t-cal-weekday-weight);
+  letter-spacing: var(--t-cal-weekday-track); text-transform: var(--t-cal-weekday-case); font-style: var(--t-cal-weekday-style);
+}
+.rx .rx-page.annual-page .rx-cal .mini td {
+  color: var(--t-text);
+  font-family: var(--t-cal-date-font); font-size: var(--t-cal-date-size); font-weight: var(--t-cal-date-weight);
+  font-style: var(--t-cal-date-style); line-height: 1;
+}
+.rx .rx-page.annual-page .rx-cal .mini .we { color: var(--c-weekend); }
+/* Dates and numerals in lining, even-width figures (Zilla Slab's default
+   old-style figures bounce in a grid). */
+.rx .page :is(.mini td, .num, .rx-folio, .lkm-cell b) { font-variant-numeric: lining-nums tabular-nums; }
+
+/* The important dates: the shared card, reset; ten ruled rows in two columns. */
+.rx .rx-page .card.annual-dates {
+  flex: none; height: auto; display: grid; grid-template-columns: 1.78in minmax(0, 1fr); column-gap: var(--s3);
+  align-items: start; margin-top: var(--s3); padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+.rx .rx-page .annual-dates .dates-label { width: auto; display: block; }
+.rx .rx-page .annual-dates .dates-label .script {
+  display: block; color: var(--c-structure);
+  font-family: var(--t-section-font); font-size: var(--t-section-size); font-weight: var(--t-section-weight);
+  letter-spacing: var(--t-section-track); text-transform: var(--t-section-case);
+  font-style: var(--t-section-style); line-height: var(--t-section-lh);
+}
+.rx .rx-page .annual-dates .dates-cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--s5); align-self: stretch; }
+.rx .rx-page .annual-dates .dates-col { display: flex; flex-direction: column; height: auto; padding: 0; }
+.rx .rx-page .annual-dates .dates-col .row { display: flex; align-items: flex-end; gap: var(--s2); height: 0.3in; padding-bottom: 0.03in; }
+.rx .rx-page .annual-dates .dates-col .row .dot-line { flex: 1 1 auto; margin-bottom: 0.02in; }
+.rx .rx-page .annual-dates .bullet { margin-bottom: 0.03in; }
+
+/* Directories (Emergency): a heading row and even ruled rows. */
+.rx .rx-page .rx-dir { display: flex; flex-direction: column; flex: 1 1 auto; }
+.rx .rx-page .rx-dir > .emg-head, .rx .rx-page .rx-dir > .rx-dr { display: grid; column-gap: var(--s2); align-items: end; }
+.rx .rx-page .rx-dir-3 > * { grid-template-columns: 1.3in minmax(0, 1fr) minmax(0, 1fr); }
+.rx .rx-page .rx-dir-2 > * { grid-template-columns: 1.3in minmax(0, 1fr); }
+.rx .rx-page .rx-dir-f > * { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); }
+.rx .rx-page .rx-dir > .emg-head {
+  margin: 0; padding-bottom: 0.04in; border-bottom: 1pt solid var(--c-structure); text-align: left;
+  color: var(--c-structure); font-family: var(--t-label-font); font-size: var(--t-label-size);
+  font-weight: var(--t-label-weight); letter-spacing: var(--t-label-track); text-transform: var(--t-label-case);
+  font-style: var(--t-label-style); line-height: 1.1;
+}
+.rx .rx-page .rx-dir > .emg-head span { text-align: left; white-space: normal; min-width: 0; }
+.rx .rx-page .rx-dir > .rx-dr { flex: 1 1 0.26in; min-height: 0.25in; max-height: 0.34in; border-bottom: var(--rx-rule) solid var(--c-line); padding-bottom: 0.03in; }
+.rx .rx-page .rx-dir > .rx-dr > .solid-line { border: 0; min-width: 0; height: 100%; }
+.rx .rx-page .rx-nm {
+  display: flex; flex-direction: column; justify-content: flex-end; color: var(--t-text); white-space: nowrap;
+  font-family: var(--t-field-font); font-size: var(--t-field-size); font-weight: var(--t-field-weight);
+  letter-spacing: var(--t-field-track); text-transform: var(--t-field-case); line-height: 1.15;
+}
+.rx .rx-page .rx-nm em { display: block; font-style: var(--t-helper-style); color: var(--t-text); margin-top: 0.01in;
+  font-size: max(7pt, calc(6pt / var(--page-zoom))); line-height: 1.1; }
+.rx .rx-page .rx-fields { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; }
+.rx .rx-page .rx-fields > .field, .rx .rx-page .rx-fields > .own-rent { flex: 1 1 0.27in; min-height: 0.26in; max-height: 0.38in; }
+.rx .rx-page .rx-ownrent { display: flex; align-items: flex-end; gap: var(--s2); padding-bottom: 0.04in; }
+.rx .rx-page .rx-ownrent .small { color: var(--t-text); font-size: var(--t-body-size); margin-right: var(--s2); }
+.rx .rx-page .rx-ownrent .check { margin-bottom: 0.01in; }
+.rx .rx-page .rx-tall > .field { flex-direction: column; align-items: stretch; justify-content: space-between; max-height: 0.5in; }
+.rx .rx-page .rx-tall > .field .solid-line { flex: none; }
+.rx .rx-page .rx-home { flex: none; display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--s5); margin-bottom: var(--s3); }
+.rx .rx-page > .rx-two.rx-grow { flex: 1 1 auto; min-height: auto; }
+.rx .rx-page .rx-two { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); column-gap: var(--s4); }
+.rx .rx-page .rx-col { display: flex; flex-direction: column; gap: var(--s4); min-width: 0; min-height: 0; }
+.rx .rx-page .rx-col > .rx-fill { flex: 1 1 auto; }
+.rx .rx-page .rx-foot3 { flex: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.32fr) minmax(0, 0.72fr); column-gap: var(--s4); margin-top: var(--s4); }
+.rx .rx-page .rx-foot3 > .card.rx-blk { min-height: 1.4in; }
+
+/* --- 3. Mastheads (templates/compose/kit.html, head()) ---------------------- */
+.rx .rx-page .masthead.rx-mast {
+  display: block; flex: none; position: relative; margin: 0 0 var(--s4); padding: 0; gap: 0;
+  border: 0; text-align: left; grid-template-columns: none;
+}
+.rx .rx-page .rx-mast h1.page-title { margin: 0; white-space: nowrap; }
+.rx .rx-page .rx-mast .rx-tline { display: flex; align-items: baseline; gap: 0; }
+.rx .rx-page .rx-mast .banner {
+  display: inline; position: static; margin: 0; padding: 0; background: none; border: 0; border-radius: 0;
+  color: inherit; box-shadow: none;
+}
+.rx .rx-page .rx-mast .banner::before, .rx .rx-page .rx-mast .banner::after { content: none; display: none; }
+.rx .rx-page .rx-mast .rx-cont { color: var(--c-structure); white-space: nowrap; margin-left: 0.28em; }
+.rx .rx-page .masthead.rx-mast { --type-title: var(--t-title-size); }
+.rx .rx-page .masthead.rx-mast .headings.rx-heads { text-align: inherit; padding: 0; min-width: 0; }
+/* The rest of a long default title prints as the deck line (kit.html). */
+.rx .rx-page .rx-mast h1 .rx-tsub { display: none; }
+.rx .rx-page .rx-mast :is(.rx-voice, .rx-subt) .banner { font: inherit; letter-spacing: inherit; text-transform: inherit; }
+.rx .rx-page .rx-mast .t-kicker, .rx .rx-page .rx-mast .rx-banner.t-kicker { color: var(--c-structure); }
+.rx .rx-page .rx-mast p { margin: 0; }
+.rx .rx-page .rx-mast :is(.rx-deck, .rx-voice, .rx-subt) { color: var(--t-text); }
+
+/* nameplate: ears over a left title and a deck, closed by a 2pt rule. */
+.rx .rx-page .masthead.rx-mast-nameplate, .rx .rx-page .masthead.rx-mast-broadsheet { padding-bottom: 0.1in; border-bottom: 2pt solid var(--c-structure); }
+.rx .rx-page .rx-mast .rx-ears {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4);
+  padding-bottom: 0.05in; margin-bottom: 0.12in; border-bottom: 0.75pt solid var(--c-structure);
+}
+.rx .rx-page .rx-mast .rx-ears .banner { white-space: nowrap; }
+.rx .rx-page .rx-mast .rx-deck { margin-top: 0.07in; max-width: 5.6in; }
+
+/* broadsheet: centred nameplate over a double rule. */
+.rx .rx-page .masthead.rx-mast-broadsheet { border-bottom: 0; padding-bottom: 0; }
+.rx .rx-page .masthead.rx-mast-broadsheet .rx-tline { justify-content: center; }
+.rx .rx-page .rx-mast .rx-dbl { height: 4.5pt; margin-top: 0.1in; border-top: 2pt solid var(--c-structure); border-bottom: 0.5pt solid var(--c-structure); }
+.rx .rx-page .rx-dateline {
+  flex: none; text-align: center; color: var(--c-structure); letter-spacing: 0.3em;
+  padding: 0 0 0.07in; margin: calc(-1 * var(--s2)) 0 0; border-bottom: 0.5pt solid var(--c-structure);
+}
+
+/* centred: the title and its second voice in italics, then the ticking band. */
+.rx .rx-page .masthead.rx-mast-centred { text-align: center; margin-bottom: 0; }
+.rx .rx-page .masthead.rx-mast-centred .rx-tline { justify-content: center; }
+.rx .rx-page .masthead.rx-mast-centred .rx-voice { margin-top: 0.05in; }
+.rx .rx-page .rx-ticking {
+  flex: none; height: 0.16in; margin: 0.1in 0 var(--s4); opacity: 0.85;
+  background-image: repeating-linear-gradient(90deg, transparent 0 0.29in, var(--red) 0.29in 0.33in,
+    transparent 0.33in 0.39in, var(--red) 0.39in 0.41in, transparent 0.41in 0.7in);
+}
+
+/* band: a full-width band in the structure colour, the title on it in
+   paper, the cover's shapes standing on its foot. */
+.rx .rx-page .masthead.rx-mast-band {
+  height: 1.38in; margin: calc(-1 * var(--page-pad-top)) calc(-1 * var(--page-pad-side)) var(--s4);
+  padding: 0 var(--page-pad-side) 0.2in; background: var(--c-structure); overflow: hidden;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.rx .rx-page .masthead.rx-mast-band :is(.rx-kick, h1.page-title, .rx-cont, .rx-subt, .rx-banner) { color: var(--paper); }
+.rx .rx-page .masthead.rx-mast-band .rx-kick { margin-bottom: 0.05in; }
+.rx .rx-page .masthead.rx-mast-band .rx-banner { background: var(--c-structure); }
+.rx .rx-page .masthead.rx-mast-band .rx-subt { margin-top: 0.06in; }
+.rx .rx-page .masthead.rx-mast-band .rx-band-shapes { position: absolute; right: var(--page-pad-side); bottom: 0; }
+
+/* shapegrid: a title block, and the shapes in their own column. */
+.rx .rx-page .masthead.rx-mast-shapegrid { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s4); align-items: end; }
+.rx .rx-page .masthead.rx-mast-shapegrid > :not(.rx-shapes) { grid-column: 1; }
+.rx .rx-page .masthead.rx-mast-shapegrid > .rx-shapes { grid-column: 2; grid-row: 1 / span 3; align-self: end; }
+.rx .rx-page .masthead.rx-mast-shapegrid .rx-kick { margin-bottom: 0.04in; }
+.rx .rx-page .masthead.rx-mast-shapegrid .rx-subt { margin-top: 0.05in; }
+
+/* --- 4. Shapes (the cover's shape grid: designs.py midcentury) ------------- */
+.rx .rx-page .rx-shapes { display: flex; flex: none; }
+.rx .rx-page .rx-s { display: block; flex: none; position: relative; width: var(--sz); height: var(--sz); background: var(--k); font-style: normal; }
+.rx .rx-page .rx-s-q { border-radius: 0 0 100% 0; }
+.rx .rx-page .rx-s-c { border-radius: 50%; }
+.rx .rx-page .rx-s-a { border-radius: calc(var(--sz) / 2) calc(var(--sz) / 2) 0 0; }
+.rx .rx-page .rx-s-h { border-radius: 0 calc(var(--sz) / 2) calc(var(--sz) / 2) 0; }
+.rx .rx-page .rx-s-d { border-radius: 0 calc(var(--sz) / 2) calc(var(--sz) / 2) 0; }
+.rx .rx-page .rx-s-d b { position: absolute; left: 22%; top: 34%; width: 32%; height: 32%; border-radius: 50%; background: var(--paper); }
+/* A section's shape key: the same shapes at heading size. */
+.r-motif-shapes .rx-page .card.rx-blk > .card-tab.rx-sec .rx-key {
+  display: block; flex: none; width: 0.15in; height: 0.15in; background: var(--k);
+}
+.r-motif-shapes .rx-page .rx-key-q { border-radius: 0 0 100% 0; }
+.r-motif-shapes .rx-page .rx-key-c { border-radius: 50%; }
+.r-motif-shapes .rx-page .rx-key-a { border-radius: 0.075in 0.075in 0 0; }
+
+/* --- 5. Compositions ------------------------------------------------------- */
+
+/* department: a rail beside a main column; hairline rules. */
+.rx .lay-department { --rx-rule: 0.5pt; }
+.rx .lay-department .rx-row { display: grid; grid-template-columns: 1.78in minmax(0, 1fr); column-gap: var(--s3); }
+.rx .lay-department .rx-row + .rx-row { border-top: 0.5pt solid var(--c-structure); padding-top: 0.1in; margin-top: 0.14in; }
+.rx .lay-department .rx-row.rx-grow { display: grid; }
+.rx .lay-department .card.rx-blk.rx-rail > .card-tab.rx-sec { white-space: normal; }
+.rx .lay-department .rx-ledger col.c-act { width: 30%; }
+.rx .lay-department .rx-ledger col.c-who { width: 1.3in; }
+.rx .lay-department .rx-stack { display: flex; flex-direction: column; margin-top: var(--s3); }
+.rx .lay-department .rx-stack .field {
+  flex: none; flex-direction: column; align-items: stretch; justify-content: space-between; height: 0.55in;
+  padding: 0.06in 0 0; border-bottom: 0.5pt solid var(--c-line);
+}
+.rx .lay-department .rx-stack .field .solid-line { display: none; }
+.rx .lay-department .rx-stack .field .label,
+.rx .lay-department .rx-home .field .label {
+  font-family: var(--t-label-font); font-size: var(--t-label-size); font-weight: var(--t-label-weight);
+  letter-spacing: var(--t-label-track); text-transform: var(--t-label-case);
+}
+.rx .lay-department .rx-ledger td:first-child { font-family: var(--t-section-font); font-style: var(--t-section-style); font-size: calc(var(--t-section-size) * 0.85); }
+.rx .lay-department .rx-ledger .rx-sep { border-left: 0.5pt solid var(--c-structure); padding-left: 0.08in; }
+.rx .lay-department .rx-cols3 { display: grid; grid-template-columns: 1.6fr 2fr 1.9fr; column-gap: var(--s3); }
+.rx .lay-department .rx-ideas .checklist .row { flex: none; height: 0.32in; }
+.rx .lay-department .rx-lead { margin-top: var(--s1); font-size: max(10pt, calc(8pt / var(--page-zoom))); }
+.rx .lay-department .page-footer { margin-top: var(--s4); }
+/* the emergency directory in department form */
+.rx .lay-department.emergency-page .rx-col > .card.rx-blk,
+.rx .lay-department.emergency-page .rx-foot3 > .card.rx-blk { border-top: 1pt solid var(--c-structure); padding-top: 0.07in; }
+.rx .lay-department.emergency-page .rx-numbered .card-tab.rx-sec,
+.rx .lay-department.emergency-page .card.rx-blk > .card-tab.rx-sec { flex-direction: row; align-items: baseline; gap: var(--s2); }
+.rx .lay-department .rx-foot3 { column-gap: 0; border-top: 0; }
+.rx .lay-department .rx-foot3 > .card.rx-blk { padding-left: 0.14in; padding-right: 0.14in; }
+.rx .lay-department .rx-foot3 > .card.rx-blk:first-child { padding-left: 0; }
+.rx .lay-department .rx-foot3 > .card.rx-blk:last-child { padding-right: 0; }
+.rx .lay-department .rx-foot3 > .card.rx-blk + .card.rx-blk { box-shadow: inset 0.5pt 0 0 var(--c-structure); }
+.rx .lay-department .rx-home .field { min-height: 0.28in; }
+.rx .lay-department.emergency-page .rx-col { gap: var(--s3); }
+.rx .lay-department.emergency-page .masthead.rx-mast { margin-bottom: var(--s3); }
+.rx .lay-department.emergency-page .rx-foot3 { margin-top: var(--s3); }
+.rx .lay-department.emergency-page .rx-home { margin-bottom: var(--s2); }
+
+/* broadsheet: three newspaper columns read down, divided by rules. */
+.rx .lay-broadsheet { --rx-rule: 0.5pt; }
+.rx .lay-broadsheet .rx-cal-cols {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: column; row-gap: 0.16in; margin-top: 0.14in;
+}
+.rx .lay-broadsheet .rx-cal .mini { padding: 0 0.16in; }
+.rx .lay-broadsheet .rx-cal .mini:nth-child(-n+4) { padding-left: 0; }
+.rx .lay-broadsheet .rx-cal .mini:nth-child(n+9) { padding-right: 0; }
+.rx .lay-broadsheet .rx-cal .mini:nth-child(n+5) { box-shadow: inset 0.5pt 0 0 var(--c-structure); }
+.rx .lay-broadsheet .rx-cal .mini .mini-head::after,
+.rx .lay-department .rx-cal .mini .mini-head::after {
+  counter-increment: rxmonth; content: counter(rxmonth, decimal-leading-zero); margin-left: auto;
+  color: var(--c-structure); font-family: var(--t-index-font); font-size: var(--t-index-size);
+  font-weight: var(--t-index-weight); letter-spacing: var(--t-index-track); font-style: normal;
+}
+.rx .lay-broadsheet .rx-cal .mini .rx-mn, .rx .lay-shapegrid .rx-cal .mini .rx-mn { display: inline-block; text-transform: lowercase; }
+.rx .lay-broadsheet .rx-cal .mini .rx-mn::first-letter { text-transform: uppercase; }
+.rx .lay-broadsheet .card.annual-dates { border-top: 1pt solid var(--c-structure); padding-top: 0.08in; margin-top: 0.16in; }
+.rx .lay-broadsheet .annual-dates .dates-cols { column-gap: 0; }
+.rx .lay-broadsheet .annual-dates .dates-col { padding: 0 0.16in; }
+.rx .lay-broadsheet .annual-dates .dates-col:first-child { box-shadow: inset 0.5pt 0 0 var(--c-structure); }
+.rx .lay-broadsheet .annual-dates .dates-col:last-child { box-shadow: inset 0.5pt 0 0 var(--c-structure); padding-right: 0; }
+.rx .lay-broadsheet .page-footer { margin-top: var(--s4); }
+
+/* recipe: double-rule cards with their heading set into the top rule. */
+.rx .lay-recipe .card.rx-blk.rx-frame {
+  border: 2pt solid var(--c-frame); padding: 0.2in 0.16in 0.1in;
+  box-shadow: inset 0 0 0 2pt var(--paper), inset 0 0 0 2.75pt var(--c-frame);
+}
+.rx .lay-recipe .card.rx-blk.rx-frame > .card-tab.rx-sec {
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -55%); margin: 0;
+  padding: 0 0.08in; background: var(--paper); gap: 0.1in;
+}
+.rx .lay-recipe .card.rx-blk.rx-frame > .card-tab.rx-sec::before,
+.rx .lay-recipe .card.rx-blk.rx-frame > .card-tab.rx-sec::after { content: ""; width: 0.3in; border-top: 0.75pt solid var(--c-structure); }
+.rx .lay-recipe .rx-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--s4); margin-bottom: var(--s5); }
+.rx .lay-recipe .rx-week { padding-top: 0.24in; }
+.rx .lay-recipe .rx-ledger th {
+  padding: 0.05in 0.06in; border-top: 0.75pt solid var(--c-structure); border-bottom: 0.75pt solid var(--c-structure);
+  background: color-mix(in srgb, var(--c-structure) 8%, var(--paper));
+}
+.rx .lay-recipe .rx-ledger th:first-child, .rx .lay-recipe .rx-ledger td:first-child { padding-left: 0.08in; }
+.rx .lay-recipe .rx-ledger td { height: 0.46in; }
+.rx .lay-recipe .rx-ledger :is(td, th) + :is(td, th) { border-left: 0.75pt solid var(--c-line); }
+.rx .lay-recipe .rx-ledger td:first-child {
+  font-family: var(--t-field-font); font-weight: var(--t-field-weight); font-size: calc(var(--t-body-size) * 1.05);
+}
+.rx .lay-recipe .rx-pair { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); column-gap: var(--s4); margin-top: var(--s5); }
+.rx .lay-recipe .rx-stackcol { display: flex; flex-direction: column; gap: var(--s5); min-height: 0; }
+.rx .rx-page .rx-stackcol > .card.rx-blk:first-child { flex: none; }
+.rx .rx-page .rx-stackcol > .card.rx-blk:last-child { flex: 1 1 auto; }
+.rx .lay-recipe .num, .rx .lay-recipe .num.hollow {
+  width: 0.22in; height: 0.22in; justify-content: center; align-items: center; display: flex;
+  border: 1pt solid var(--c-structure); margin-right: 0.04in;
+}
+.rx .lay-recipe .rx-lead { margin: 0 0 var(--s1); color: var(--t-text); }
+.rx .lay-recipe .rx-two { column-gap: var(--s4); }
+.rx .lay-recipe .rx-col { gap: var(--s4); }
+.rx .lay-recipe .rx-foot3 { margin-top: var(--s5); }
+.rx .lay-recipe .rx-foot3 .card.rx-blk.rx-frame > .card-tab.rx-sec { letter-spacing: 0.06em; gap: 0.06in; padding: 0 0.05in; }
+.rx .lay-recipe .rx-foot3 .card.rx-blk.rx-frame > .card-tab.rx-sec::before,
+.rx .lay-recipe .rx-foot3 .card.rx-blk.rx-frame > .card-tab.rx-sec::after { width: 0.1in; }
+.rx .lay-recipe .rx-home { margin-bottom: var(--s5); }
+.rx .lay-recipe.annual-page .rx-cal-3x4 { margin-top: var(--s1); }
+.rx .lay-recipe .rx-cal .mini { border: 0.75pt solid var(--c-frame); }
+.rx .lay-recipe .rx-cal .mini .mini-head {
+  justify-content: center; padding: 0.045in 0 0.04in; border-bottom: 0;
+  background: var(--c); color: var(--c-on);
+}
+.rx .lay-recipe .rx-cal .mini table { margin: 0.02in 0 0.03in; }
+.rx .lay-recipe .card.annual-dates {
+  grid-template-columns: 1fr; row-gap: var(--s2); margin-top: var(--s5); padding: 0.14in 0.2in 0.1in;
+  border: 2pt solid var(--c-frame); box-shadow: inset 0 0 0 2pt var(--paper), inset 0 0 0 2.75pt var(--c-frame);
+}
+.rx .lay-recipe .annual-dates .dates-label { display: flex; justify-content: center; align-items: center; gap: 0.1in; }
+.rx .lay-recipe .annual-dates .dates-label::before,
+.rx .lay-recipe .annual-dates .dates-label::after { content: ""; width: 0.4in; border-top: 0.75pt solid var(--c-structure); }
+
+/* grids of twelve months: three across, four down, read across. */
+.rx .rx-page .rx-cal-3x4 { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 0.16in 0.22in; }
+
+/* band (Family Time): tinted tiles, striped rows, tinted blocks. */
+.rx .lay-band .rx-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--s3); margin-bottom: var(--s4); }
+.rx .lay-band .rx-tile, .rx .lay-band .card.rx-blk.rx-tint {
+  background: color-mix(in srgb, var(--c-structure) 7%, var(--paper)); border-radius: 0.05in;
+}
+.rx .lay-band .rx-tile { padding: 0.06in 0.16in 0.08in; }
+.rx .lay-band .card.rx-blk.rx-tint { padding: 0.14in 0.18in 0.12in; }
+.rx .lay-band .rx-ledger th { border-bottom: 1.5pt solid var(--c-structure); padding: 0 0.08in 0.06in; }
+.rx .lay-band .rx-ledger td { height: 0.44in; border-bottom: 0; padding: 0 0.08in; }
+.rx .lay-band .rx-ledger.rx-striped tbody tr:nth-child(odd) td { background: color-mix(in srgb, var(--c-structure) 7%, var(--paper)); }
+.rx .lay-band .rx-ledger td:first-child { padding-left: 0.1in; border-right: 0.75pt solid var(--c-line); font-weight: 600; }
+.rx .lay-band .rx-pair { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--s3); margin-top: var(--s4); }
+.rx .lay-band .rx-stackcol { display: flex; flex-direction: column; gap: var(--s3); min-height: 0; }
+.rx .lay-band .rx-lead { margin: 0 0 var(--s1); }
+
+/* shapegrid: open sections under a 2pt rule in their shape's colour. */
+.rx .lay-shapegrid .card.rx-blk.rx-open { border-top: 2pt solid var(--k, var(--c-structure)); padding-top: 0.08in; }
+.rx .lay-shapegrid .rx-sg { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--s5); align-items: start; }
+.rx .lay-shapegrid .rx-sg-main { display: flex; flex-direction: column; min-width: 0; }
+.rx .lay-shapegrid .rx-side-shapes { flex-direction: column; }
+.rx .lay-shapegrid .rx-foot2 { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: var(--s4); margin-top: var(--s4); }
+.rx .lay-shapegrid .rx-two { flex: none; }
+.rx .lay-shapegrid.annual-page .rx-cal .mini .mini-head { border-bottom: 2pt solid var(--c); align-items: center; gap: 0.07in; }
+.rx .lay-shapegrid.annual-page .rx-cal .mini .mini-head::before {
+  content: ""; flex: none; width: 0.15in; height: 0.15in; background: var(--c);
+}
+.rx .lay-shapegrid.annual-page .mini[data-season="winter"] .mini-head::before { border-radius: 0 0 100% 0; }
+.rx .lay-shapegrid.annual-page .mini[data-season="spring"] .mini-head::before { border-radius: 50%; }
+.rx .lay-shapegrid.annual-page .mini[data-season="summer"] .mini-head::before { border-radius: 0.075in 0.075in 0 0; }
+.rx .lay-shapegrid .card.annual-dates { border-top: 2pt solid var(--orange); padding-top: 0.08in; margin-top: var(--s4); }
+.rx .lay-shapegrid .rx-head-shapes { gap: 0; }
+
+/* --- 6. Every worksheet of a recipe design: the default compositions -------
+   Pages that keep their default composition still take the recipe's type
+   scale, text colour, title area, icons, motif and section language, so they
+   sit beside the composed pages as one design. `W` below is a worksheet on
+   its default composition: .page:not(.rx-page):not(.lk-cover):not(.lk-month). */
+
+/* Text colour and footer, on every worksheet (composed or not). */
+.rx .page:not(.lk-cover):not(.lk-month) { color: var(--t-text); }
+.rx .page .page-footer .txt, .rx .page .page-footer .txt.caps {
+  color: var(--c-structure);
+  font-family: var(--t-footer-font); font-size: var(--t-footer-size); font-weight: var(--t-footer-weight);
+  letter-spacing: var(--t-footer-track); text-transform: var(--t-footer-case); font-style: var(--t-footer-style);
+}
+
+/* Labels, column heads, field labels and body text from the scale. */
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th {
+  font-family: var(--t-label-font); font-size: var(--t-label-size); font-weight: var(--t-label-weight);
+  letter-spacing: var(--t-label-track); text-transform: var(--t-label-case); font-style: var(--t-label-style);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.field .label, .own-rent .label, .emg-head, .area-name, .rowlabel) {
+  font-family: var(--t-field-font); font-size: var(--t-field-size); font-weight: var(--t-field-weight);
+  letter-spacing: var(--t-field-track); text-transform: var(--t-field-case); color: var(--t-text);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.checklist .row, .ie-row, .task-cell, .tradition-lead, .chores-note-lead) {
+  font-family: var(--t-body-font); font-size: var(--t-body-size); color: var(--t-text);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab {
+  font-family: var(--t-section-font); font-size: var(--t-section-size); font-weight: var(--t-section-weight);
+  letter-spacing: var(--t-section-track); text-transform: var(--t-section-case); font-style: var(--t-section-style);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.famtime-label, .maint-label, .ye-head span) {
+  font-family: var(--t-section-font); font-size: var(--t-section-size); font-weight: var(--t-section-weight);
+  letter-spacing: var(--t-section-track); text-transform: var(--t-section-case); font-style: var(--t-section-style);
+  color: var(--c-structure);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .caps.tiny {
+  font-family: var(--t-label-font); font-size: var(--t-label-size); font-weight: var(--t-label-weight);
+  letter-spacing: var(--t-label-track); text-transform: var(--t-label-case);
+}
+
+/* The default masthead: the title in the recipe's title size (the shared fit
+   machinery still shrinks a long one), the banner and strapline as the
+   design's kicker or second voice, no ribbon. */
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead { --type-title: var(--t-title-size); }
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead h1.page-title {
+  font-family: var(--t-title-font); font-weight: var(--t-title-weight);
+  letter-spacing: var(--t-title-track); text-transform: var(--t-title-case); line-height: var(--t-title-lh);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .banner {
+  background: none; padding: 0; border: 0; border-radius: 0; margin-top: 0.05in; color: var(--c-structure);
+  font-family: var(--t-kicker-font); font-size: var(--t-kicker-size); font-weight: var(--t-kicker-weight);
+  letter-spacing: var(--t-kicker-track); text-transform: var(--t-kicker-case); font-style: var(--t-kicker-style);
+}
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .banner::before,
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .banner::after { content: none; display: none; }
+.rx .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .strapline {
+  color: var(--t-text);
+  font-family: var(--t-deck-font); font-size: var(--t-deck-size); font-weight: var(--t-deck-weight);
+  letter-spacing: var(--t-deck-track); text-transform: var(--t-deck-case); font-style: var(--t-deck-style);
+  line-height: var(--t-deck-lh);
+}
+
+/* nameplate: the kicker and the banner as ears over the title. */
+.r-title-nameplate .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings {
+  display: grid; grid-template-columns: max-content minmax(0, 1fr); text-align: left; padding-top: 0;
+}
+.r-title-nameplate .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > * { grid-column: 1 / -1; }
+.r-title-nameplate .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings::before {
+  content: var(--rx-kicker); grid-column: 1; grid-row: 1; align-self: end; white-space: nowrap; padding-bottom: 0.05in; margin-bottom: 0.1in;
+  border-bottom: 0.75pt solid var(--c-structure); color: var(--c-structure);
+  font-family: var(--t-kicker-font); font-size: var(--t-kicker-size); font-weight: var(--t-kicker-weight);
+  letter-spacing: var(--t-kicker-track); text-transform: var(--t-kicker-case);
+}
+.r-title-nameplate .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .banner {
+  grid-column: 2; grid-row: 1; margin: 0 0 0.1in; padding-bottom: 0.05in; align-self: end;
+  border-bottom: 0.75pt solid var(--c-structure); text-align: right; white-space: normal; padding-left: var(--s4);
+}
+.r-title-nameplate .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .year-tint { grid-row: 2; }
+.r-title-nameplate .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead { border-bottom: 2pt solid var(--c-structure); padding-bottom: 0.1in; margin-bottom: var(--s4); }
+
+/* centred: the banner in the second voice (italics) under the title, and
+   the page's one ticking band under the masthead instead of along the top. */
+.r-title-centred .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .banner {
+  color: var(--t-text);
+  font-family: var(--t-deck-font); font-size: var(--t-deck-size); font-weight: var(--t-deck-weight);
+  letter-spacing: 0; text-transform: none; font-style: var(--t-deck-style);
+}
+body.rx.r-motif-ticking .page:not(.lk-cover):not(.lk-month)::before { content: none; display: none; }
+.r-motif-ticking .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead::after {
+  content: ""; grid-column: 1 / -1; height: 0.16in; margin-top: 0.08in; opacity: 0.85;
+  background-image: repeating-linear-gradient(90deg, transparent 0 0.29in, var(--red) 0.29in 0.33in,
+    transparent 0.33in 0.39in, var(--red) 0.39in 0.41in, transparent 0.41in 0.7in);
+}
+
+/* shapegrid: a left title with the kicker over it and the banner as its
+   subtitle; three of the cover's shapes at the right, drawn in the palette's
+   shape colours; the corner circle retired. */
+body.rx.r-motif-shapes .page:not(.lk-cover):not(.lk-month)::after { content: none; display: none; }
+.r-title-shapegrid .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead {
+  position: relative; padding-right: 1.75in; margin-bottom: var(--s4);
+}
+.r-title-shapegrid .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings { text-align: left; padding-top: 0; }
+.r-title-shapegrid .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings::before {
+  content: var(--rx-kicker); display: block; margin-bottom: 0.04in; color: var(--c-structure);
+  font-family: var(--t-kicker-font); font-size: var(--t-kicker-size); font-weight: var(--t-kicker-weight);
+  letter-spacing: var(--t-kicker-track); text-transform: var(--t-kicker-case);
+}
+.r-title-shapegrid .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead .headings > .banner {
+  display: block; margin-top: 0.05in; color: var(--t-text);
+  font-family: var(--t-deck-font); font-size: var(--t-deck-size); font-weight: var(--t-deck-weight);
+  letter-spacing: var(--t-deck-track); text-transform: var(--t-deck-case); font-style: var(--t-deck-style);
+}
+.r-motif-shapes .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead::after {
+  --sz: 0.5in; content: ""; position: absolute; right: 0; bottom: 0; width: calc(3 * var(--sz)); height: var(--sz);
+  background:
+    radial-gradient(circle at 0 0, var(--navy) 0 var(--sz), transparent calc(var(--sz) + 0.5px)) 0 0 / var(--sz) var(--sz) no-repeat,
+    radial-gradient(circle, var(--orange) 0 calc(var(--sz) / 2), transparent calc(var(--sz) / 2 + 0.5px)) var(--sz) 0 / var(--sz) var(--sz) no-repeat,
+    radial-gradient(circle at 50% calc(var(--sz) / 2), var(--pink) 0 calc(var(--sz) / 2), transparent calc(var(--sz) / 2 + 0.5px)) calc(2 * var(--sz)) 0 / var(--sz) var(--sz) no-repeat,
+    linear-gradient(var(--pink), var(--pink)) calc(2 * var(--sz)) calc(var(--sz) / 2) / var(--sz) calc(var(--sz) / 2) no-repeat;
+}
+
+/* Icons: none, or bare in the structure colour (no discs, no washes). */
+.r-icons-none .page:not(.lk-cover):not(.lk-month) :is(.chip, .card-tab > .ico, .famtime-label > .ico, .maint-label > .ico) { display: none; }
+.r-icons-bare .page:not(.lk-cover):not(.lk-month) .chip,
+.r-icons-bare .page:not(.lk-cover):not(.lk-month) .chip.wash { background: none; border: 0; }
+.r-icons-bare .page:not(.lk-cover):not(.lk-month) .chip .ico { fill: var(--c-structure); width: 72%; height: 72%; }
+.r-icons-bare .page:not(.lk-cover):not(.lk-month) .card-tab .ico { fill: currentColor; }
+
+/* Section language, rules: open sections under a rule; heads in the section
+   role over nothing; tables with a ruled head; numerals bare. */
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) .goal-box {
+  border: 0; border-top: 0.5pt solid var(--c-structure); border-radius: 0; background: none; padding-left: 0; padding-right: 0;
+}
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) .total-bar {
+  background: none; border-top: 1pt solid var(--c-structure); border-radius: 0; padding-left: 0; padding-right: 0;
+}
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) .total-box { background: none; border-bottom: 0.5pt solid var(--c-line); border-radius: 0; }
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) .chores-note { border: 0; border-top: 1pt solid var(--c-structure); border-radius: 0; background: none; }
+
+/* Section language, frames: double-rule frames; the tab is a paper label
+   set into the top rule, caps between short rules; the table head is a
+   light band between two rules (no dark bar); numerals in square boxes. */
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.card, .goal-box, .chores-note) {
+  border: 2pt solid var(--c-frame); border-radius: 0; background: none;
+  box-shadow: inset 0 0 0 2pt var(--paper), inset 0 0 0 2.75pt var(--c-frame);
+}
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab {
+  background: var(--paper); color: var(--c-structure); border-radius: 0; gap: 0.08in; padding-left: 0.08in; padding-right: 0.08in;
+}
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab::before,
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab::after {
+  content: ""; flex: none; width: 0.22in; border-top: 0.75pt solid var(--c-structure);
+}
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th,
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th.th-fill {
+  background: color-mix(in srgb, var(--c-structure) 8%, var(--paper)); color: var(--c-structure);
+  border-top: 0.75pt solid var(--c-structure); border-bottom: 0.75pt solid var(--c-structure); border-radius: 0;
+}
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th.we { color: var(--c-weekend); }
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.num, .num.hollow) {
+  border-radius: 0; background: none; border: 1pt solid var(--c-structure); color: var(--c-structure);
+  font-family: var(--t-numeral-font); font-weight: var(--t-numeral-weight);
+  font-size: max(7.5pt, calc(7pt / var(--page-zoom))); line-height: 1;
+  width: auto; height: auto; min-width: 1.45em; min-height: 1.45em; padding: 0 0.12em;
+}
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .total-bar {
+  background: none; border: 1pt solid var(--c-structure); border-radius: 0;
+}
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .total-box { background: none; border-left: 1pt solid var(--c-structure); border-radius: 0; }
+
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab.we { color: var(--c-weekend); }
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab.we::before,
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab.we::after { border-top-color: var(--c-weekend); }
+
+/* Section language, blocks: sections as tinted blocks with a plain heading
+   in the section role; table heads over a 1.5pt rule, rows lightly striped;
+   numerals bold and bare; check boxes with soft corners. */
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.card, .goal-box, .chores-note) {
+  border: 0; border-radius: 0.05in; box-shadow: none;
+  background: color-mix(in srgb, var(--c-structure) 7%, var(--paper));
+}
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card.has-tab { padding-top: 0.12in; }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card.has-tab > .card-tab {
+  position: static !important; margin: 0 0 0.06in !important; max-width: none !important;
+  background: none; color: var(--c-structure); padding: 0; border-radius: 0; white-space: nowrap;
+}
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab .ico { fill: var(--orange); width: 0.15in; height: 0.15in; }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card.has-tab > .card-tab.we { color: var(--c-weekend); }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab.we .ico { fill: var(--c-weekend); }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th,
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th.th-fill {
+  background: none; color: var(--c-structure); border-radius: 0; border-bottom: 1.5pt solid var(--c-structure);
+}
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl th.we { color: var(--c-weekend); }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .tbl tbody tr:nth-child(odd) td {
+  background: color-mix(in srgb, var(--c-structure) 7%, var(--paper));
+}
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.num, .num.hollow) {
+  background: none; border: 0; color: var(--c-structure); width: auto; min-width: 0.24in;
+  font-family: var(--t-numeral-font); font-weight: var(--t-numeral-weight); font-size: var(--t-numeral-size);
+}
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .check { border-radius: 0.025in; border-color: var(--c-structure); }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .total-bar {
+  background: color-mix(in srgb, var(--c-structure) 12%, var(--paper)); border-radius: 0.05in;
+}
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) .total-box { background: var(--paper); }
+.r-sections-blocks .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.famtime-meta, .school-meta, .emg-top, .vac-meta, .maint-meta, .health-meta) {
+  border: 0; border-radius: 0.05in; background: color-mix(in srgb, var(--c-structure) 7%, var(--paper));
+}
+
+/* The meal plan's day cells: no grey or pink washes; the day name carries
+   the weekday or weekend colour. A blocks design tints the whole column. */
+.rx .page .meal-tbl tbody td.daycell { background: none; }
+.r-sections-blocks .page .meal-tbl tbody td.daycell { background: color-mix(in srgb, var(--c-structure) 7%, var(--paper)); }
+.rx .page .meal-tbl tbody td.daycell .dayname {
+  font-family: var(--t-label-font); font-size: var(--t-label-size); font-weight: var(--t-label-weight);
+  letter-spacing: var(--t-label-track); text-transform: var(--t-label-case);
+}
+
+/* --- 7. Small pages ---------------------------------------------------------
+   The labels sit at their print minimum there (larger in letter terms), so a
+   directory's column heads may wrap rather than run past their column. */
+.small-page .rx .rx-page .rx-dir > .emg-head, .small-page.rx .rx-page .rx-dir > .emg-head { letter-spacing: 0.02em; }
+.small-page.rx .rx-page .rx-dir > .emg-head span { white-space: normal; }
+
+/* --- 8. Text colour policy `structure` (Mid-century: no ink text) ----------
+   Text the shared CSS sets in the ink token reads the recipe's text colour;
+   text the look sets in a light accent (the cover's kicker, the month band's
+   kicker) is deepened or lightened just enough to read at 4.5:1 on its
+   ground, still from the palette, so a theme recolours it. */
+.r-text-structure .page :is(.values-q, .vm-prompt, .vm-blurb, .index-row, .index-row *, .index-lede, .chores-note-lead) { color: var(--t-text); }
+.r-text-structure .lk-cover .mc-kick { color: color-mix(in srgb, var(--pink) 70%, var(--ink)); }
+.r-text-structure .lk-month .lkm-head .lkm-kicker { color: color-mix(in srgb, var(--orange) 40%, var(--paper)); }
+
+/* --- 9. Section heads in narrow frames; numerals ---------------------------- */
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab { letter-spacing: 0.08em; white-space: nowrap; }
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab .ico { display: none; }
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab::before,
+.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab::after { width: 0.12in; }
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) :is(.num, .num.hollow) {
+  font-family: var(--t-numeral-font); font-weight: var(--t-numeral-weight); font-size: var(--t-numeral-size);
+  color: var(--c-structure);
+}
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) .num::after { content: none; }
+
+/* On a small page, column heads and list items may wrap to a second line. */
+.small-page.rx .rx-page .rx-ledger th { white-space: normal; }
+.small-page.rx .rx-page .checklist .row { white-space: normal; max-height: none; }
+.small-page.rx .rx-page .checklist .row .solid-line { min-width: 0.15in; }
+.small-page.rx .rx-page :is(.rx-nm, .rx-nm em, .rx-tall .field .label) { white-space: normal; }
+.small-page.rx .rx-page .rx-dr { max-height: none; }
+.small-page.rx .rx-page .rx-ownrent { flex-wrap: wrap; row-gap: 0.02in; }
+.small-page.rx .rx-page .card.rx-blk > .card-tab.rx-sec { letter-spacing: 0.02em; }
+.small-page.rx .lay-recipe .card.rx-blk.rx-frame > .card-tab.rx-sec::before,
+.small-page.rx .lay-recipe .card.rx-blk.rx-frame > .card-tab.rx-sec::after { display: none; }
+.small-page.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab { white-space: normal; letter-spacing: 0.02em; }
+.small-page.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab::before,
+.small-page.r-sections-frames .page:not(.rx-page):not(.lk-cover):not(.lk-month) .card-tab::after { display: none; }
+
+/* --- 10. Print minimums on the default compositions -------------------------
+   Small text the shared CSS fixes in points (a table's helper line, the
+   tracker's day letters, the index) prints at least at the adopted minimum
+   (6.5pt; chrome.PRINT_MINIMUMS) on every page size: max(its letter size,
+   6.5pt / page zoom). Measured in a real browser for the trio
+   (tests/test_recipes.py). */
+.rx .page .health-tbl .blurb { font-size: 6.5pt; }
+.rx .page :is(.appt-head span, .week-head span) { font-size: max(6.5pt, calc(6.5pt / var(--page-zoom))); }
+.small-page.rx .page :is(.hl-q, .maint-tbl td, .howto-body, .index-lede, .values-q, .values-note p, .vm-tag,
+  .total-bar, .total-box, .slotcell span, .vm-blurb) { font-size: calc(6.6pt / var(--page-zoom)); }
+.small-page.rx .page :is(.index-num, .index-title) { font-size: calc(6.6pt / var(--page-zoom)); }
+/* The tracker's day letters keep their pitch over the dots on a small page:
+   each letter gets the whole pitch (box and gap), centred where it was. */
+.small-page.rx .page .week-head { gap: 0; margin-left: -0.013in; }
+.small-page.rx .page .week-head span { width: 0.126in; font-size: calc(6pt / var(--page-zoom)); font-weight: 400; letter-spacing: 0; }
+/* Numbered rows in a fixed-height card: the numeral sets no taller line. */
+.r-sections-rules .page:not(.rx-page):not(.lk-cover):not(.lk-month) .numbered .num { height: auto; line-height: 0.9; }
+/* The year-end page's numbered cards grow to hold their five lines when the
+   numerals sit at their print minimum (the open row below gives the room). */
+.small-page.rx .page .ye-row-b { height: auto; min-height: 1.6in; }

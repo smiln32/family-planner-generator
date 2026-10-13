@@ -5,12 +5,16 @@
                 "Family Walk / Bike Ride", "Read Together", "Visit Family / Friends",
                 "Volunteer Together", "Other:"] %}
 
+{# The recipe picks this page's composition (chrome.Recipe.layouts); the
+   default is the page below, the others are in templates/compose/. #}
+{% set lay = rc.layout("family_time") %}
+{% if lay != "default" %}{% include "compose/family_time-" ~ lay ~ ".html" %}{% else %}
 <section class="page famtime-page">
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Family Time") }}
-      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:17pt">Planner</div>
+      <div class="banner b-17" style="--banner-bg:{{ p.structure }}">Planner</div>
       <div class="strapline script">Making time together makes the best memories.</div>
     </div>
     <svg class="art" viewBox="0 0 200 150" role="img" aria-label="Sofa and plant">
@@ -78,3 +82,4 @@
 
   {{ footer("Time together is the greatest gift.") }}
 </section>
+{% endif %}

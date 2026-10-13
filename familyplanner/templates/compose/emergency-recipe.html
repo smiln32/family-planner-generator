@@ -1,0 +1,22 @@
+{# Emergency, "recipe card" (an order pad): the centred title and its second
+   voice over one ticking band, the home details, then double-rule cards
+   with their headings set into the top rule: the numbers on the left, the
+   people and papers on the right, and a foot of three. Picked by
+   Farmhouse's recipe. #}
+{% from "macros.html" import footer with context %}
+{% from "compose/kit.html" import head with context %}
+{% import "compose/emergency-kit.html" as e with context %}
+<section class="page emergency-page rx-page lay-recipe">
+  {{ head("centred", "Emergency Contacts", sub="& Important Information",
+          banner="Be Prepared. Be Safe. Stay Together.") }}
+  {{ e.home() }}
+  <div class="rx-two rx-grow">
+    <div class="rx-col">{{ e.contacts("rx-frame") }}{{ e.utilities("rx-frame rx-fill") }}</div>
+    <div class="rx-col">{{ e.family("rx-frame") }}{{ e.out_of_town("rx-frame") }}{{ e.info("rx-frame rx-fill") }}</div>
+  </div>
+  <div class="rx-foot3">
+    {% if not rc.omits("emergency", "family_plan") %}{{ e.plan("rx-frame") }}{% endif %}
+    {{ e.check("rx-frame") }}{{ e.notes("rx-frame") }}
+  </div>
+  {{ footer("Prepared today, protected tomorrow.") }}
+</section>

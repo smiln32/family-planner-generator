@@ -1,0 +1,137 @@
+{# The parts every recipe composition (templates/compose/<page>-<layout>.html)
+   is built from. A composition is a shared arrangement any design may pick
+   through its recipe (chrome.Recipe.layouts); it never belongs to one
+   design. Type comes from the recipe's scale (.t-<role> in static/recipes.css),
+   colour from the roles, and the write-on parts are the shared macros, so a
+   composition keeps every line, row, check box and label that the default
+   page prints (tests/test_chrome_variants.py). #}
+{% from "macros.html" import ico with context %}
+
+{# The page's masthead in one of five forms:
+   nameplate  kicker ears over a left title and an italic deck (Editorial)
+   broadsheet kicker ears over a centred title and a double rule
+   centred    a centred title, its second voice in italics, a ticking band
+   band       a full-width band in the structure colour with shapes (Mid-century)
+   shapegrid  a title block beside a row of the cover's shapes
+   `title` is the page title. `cont` continues it on the same line in the
+   title's style (the default page's banner, e.g. "Calendar"); `sub` is the
+   rest of a long default title (e.g. "& Important Information"): the h1
+   keeps the default page's full title text, as the shared title tests and
+   the content tests read it, and the rest prints as the first words of the
+   deck line under the title, so the printed title stays one line;
+   `banner` is the default page's banner line, set as this form's kicker or
+   second voice; `deck` is a line of copy under the title. #}
+{% macro head(form, title, cont="", sub="", banner="", deck="", year="", shapes_html="") %}
+<header class="masthead rx-mast rx-mast-{{ form }}">
+  <div class="headings rx-heads">
+  {% if form in ("nameplate", "broadsheet") %}
+  <div class="rx-ears">
+    <span class="t-kicker">{{ rc.kicker }}</span>
+    {% if banner %}<span class="banner rx-banner t-kicker">{{ banner }}</span>{% endif %}
+  </div>
+  {% elif form in ("band", "shapegrid") and rc.kicker %}
+  <span class="t-kicker rx-kick">{{ rc.kicker }}</span>
+  {% endif %}
+  <div class="rx-tline">
+    <h1 class="display page-title t-title">{{ title }}{% if sub %}<span class="rx-tsub"> {{ sub }}</span>{% endif %}</h1>
+    {% if cont %}<span class="banner rx-cont t-title">{{ cont }}</span>{% endif %}
+    {% if year %}<span class="rx-folio">{{ year }}</span>{% endif %}
+  </div>
+  {% set lead = sub if sub else "" %}
+  {% if form == "centred" %}
+    {% if banner %}<p class="rx-voice t-deck">{% if lead %}{{ lead }} &middot; {% endif %}<span class="banner rx-banner">{{ banner }}</span>{% if deck %} &middot; {{ deck }}{% endif %}</p>
+    {% elif deck or lead %}<p class="rx-voice t-deck">{{ lead }}{% if lead and deck %} &middot; {% endif %}{{ deck }}</p>{% endif %}
+  {% elif form in ("band", "shapegrid") %}
+    {% if banner or deck or lead %}<p class="rx-subt t-deck">{% if lead %}{{ lead }}{% if banner or deck %} &middot; {% endif %}{% endif %}{% if banner %}<span class="banner rx-banner">{{ banner }}</span>{% endif %}{% if banner and deck %} &middot; {% endif %}{{ deck }}</p>{% endif %}
+  {% elif deck or lead %}
+  <p class="rx-deck t-deck">{{ lead }}{% if lead and deck %} &middot; {% endif %}{{ deck }}</p>
+  {% endif %}
+  {% if form == "broadsheet" %}<div class="rx-dbl"></div>{% endif %}
+  </div>
+  {{ shapes_html }}
+</header>
+{% if form == "centred" and rc.motif == "ticking" %}<div class="rx-ticking" aria-hidden="true"></div>{% endif %}
+{% endmacro %}
+
+{# A section heading: the shared card tab, inside a `.card.rx-blk`. A shape
+   key (q quarter, c circle, a arch, s square) leads it where the recipe's
+   motif is shapes; numbered compositions count them (01, 02 ...) in CSS. #}
+{% macro sec(text, key="c", colour="orange") %}<div class="card-tab rx-sec"><span class="rx-key rx-key-{{ key }}" style="--k:var(--{{ colour }})" aria-hidden="true"></span><span class="rx-sec-t">{{ text }}</span></div>{% endmacro %}
+
+{# A day name. The default page prints a three-letter tag before the name
+   ("SUN Sunday"); the tag is redundant (2026-10-13 audit), so it stays in the
+   markup with its data-day, as the content tests read it, and only the name
+   prints. #}
+{% macro dayname(name, we) -%}
+<span class="rx-day{% if we %} we{% endif %}"><span class="pill{% if we %} we{% endif %}" data-day="{{ 'weekend' if we else 'weekday' }}">{{ name[:3]|upper }}</span><span class="rx-dn">{{ name }}</span></span>
+{%- endmacro %}
+
+{# A row of the cover's geometric shapes. `items` is a list of (shape,
+   colour token); shapes: q quarter circle, c circle, s square, a arch
+   (half disc), d disc with a hole, h half disc on its side. #}
+{% macro shapes(items, size=".6in", cls="") -%}
+<div class="rx-shapes {{ cls }}" style="--sz:{{ size }}" aria-hidden="true">{% for shape, colour in items %}<i class="rx-s rx-s-{{ shape }}" style="--k:var(--{{ colour }})">{% if shape == "d" %}<b></b>{% endif %}</i>{% endfor %}</div>
+{%- endmacro %}
+
+{# One month of the annual calendar: the same tile, head and dates as the
+   default page (the tests compare them), styled by the composition. #}
+{% set motif_icon = {
+     "snowman": "snowflake", "hearts": "heart", "sprout": "sprout",
+     "tulips": "flower", "flowers": "flower", "sun": "sun", "beach": "palm",
+     "school": "book", "pumpkin": "pumpkin", "leaves": "leaf",
+     "snowflake": "snowflake"} %}
+{% macro month(month, month_number) %}
+{% set key = month_key(month, month_number) %}
+<div class="mini" data-season="{{ key }}" data-n="{{ '%02d' % month_number }}" style="--c:{{ p[key] }};--c-on:{{ p[key ~ '-on'] if (key ~ '-on') in p else '#fff' }}">
+  <div class="mini-head">{{ ico(motif_icon.get(month.motif, "heart")) }} <span class="rx-mn">{{ month.name|upper }}</span></div>
+  <table>
+    <thead><tr>
+      {% set weekend = weekend_flags(cfg.sunday_first) %}
+      {% for initial in day_initials(cfg.sunday_first) %}
+      <th class="{{ 'we' if weekend[loop.index0] else 'wd' }}" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">{{ initial }}</th>
+      {% endfor %}
+    </tr></thead>
+    <tbody>
+      {% for week in compact_grid(cfg.year, month_number, cfg.sunday_first) %}
+      <tr>
+        {% for day in week %}
+        <td{% if day.weekend %} class="we"{% if day.number %} data-day="weekend"{% endif %}{% endif %}>{{ day.number or "" }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{# The Important Dates block: the default page's card and its ten rows, the
+   bullet from the chrome catalog (as annual_calendar.html chooses it). #}
+{% macro dates(heading="Important Dates &amp; Events") %}
+{% set bullet = "none" if cc.ornaments == "none"
+   else ("box" if cc.calendar_tile == "square"
+   else ("dot" if cc.ornaments == "corner" else "heart")) %}
+<div class="card annual-dates" style="--c:{{ p.structure }}">
+  <div class="dates-label"><span class="script">{{ heading|safe }}</span></div>
+  <div class="dates-cols">
+    {% for col in range(2) %}
+    <div class="dates-col">
+      {% for _ in range(5) %}
+      <div class="row">
+        {% if bullet == "heart" %}
+        <svg class="ico bullet" style="fill:{{ p.structure }}"><use href="#i-heart"/></svg>
+        {% elif bullet != "none" %}
+        <span class="bullet mark-{{ bullet }}"></span>
+        {% endif %}
+        <span class="dot-line"></span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{# The planner year as the masthead prints it, or nothing (cover_year). #}
+{% macro year_text() -%}
+{%- if cfg.year_on_cover == "print" %}{{ cfg.cover_year_display }}{% endif -%}
+{%- endmacro %}

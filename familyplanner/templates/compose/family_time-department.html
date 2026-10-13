@@ -1,0 +1,54 @@
+{# Family Time, "department page" (a magazine department page): a left
+   nameplate over a 2pt rule; a narrow rail beside a wide main column; the
+   week as a ruled ledger; numbered sections. Picked by Editorial's recipe. #}
+{% from "macros.html" import footer, field, checklist, numbered, lines with context %}
+{% from "compose/kit.html" import head, sec, dayname with context %}
+<section class="page famtime-page rx-page lay-department rx-numbered">
+  {{ head("nameplate", "Family Time", banner="Planner",
+          deck="Making time together makes the best memories.") }}
+
+  <div class="rx-row rx-fixed">
+    <div class="card rx-blk rx-rail">
+      {{ sec("Weekly Family Time Plan") }}
+      <div class="rx-stack">{{ field("Week of:") }}{{ field("Our family goal:") }}{{ field("Focus this week:") }}</div>
+    </div>
+    <table class="rx-ledger">
+      <colgroup><col class="c-day"><col class="c-act"><col class="c-time"><col class="c-who"><col></colgroup>
+      <thead><tr>
+        <th class="t-label">Day</th><th class="t-label">Family Time Activity</th><th class="t-label">Time</th>
+        <th class="t-label">Who's Involved</th><th class="t-label rx-sep">Notes</th>
+      </tr></thead>
+      <tbody>
+        {% set weekend = weekend_flags(cfg.sunday_first) %}
+        {% for name in day_names(cfg.sunday_first) %}
+        <tr><td>{{ dayname(name, weekend[loop.index0]) }}</td><td></td><td></td><td></td><td class="rx-sep"></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rx-row rx-fixed">
+    <div class="card rx-blk rx-rail">{{ sec("Family Time Ideas") }}</div>
+    <div class="rx-cols3 rx-ideas">
+      {% set ideas = ["Game Night", "Movie Night", "Cook Together", "Outdoor Adventure",
+                      "Family Walk / Bike Ride", "Read Together", "Visit Family / Friends",
+                      "Volunteer Together", "Other:"] %}
+      {% for col in range(3) %}{{ checklist(items=ideas[col * 3:col * 3 + 3], colour="structure", dotted=false) }}{% endfor %}
+    </div>
+  </div>
+
+  <div class="rx-row rx-grow">
+    <div class="card rx-blk rx-rail">{{ sec("Family Time Priorities") }}</div>
+    {{ numbered(5, "structure") }}
+  </div>
+
+  <div class="rx-row rx-grow">
+    <div class="card rx-blk rx-rail">
+      {{ sec("Family Traditions") }}
+      <p class="rx-lead t-deck">This month, we plan to:</p>
+    </div>
+    {{ lines(5, solid=true) }}
+  </div>
+
+  {{ footer("Time together is the greatest gift.") }}
+</section>

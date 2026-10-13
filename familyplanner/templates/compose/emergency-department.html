@@ -1,0 +1,21 @@
+{# Emergency, "department page": the left nameplate, the home details, then a
+   two-column directory (numbers on the left; people and the household's
+   papers on the right) on even ruled rows, and a foot of three columns
+   divided by rules; numbered sections. Picked by Editorial's recipe. #}
+{% from "macros.html" import footer with context %}
+{% from "compose/kit.html" import head with context %}
+{% import "compose/emergency-kit.html" as e with context %}
+<section class="page emergency-page rx-page lay-department rx-numbered">
+  {{ head("nameplate", "Emergency Contacts", sub="& Important Information",
+          banner="Be Prepared. Be Safe. Stay Together.") }}
+  {{ e.home() }}
+  <div class="rx-two rx-grow">
+    <div class="rx-col">{{ e.contacts() }}{{ e.utilities("rx-fill") }}</div>
+    <div class="rx-col">{{ e.family() }}{{ e.out_of_town() }}{{ e.info("rx-fill") }}</div>
+  </div>
+  <div class="rx-foot3">
+    {% if not rc.omits("emergency", "family_plan") %}{{ e.plan() }}{% endif %}
+    {{ e.check() }}{{ e.notes() }}
+  </div>
+  {{ footer("Prepared today, protected tomorrow.") }}
+</section>

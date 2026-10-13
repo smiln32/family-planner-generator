@@ -72,9 +72,11 @@
    printed twice: a hidden copy at an eighth of the size measures it, and the
    CSS (".pt-fit" in planner.css) shrinks the visible copy only as far as it
    must to fit the masthead. No script: it works in the PDF and the preview.
-   Both copies are h1.display.page-title, so every look rule styles them alike. #}
+   Both copies are h1.display.page-title, so every look rule styles them alike.
+   The title colour is the stylesheet's (`h1.page-title` in planner.css, the
+   navy token), not an inline style, so a look or a recipe can set it. #}
 {% macro page_title(text) %}
-<div class="pt-fit"><div class="pt-room"><h1 class="display page-title" style="color:{{ p.navy }}">{{ text }}</h1></div><h1 class="display page-title pt-probe" aria-hidden="true">{{ text }}</h1></div>
+<div class="pt-fit"><div class="pt-room"><h1 class="display page-title">{{ text }}</h1></div><h1 class="display page-title pt-probe" aria-hidden="true">{{ text }}</h1></div>
 {% endmacro %}
 
 {# The standard page masthead: mark on the left, stacked title, optional art. #}

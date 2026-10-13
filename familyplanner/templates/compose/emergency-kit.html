@@ -1,0 +1,102 @@
+{# The Emergency page's sections for the recipe compositions. Each keeps the
+   default page's labels, write-on lines and check boxes exactly (the
+   directory heads are the default page's .emg-head rows); a composition
+   only arranges them. `key`/`colour` are the section's shape key where the
+   recipe's motif is shapes. #}
+{% from "macros.html" import field, checklist, lines with context %}
+{% from "compose/kit.html" import sec with context %}
+
+{% macro home() %}
+<div class="rx-home">
+  <div class="rx-home-col">{{ field("Home address:") }}{{ field("City / State / ZIP:") }}</div>
+  <div class="rx-home-col">{{ field("Home phone:") }}{{ field("Family email:") }}</div>
+</div>
+{% endmacro %}
+
+{% macro contacts(cls="", key="a", colour="pink") %}
+{% set rows = [("Emergency", "Police / Fire / Ambulance"), ("Local Police", ""), ("Fire Department", ""),
+               ("Poison Control", ""), ("Nearest Hospital", ""), ("Family Doctor", ""), ("Dentist", ""),
+               ("Veterinarian", ""), ("Other", ""), ("Other", "")] %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Emergency Contacts", key, colour) }}
+  <div class="rx-dir rx-dir-3">
+    <div class="emg-head"><span>Contact</span><span>Name</span><span>Phone number</span></div>
+    {% for label, sub in rows %}
+    <div class="rx-dr"><span class="rx-nm">{{ label }}{% if sub %}<em class="t-helper">{{ sub }}</em>{% endif %}</span><span class="solid-line"></span><span class="solid-line"></span></div>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro utilities(cls="", key="c", colour="orange") %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Utilities & Services", key, colour) }}
+  <div class="rx-dir rx-dir-2">
+    <div class="emg-head two"><span>Service</span><span>Phone number</span></div>
+    {% for label in ["Water", "Electricity", "Gas", "Trash / Recycling", "Internet / Cable", "Phone Provider"] %}
+    <div class="rx-dr"><span class="rx-nm">{{ label }}</span><span class="solid-line"></span></div>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro family(cls="", key="q", colour="navy") %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Family Contact List", key, colour) }}
+  <div class="rx-dir rx-dir-f">
+    <div class="emg-head three"><span>Name</span><span>Relationship</span><span>Phone number</span></div>
+    {% for _ in range(5) %}
+    <div class="rx-dr"><span class="solid-line"></span><span class="solid-line"></span><span class="solid-line"></span></div>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro out_of_town(cls="", key="c", colour="orange") %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Out of Town Contact", key, colour) }}
+  <div class="rx-fields">{{ field("Name:") }}{{ field("Relationship:") }}{{ field("Phone number:") }}{{ field("Address:") }}</div>
+</div>
+{% endmacro %}
+
+{% macro info(cls="", key="s", colour="pink") %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Important Information", key, colour) }}
+  <div class="rx-fields">
+    {{ field("Insurance company:") }}{{ field("Policy number:") }}{{ field("Group number:") }}
+    <div class="row own-rent rx-ownrent">
+      <span class="label">Homeowner / Renter:</span>
+      <span class="check"></span><span class="small">Owner</span>
+      <span class="check"></span><span class="small">Renter</span>
+    </div>
+    {{ field("Insurance agent:") }}{{ field("Agent phone:") }}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro plan(cls="", key="q", colour="navy") %}
+<div class="card rx-blk {{ cls }}" data-section="family_plan" style="--k:var(--{{ colour }})">
+  {{ sec("Family Emergency Plan", key, colour) }}
+  <div class="rx-fields rx-tall">
+    {{ field("Meeting place (near home):") }}
+    {{ field("Meeting place (outside neighborhood):") }}
+    {{ field("Notes / special instructions:") }}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro check(cls="", key="c", colour="orange") %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Emergency Checklist", key, colour) }}
+  {{ checklist(items=["Keep emergency kit stocked", "Review plan with family regularly",
+                      "Keep important documents in a safe place", "Ensure smoke & CO detectors work",
+                      "Keep this information up to date"], colour="structure", dotted=false) }}
+</div>
+{% endmacro %}
+
+{% macro notes(cls="", key="q", colour="navy") %}
+<div class="card rx-blk {{ cls }}" style="--k:var(--{{ colour }})">
+  {{ sec("Notes", key, colour) }}
+  {{ lines(6) }}
+</div>
+{% endmacro %}

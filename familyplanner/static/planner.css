@@ -2302,3 +2302,29 @@ body {
 .box-06b :is(.lx-box.lx-we, .card.we) { --tape: color-mix(in srgb, var(--c-weekend) 12%, #fff); }
 .layout .card-tab.we { color: var(--c-weekend); }
 :is(.box-plain, .box-02a, .box-11a, .box-12a) .card-tab.we { background: var(--c-weekend); color: var(--c-weekend-on); }
+
+/* ==========================================================================
+   Moved from inline styles (Phase 2 step 5, 2026-10-13)
+   The templates used to fix these in style="" attributes, which no
+   stylesheet could reach: the worksheet title colour (macros.page_title),
+   the banner sizes and the meal plan's day cells. They are classes now, so
+   a look or a recipe can set them; the values are the ones the inline
+   styles printed, and a selector that outranks every rule that the inline
+   style used to beat keeps every design as it printed.
+   ========================================================================== */
+h1.page-title { color: var(--navy); }
+.page .headings .banner.b-17 { font-size: 17pt; }
+.page .headings .banner.b-14 { font-size: 14pt; }
+.page .headings .banner.b-13 { font-size: 13pt; }
+.page .headings .banner.b-9h { font-size: 9.5pt; }
+.page .headings .banner.b-9 { font-size: 9pt; }
+/* The total bars (budget, vacation): the structure colour at 31/255 and
+   34/255 alpha, as the inline `#RRGGBB1F` and `#RRGGBB22` printed. */
+.page .total-bar.tb-31 { background: rgb(from var(--c-structure) r g b / calc(31 / 255)); }
+.page .total-bar.tb-34 { background: rgb(from var(--c-structure) r g b / calc(34 / 255)); }
+/* The meal plan's day cell: the structure colour on weekdays, the weekend
+   accent on the two weekend days, its wash behind the day name and glyph. */
+.meal-tbl tbody td.daycell { --c: var(--c-structure); background: var(--c-wash); }
+.meal-tbl tbody td.daycell.we { --c: var(--c-weekend); }
+.meal-tbl tbody td.daycell .dayname { color: var(--c); }
+.meal-tbl tbody td.daycell .dayglyph { fill: var(--c); }

@@ -1,0 +1,19 @@
+{# Annual calendar, "broadsheet": a centred nameplate between ears over a
+   double rule, a dateline, then the twelve months in three newspaper
+   columns divided by rules (read down each column), filling the page; the
+   dates to keep as a ruled foot. Picked by Editorial's recipe. #}
+{% from "macros.html" import footer with context %}
+{% from "compose/kit.html" import head, month, dates, year_text with context %}
+<section class="page annual-page rx-page lay-broadsheet">
+  {{ head("broadsheet", "Annual Family", cont="Calendar", banner="") }}
+  {% set yr = year_text() %}
+  <div class="rx-dateline t-kicker">January &mdash;{% if yr %} {{ yr }} &mdash;{% endif %} December</div>
+
+  <div class="rx-cal rx-cal-cols">
+    {% for m in cfg.months %}{{ month(m, loop.index) }}{% endfor %}
+  </div>
+
+  {{ dates() }}
+
+  {{ footer("A whole year of memories, together.") }}
+</section>

@@ -15,12 +15,16 @@
 {% set bullet = "none" if cc.ornaments == "none"
    else ("box" if cc.calendar_tile == "square"
    else ("dot" if cc.ornaments == "corner" else "heart")) %}
+{# The recipe picks this page's composition (chrome.Recipe.layouts); the
+   default is the page below, the others are in templates/compose/. #}
+{% set lay = rc.layout("annual_calendar") %}
+{% if lay != "default" %}{% include "compose/annual_calendar-" ~ lay ~ ".html" %}{% else %}
 <section class="page annual-page">
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Annual Family") }}
-      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:13pt">Calendar</div>
+      <div class="banner b-13" style="--banner-bg:{{ p.structure }}">Calendar</div>
       {{ year_mark("annual-year", tint=false) }}
       {{ divider() }}
     </div>
@@ -95,3 +99,4 @@
 
   {{ footer("A whole year of memories, together.") }}
 </section>
+{% endif %}

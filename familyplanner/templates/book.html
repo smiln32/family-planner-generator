@@ -31,6 +31,13 @@
   --type-cover: {{ cfg.type_size.cover }}pt;
   --type-body: {{ cfg.type_size.body }}pt;
   --type-script: {{ cfg.type_size.script }}pt;
+{% if recipe_tokens %}
+  /* The design's recipe (chrome.Recipe): type scale, spacing and text
+     colour, read by static/recipes.css. */
+{% for name, value in recipe_tokens.items() %}
+  {{ name }}: {{ value|safe }};
+{% endfor %}
+{% endif %}
 }
 
 {{ css|safe }}

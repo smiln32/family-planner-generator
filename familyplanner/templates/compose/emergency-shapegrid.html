@@ -1,0 +1,29 @@
+{# Emergency, "shape grid": the title block, the home details and the
+   directory beside a column of the cover's shapes, then the checklist and
+   notes across the foot; open sections, each under a rule in its shape's
+   colour and keyed by that shape. Picked by Mid-century's recipe, which
+   leaves the family plan section out (an owner-approved content exception);
+   a recipe that keeps it gets it in the right-hand column. #}
+{% from "macros.html" import footer with context %}
+{% from "compose/kit.html" import head, shapes with context %}
+{% import "compose/emergency-kit.html" as e with context %}
+{% set keep_plan = not rc.omits("emergency", "family_plan") %}
+<section class="page emergency-page rx-page lay-shapegrid">
+  <div class="rx-sg rx-fixed">
+    <div class="rx-sg-main">
+      {{ head("shapegrid", "Emergency Contacts", sub="& Important Information",
+              banner="Be Prepared. Be Safe. Stay Together.") }}
+      {{ e.home() }}
+      <div class="rx-two">
+        <div class="rx-col">{{ e.contacts("rx-open", "a", "pink") }}{{ e.utilities("rx-open rx-fill", "c", "orange") }}</div>
+        <div class="rx-col">{{ e.family("rx-open", "q", "navy") }}{{ e.out_of_town("rx-open", "c", "orange") }}
+          {% if keep_plan %}{{ e.plan("rx-open", "q", "navy") }}{% endif %}{{ e.info("rx-open rx-fill", "a", "pink") }}</div>
+      </div>
+    </div>
+    {{ shapes([("a", "pink"), ("c", "orange"), ("q", "navy"), ("s", "orange"), ("d", "navy")], "1.1in", "rx-side-shapes") }}
+  </div>
+  <div class="rx-foot2 rx-grow">
+    {{ e.check("rx-open", "c", "orange") }}{{ e.notes("rx-open", "q", "navy") }}
+  </div>
+  {{ footer("Prepared today, protected tomorrow.") }}
+</section>

@@ -11,12 +11,16 @@
                 ("fire", "red", "Gas"), ("trash", "green", "Trash / Recycling"),
                 ("wifi", "purple", "Internet / Cable"), ("phone", "pink", "Phone Provider")] %}
 
+{# The recipe picks this page's composition (chrome.Recipe.layouts); the
+   default is the page below, the others are in templates/compose/. #}
+{% set lay = rc.layout("emergency") %}
+{% if lay != "default" %}{% include "compose/emergency-" ~ lay ~ ".html" %}{% else %}
 <section class="page emergency-page">
   <header class="masthead">
     {{ house_family() }}
     <div class="headings">
       {{ page_title("Emergency Contacts & Important Information") }}
-      <div class="banner" style="--banner-bg:{{ p.structure }};font-size:9pt">
+      <div class="banner b-9" style="--banner-bg:{{ p.structure }}">
         Be Prepared. Be Safe. Stay Together.</div>
       {{ divider() }}
     </div>
@@ -114,7 +118,7 @@
   </div>
 
   <div class="emg-plan">
-    <div class="card has-tab" style="--c:{{ p.structure }}">
+    <div class="card has-tab" data-section="family_plan" style="--c:{{ p.structure }}">
       <div class="card-tab">{{ ico("pin") }} Family Emergency Plan</div>
       <div class="plan-fields">
         {{ field("Meeting place (near home):") }}
@@ -135,3 +139,4 @@
 
   {{ footer("Prepared today, protected tomorrow.") }}
 </section>
+{% endif %}
