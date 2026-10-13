@@ -404,8 +404,8 @@
 }
 .rx .lay-recipe .rx-pair { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); column-gap: var(--s4); margin-top: var(--s5); }
 .rx .lay-recipe .rx-stackcol { display: flex; flex-direction: column; gap: var(--s5); min-height: 0; }
-.rx .rx-page .rx-stackcol > .card.rx-blk:first-child { flex: none; }
-.rx .rx-page .rx-stackcol > .card.rx-blk:last-child { flex: 1 1 auto; }
+.rx .rx-page .rx-stackcol > .card.rx-blk:first-child { flex: 5 1 auto; }
+.rx .rx-page .rx-stackcol > .card.rx-blk:last-child { flex: 6 1 auto; }
 .rx .lay-recipe .num, .rx .lay-recipe .num.hollow {
   width: 0.22in; height: 0.22in; justify-content: center; align-items: center; display: flex;
   border: 1pt solid var(--c-structure); margin-right: 0.04in;
