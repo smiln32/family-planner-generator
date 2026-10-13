@@ -249,6 +249,13 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
     # cover's HTML is exactly as designed.
     own_set = designs.look_fonts(cfg.design)
     own_faces = not own_set or cfg.faces == typefaces.resolve(own_set)
+    # The design's chrome catalog entry (chrome.py). The body carries the
+    # spec that prints (`active`: the intended spec once the owner has
+    # approved it, else today's) as `c-<field>-<value>` classes, and the
+    # templates read it as `cc` for their variant branches. A retired look
+    # without an entry prints the shared defaults.
+    spec = chrome.for_design(cfg.design)
+    cc = spec.active if spec else chrome.SHARED
 
     bodies = []
     for page in pages:
@@ -263,15 +270,12 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
             body_stack=cfg.faces.stack("body"),
             look=look,
             own_faces=own_faces,
+            cc=cc,
             **page.context,
         )
         bodies.append(_decorate(rendered, cfg, nav, page))
 
     width_in, height_in = cfg.page_inches
-    # The design's chrome catalog entry (chrome.py). The body carries its
-    # intended spec as `c-<field>-<value>` classes; no stylesheet reads them
-    # yet (Phase 2 step 3). None for a retired look without an entry.
-    spec = chrome.for_design(cfg.design)
     return shell.render(
         cfg=cfg,
         roles=roles,
@@ -280,8 +284,10 @@ def render_html(cfg: Config, pages: list[Page], standalone: bool = False,
         chrome_classes=spec.body_classes() if spec else "",
         pages=pages,
         bodies=bodies,
-        css=(STATIC_DIR / "planner.css").read_text(encoding="utf-8")
-        + NEWLINE + (STATIC_DIR / "looks.css").read_text(encoding="utf-8"),
+        # The shared chrome, then the catalog variants it selects by the
+        # body's `c-*` classes, then the looks on top.
+        css=NEWLINE.join((STATIC_DIR / name).read_text(encoding="utf-8")
+                         for name in ("planner.css", "chrome.css", "looks.css")),
         fonts_css=_fonts_css(cfg, font_base),
         font_display=cfg.faces.stack("display"),
         font_script=cfg.faces.stack("script"),

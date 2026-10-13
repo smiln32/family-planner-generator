@@ -515,3 +515,52 @@ def test_text_reads_on_the_shared_chrome_washes(design, theme):
     # visible on paper.
     assert colours.contrast(roles["frame"], palette["paper"]) >= 1.5
     assert colours.contrast(roles["line"], palette["paper"]) >= 1.1
+
+
+# --- Phase 2 step 4: the trio's variants leave the four axes independent ------------
+
+TRIO = ("editorial", "farmhouse", "midcentury")
+
+
+@pytest.mark.parametrize("design", TRIO)
+def test_the_other_axes_still_take_effect_on_a_refined_design(tmp_path, design):
+    """A theme, a `palette:` block, a typeface set and a page list each take
+    effect on a design that prints its intended chrome spec, and the chrome
+    classes on the body do not move with them."""
+    from familyplanner import chrome
+    plan = tmp_path / "family.yaml"
+    plan.write_text(f"design: {design}\npalette:\n  teal: '#123456'\n", encoding="utf-8")
+    assert cli.main(["build", "-c", str(plan), "--theme", "goal", "--fonts", "elegant",
+                     "--only", "cover,chores,annual_calendar", "--html-only",
+                     "-o", str(tmp_path)]) == 0
+    html = next(tmp_path.glob("*.html")).read_text(encoding="utf-8")
+    root = {k.strip(): v.strip() for k, v in _root_vars(html).items()}
+    assert root["--navy"] == themes.PRESETS["goal"]["navy"]
+    assert re.search(r"--c-structure:\s*" + root["--navy"], html)
+    assert root["--teal"] == "#123456"
+    elegant = typefaces.resolve("elegant")
+    assert elegant.display in root["--font-display"] and elegant.body in root["--font-body"]
+    assert html.count('<section class="page') == 3
+    assert 'class="page chores-page"' in html and 'class="page annual-page"' in html
+    body = html.split('<body class="', 1)[1].split('"', 1)[0].split()
+    assert [c for c in body if c.startswith("c-")] == chrome.get(design).components.classes()
+    # No theme, own fonts, every page: the same chrome classes.
+    plan.write_text(f"design: {design}\n", encoding="utf-8")
+    cfg = config.load(plan)
+    html = render.render_html(cfg, render.plan_pages(cfg))
+    body = html.split('<body class="', 1)[1].split('"', 1)[0].split()
+    assert [c for c in body if c.startswith("c-")] == chrome.get(design).components.classes()
+    assert designs.LOOKS[design]["palette"]["navy"].upper() in html.split(":root", 1)[1][:2000]
+
+
+@pytest.mark.parametrize("design", TRIO)
+def test_repeated_builds_are_byte_identical(design):
+    cfg = config.load(None)
+    cfg.design = design
+    cfg.pages = ["cover", "family_time", "annual_calendar", "january"]
+    cfg = config.validate(cfg)
+    first = render.render_html(cfg, render.plan_pages(cfg))
+    again = config.load(None)
+    again.design, again.pages = design, list(cfg.pages)
+    again = config.validate(again)
+    assert render.render_html(again, render.plan_pages(again)) == first

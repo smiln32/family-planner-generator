@@ -333,6 +333,12 @@ body {
   letter-spacing: 0.035em; text-transform: uppercase;
   padding: 0.055in 0.06in; text-align: center;
 }
+/* A filled header cell (class th-fill in the templates, since Phase 2 step 4;
+   it was an inline fill): the structure colour, or the weekend accent on a
+   weekend day. The catalog's `table_head: rule` variant (chrome.css) lifts
+   the fill. */
+.tbl th.th-fill { background: var(--c-structure); }
+.tbl th.th-fill.we { background: var(--c-weekend); }
 .tbl thead th:first-child { border-radius: 0.07in 0 0 0; }
 .tbl thead th:last-child { border-radius: 0 0.07in 0 0; }
 .tbl td {
@@ -841,11 +847,16 @@ body {
 .famtime-label .ico { width: 0.18in; height: 0.18in; }
 .famtime-tbl { flex: none; --row-h: 0.46in; margin-bottom: 0.2in; }
 .daytag { width: 1.35in; }
+/* The day tag: the structure colour, or the weekend accent on a weekend day
+   (a class since Phase 2 step 4; it was an inline fill). The catalog's
+   `marks: text` variant (chrome.css) sets it as bare text. */
 .daytag .pill {
   display: inline-block; min-width: 0.32in; text-align: center;
+  background: var(--c-structure);
   color: var(--c-on); font-weight: 800; font-size: 6.6pt; letter-spacing: 0.03em;
   border-radius: 999px; padding: 0.022in 0.05in; margin-right: 0.06in;
 }
+.daytag .pill.we { background: var(--c-weekend); }
 .famtime-bottom { flex: 1 1 auto; gap: 0.15in; }
 .famtime-bottom .checklist .row { font-size: 8pt; }
 .tradition-lead { margin: 0 0 0.06in; font-size: 8.4pt; }

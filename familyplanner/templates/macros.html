@@ -51,13 +51,19 @@
 </svg>
 {% endmacro %}
 
-{# Page footer: sprig, line, sprig. `caps` switches script for bold uppercase. #}
+{# Page footer: sprig, line, sprig. `caps` switches script for bold uppercase.
+   The two hearts follow the design's ornament set (cc.ornaments, chrome.py):
+   none means none. #}
 {% macro footer(text, caps=false) %}
 <div class="page-footer">
   {{ sprig() }}
+  {% if cc.ornaments != "none" %}
   <svg class="ico" style="width:.13in;height:.13in;fill:{{ p.pink }}"><use href="#i-heart"/></svg>
+  {% endif %}
   <span class="txt{% if caps %} caps{% endif %}">{{ text }}</span>
+  {% if cc.ornaments != "none" %}
   <svg class="ico" style="width:.13in;height:.13in;fill:{{ p.pink }}"><use href="#i-heart"/></svg>
+  {% endif %}
   {{ sprig(flip=true) }}
 </div>
 {% endmacro %}

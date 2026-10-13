@@ -6,9 +6,10 @@ their shape and placement, not fixed colours." So `planner.css` and
 `looks.css` read the twelve palette tokens and the `--c-*` roles that
 `book.html` writes on `:root` (config.resolve_palette, colours.roles) and
 never redefine them, and no rule outside `:root` prints a chromatic hex of
-its own: not a design-scoped rule (step 1) and not the shared worksheet
-chrome either (step 2: meta strips, table and calendar hairlines, write-on
-lines, the day pill wash). The retired looks, which are not offered and keep
+its own: not a design-scoped rule (step 1), not the shared worksheet
+chrome (step 2: meta strips, table and calendar hairlines, write-on lines,
+the day pill wash) and not the catalog variants in `chrome.css` (step 4)
+either. The retired looks, which are not offered and keep
 their old CSS, the three look-art colours and the budget donut (a chart) are
 allowed by name below, each with its reason.
 """
@@ -24,7 +25,7 @@ import pytest
 from familyplanner import colours, config
 from familyplanner.render import STATIC_DIR
 
-FILES = ["planner.css", "looks.css"]
+FILES = ["planner.css", "chrome.css", "looks.css"]
 
 TOKENS = tuple(f"--{name}" for name in config.DEFAULT_PALETTE)
 ROLE_PROPS = tuple(f"--c-{role}" for role in colours.ALL_ROLES) + tuple(

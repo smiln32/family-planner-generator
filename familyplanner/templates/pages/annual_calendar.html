@@ -7,6 +7,14 @@
      "school": "book", "pumpkin": "pumpkin", "leaves": "leaf",
      "snowflake": "snowflake"} %}
 
+{# The Important Dates bullet follows the chrome catalog (cc, chrome.py): no
+   bullet with no ornaments (Editorial), a square box on square calendar tiles
+   (Farmhouse), a dot with the corner-shape ornament set (Mid-century), else
+   the heart. The month tiles and their heads are styled by static/chrome.css
+   from the body's c-calendar-* classes. #}
+{% set bullet = "none" if cc.ornaments == "none"
+   else ("box" if cc.calendar_tile == "square"
+   else ("dot" if cc.ornaments == "corner" else "heart")) %}
 <section class="page annual-page">
   <header class="masthead">
     {{ house_family() }}
@@ -72,7 +80,11 @@
       <div class="dates-col">
         {% for _ in range(5) %}
         <div class="row">
+          {% if bullet == "heart" %}
           <svg class="ico bullet" style="fill:{{ p.structure }}"><use href="#i-heart"/></svg>
+          {% elif bullet != "none" %}
+          <span class="bullet mark-{{ bullet }}"></span>
+          {% endif %}
           <span class="dot-line"></span>
         </div>
         {% endfor %}

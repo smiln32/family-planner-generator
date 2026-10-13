@@ -40,12 +40,11 @@
   <table class="tbl school-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.structure }}">Time</th>
+        <th class="th-fill">Time</th>
         {% set weekend = weekend_flags(cfg.sunday_first) %}
         {% for name in day_names(cfg.sunday_first) %}
-        {% set key = "weekend" if weekend[loop.index0] else "structure" %}
-        <th data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
-            style="background:{{ p[key] }};color:{{ p[key ~ '-on'] }}">
+        <th class="th-fill{% if weekend[loop.index0] %} we{% endif %}"
+            data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">
           {{ name }}</th>
         {% endfor %}
       </tr>

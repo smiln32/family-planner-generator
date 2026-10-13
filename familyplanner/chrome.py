@@ -24,9 +24,13 @@ the audit's findings (where the inherited default contradicted the design's
 identity) and await the owner's look; where the audit found the design fits
 as it prints, intended equals current and the entry says so.
 
-Nothing here prints yet. `render.render_html` puts the entry in the
-template context and `book.html` writes one `c-<field>-<value>` class per
-field on `<body>`; no stylesheet reads those classes until step 4.
+What prints (Phase 2 step 4, 2026-10-13): `Chrome.active` is the intended
+spec for a design the owner has approved (`approved`: the trio, and every
+design whose intended spec is what it prints already) and today's spec for
+the rest. `render.render_html` writes `active` as one `c-<field>-<value>`
+class per field on `<body>` and passes it to the templates as `cc`;
+`static/chrome.css` holds the variants those classes select. So an
+unapproved design prints exactly as it did until the owner looks at it.
 Colours are not here: `palette_ref` and `fonts_ref` point at the design's
 own palette and typeface set (`designs.look_palette`, `designs.look_fonts`).
 See `_config/chrome-catalog.md` for the contract.
@@ -47,8 +51,9 @@ VOCAB: dict[str, tuple[str, ...]] = {
     # text, an outlined label, a pill, a tape label, a label set into the
     # frame line, or a script heading.
     "heads": ("bar", "rule", "text", "outlined", "pill", "tape", "inset", "script"),
-    # Meta strip at the top of a worksheet: framed box, a ruled row, or bare.
-    "strip": ("boxed", "ruled", "bare"),
+    # Meta strip at the top of a worksheet: the shared rounded box, a square
+    # frame in the frame colour, a ruled row, or bare.
+    "strip": ("boxed", "framed", "ruled", "bare"),
     # Table header row: filled with the structure colour, text over a rule,
     # or an outlined row.
     "table_head": ("filled", "rule", "outlined"),
@@ -143,16 +148,27 @@ class Chrome:
     components: Components
     current: Components
     corners_note: str = ""
+    # The owner has approved the intended spec, so it prints. Set explicitly
+    # for the trio (2026-10-12); derived for a design whose intended spec is
+    # what it prints already (nothing to approve).
+    approved: bool = False
 
     def __post_init__(self) -> None:
         if self.family not in FAMILIES:
             raise ValueError(f"chrome {self.id}: family {self.family!r} is not one of {FAMILIES}")
         if self.status not in STATUSES:
             raise ValueError(f"chrome {self.id}: status {self.status!r} is not one of {STATUSES}")
+        if self.components == self.current:
+            object.__setattr__(self, "approved", True)
+
+    @property
+    def active(self) -> Components:
+        """The spec that prints: the intended one once approved, else today's."""
+        return self.components if self.approved else self.current
 
     def body_classes(self) -> str:
-        """The intended spec as `<body>` classes (book.html)."""
-        return " ".join(self.components.classes())
+        """The printing spec as `<body>` classes (book.html)."""
+        return " ".join(self.active.classes())
 
     def gap(self) -> dict[str, tuple[str, str]]:
         """Fields where the intended treatment differs from today's: name -> (intended, current)."""
@@ -190,7 +206,7 @@ LAYOUT = replace(SHARED, table_corners="square", lines="hairline", ornaments="he
 MINIMAL = replace(LOOK, corners="square", heads="text", strip="ruled", table_head="rule",
                   table_corners="square", checks="square", calendar_head="rule",
                   calendar_tile="open", ornaments="none")
-CLASSIC = replace(LOOK, corners="square", heads="bar", table_corners="square",
+CLASSIC = replace(LOOK, corners="square", heads="bar", strip="framed", table_corners="square",
                   checks="square", calendar_head="bar", calendar_tile="square",
                   ornaments="none")
 GEOMETRIC = replace(LOOK, heads="pill")
@@ -216,10 +232,10 @@ _LOOKS: list[Chrome] = [
         decoration="None. No hearts, sprigs or art; the page is type and rules.",
         density="Generous leading, wide tracking on labels, open tables.",
         alignment="Flush left throughout.",
-        calendar="Twelve open months: month name over a rule, no tile box, no pill.",
+        calendar="Twelve open months: month name over a rule in the season colour, no tile box, no pill.",
         print="Rules only, no bleed; ink coverage low.",
         palette_ref="editorial", fonts_ref="home-edition", layouts=(), base="editorial",
-        status="look",
+        status="look", approved=True,
         components=replace(MINIMAL, marks="text", footer="rule"),
         current=replace(LOOK, corners="square", heads="text", footer="rule"),
     ),
@@ -236,7 +252,7 @@ _LOOKS: list[Chrome] = [
         calendar="Pill month heads on rounded tiles, as today.",
         print="The corner shape runs to the trim; no other bleed.",
         palette_ref="midcentury", fonts_ref="family-plan", layouts=(), base="midcentury",
-        status="look",
+        status="look", approved=True,
         components=replace(GEOMETRIC, corners="soft", labels="lower", footer="lower",
                            ornaments="corner"),
         current=replace(LOOK, corners="soft", footer="lower", ornaments="corner"),
@@ -264,16 +280,15 @@ _LOOKS: list[Chrome] = [
                   "Owner-approved intended spec (Phase 2 trio).",
         header="Bold masthead in barn red; the banner is a square ink bar.",
         headings="Square filled tab bars in the ink colour.",
-        borders="1.4px ink frames, square; the meta strip is a square box.",
+        borders="1.4px ink frames, square; the meta strip is a square frame (strip: framed).",
         decoration="The grain-sack stripe band across the top of every worksheet.",
         density="Sturdy: full frames and bars.",
         alignment="Centred masthead, flush-left cards.",
         calendar="Square tiles with a bar month head.",
         print="The stripe band runs to the trim at the top.",
         palette_ref="farmhouse", fonts_ref="home-grown", layouts=(), base="farmhouse",
-        status="look",
-        components=replace(CLASSIC, strip="boxed", footer="script", ornaments="stripe",
-                           page="band"),
+        status="look", approved=True,
+        components=replace(CLASSIC, footer="script", ornaments="stripe", page="band"),
         current=replace(LOOK, corners="square", heads="bar", footer="script",
                         ornaments="stripe", page="band"),
     ),
@@ -497,12 +512,12 @@ _LAYOUT_CURRENT: dict[str, Components] = {
 
 # The intended family spec; the audit's findings for each family.
 _LAYOUT_INTENDED: dict[str, Components] = {
-    "02": replace(_LAYOUT_CURRENT["02"], checks="square", marks="square",
+    "02": replace(_LAYOUT_CURRENT["02"], strip="framed", checks="square", marks="square",
                   calendar_head="bar", calendar_tile="square", footer="caps",
                   ornaments="none"),
     "06": _LAYOUT_CURRENT["06"],
-    "11": replace(_LAYOUT_CURRENT["11"], calendar_head="bar", calendar_tile="square",
-                  footer="caps", ornaments="none"),
+    "11": replace(_LAYOUT_CURRENT["11"], strip="framed", calendar_head="bar",
+                  calendar_tile="square", footer="caps", ornaments="none"),
     "12": _LAYOUT_CURRENT["12"],
 }
 
@@ -524,7 +539,7 @@ _LAYOUT_BOX: dict[str, dict[str, str]] = {
 
 # Where a layout's own intended treatment differs from its family (override
 # audit): 06a's script headings and 12b and 12c's script headings read
-# against heavy caps labels; 11b's hairline rules against a boxed strip.
+# against heavy caps labels; 11b's hairline rules against a framed strip.
 _LAYOUT_OWN: dict[str, dict[str, str]] = {
     "06a": {"labels": "sentence"},
     "11b": {"strip": "ruled"},

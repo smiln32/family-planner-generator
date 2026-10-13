@@ -210,12 +210,15 @@ def cmd_chrome(args: argparse.Namespace) -> int:
             gap = entry.gap()
             if gap:
                 changes = "  ".join(f"{k}: {want} (now {now})" for k, (want, now) in gap.items())
+                if entry.approved:
+                    changes += "  [approved: the intended spec prints]"
             else:
                 changes = "as it prints today"
             print(f"  {entry.id:<11} {changes}")
         print()
-        print("Editorial, Farmhouse and Mid-century are the owner-approved trio; the")
-        print("other intended values follow the override audit and await her look.")
+        print("Editorial, Farmhouse and Mid-century are the owner-approved trio and print")
+        print("their intended spec (static/chrome.css); the other intended values follow")
+        print("the override audit, await her look, and print as today until then.")
         return 0
     which = "current" if args.current else "intended"
     print(f"Chrome catalog ({which} component treatments):")

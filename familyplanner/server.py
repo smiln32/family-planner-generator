@@ -346,7 +346,8 @@ class Handler(BaseHTTPRequestHandler):
                  "cover": _cover_kind(name),
                  # The chrome catalog's summary (chrome.py); not shown yet.
                  "chrome": {"family": chrome.get(name).family,
-                            "character": chrome.get(name).character}}
+                            "character": chrome.get(name).character,
+                            "approved": chrome.get(name).approved}}
                 for name in designs.names()
             ],
             # The design open now may be a retired look the picker no longer

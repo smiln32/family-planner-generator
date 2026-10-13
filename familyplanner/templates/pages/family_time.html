@@ -38,11 +38,11 @@
   <table class="tbl famtime-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.structure }}">Day</th>
-        <th style="background:{{ p.structure }}">Family Time Activity</th>
-        <th style="background:{{ p.structure }}">Time</th>
-        <th style="background:{{ p.structure }}">Who's Involved</th>
-        <th style="background:{{ p.structure }}">Notes</th>
+        <th class="th-fill">Day</th>
+        <th class="th-fill">Family Time Activity</th>
+        <th class="th-fill">Time</th>
+        <th class="th-fill">Who's Involved</th>
+        <th class="th-fill">Notes</th>
       </tr>
     </thead>
     <tbody>
@@ -50,9 +50,8 @@
       {% for name in day_names(cfg.sunday_first) %}
       <tr>
         <td class="daytag">
-          {% set key = "weekend" if weekend[loop.index0] else "structure" %}
-          <span class="pill" data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}"
-                style="background:{{ p[key] }};color:{{ p[key ~ '-on'] }}">{{ name[:3]|upper }}</span>
+          <span class="pill{% if weekend[loop.index0] %} we{% endif %}"
+                data-day="{{ 'weekend' if weekend[loop.index0] else 'weekday' }}">{{ name[:3]|upper }}</span>
           <span>{{ name }}</span>
         </td>
         <td></td><td></td><td></td><td></td>

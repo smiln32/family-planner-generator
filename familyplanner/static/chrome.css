@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Catalog variants (Phase 2 step 4, 2026-10-13)
+   The chrome catalog (familyplanner/chrome.py, _config/chrome-catalog.md)
+   names one treatment per component for every design. The body of a
+   rendered book carries the spec that prints as one `c-<field>-<value>`
+   class per field, and this sheet selects the variant for each value.
+   Loaded by render.py after planner.css (the shared chrome) and before
+   looks.css (each look's own rules).
+
+   Rules:
+   - The shared chrome in planner.css IS the base value of every field (the
+     rounded `boxed` strip, the `filled` table head with `rounded` corners,
+     `rounded` checks, `circle` marks, `pill` month heads on `rounded`
+     tiles, `caps-heavy` labels, the heart bullet). A base value has no rule
+     here; a value that differs from the base has one block below.
+   - A block for a value that an unapproved design already prints through
+     its own look CSS (Swiss grid's square checks and marks, the layouts'
+     square table corners) sets exactly the same computed value, so that
+     design prints pixel for pixel as before. A new value for an existing
+     field needs a block here that reproduces today's look for every design
+     that already carries the value (tests/test_chrome_variants.py,
+     HANDOFF.md "Step 4" for the pixel proof).
+   - Fields the look CSS already produces per design (corners, heads, lines,
+     footer, page) have no block yet; the body carries them for a later
+     step.
+   - Colours are tokens and roles only (tests/test_css_tokens.py): the
+     structure colour and its text colour, the weekend accent, the frame
+     role for frames, the strip role for the strip's rule, the season colour
+     (--c on a month tile) for a month head's bar or rule, and the palette's
+     orange for the Mid-century dot, which is that look's own month-page
+     mark (design-system.md, "Exceptions that are a look's art").
+   ========================================================================== */
+
+/* --- strip: boxed (base) | framed | ruled | bare ----------------------------
+   framed: the same 1.4px frame-role box, square (Farmhouse: its cards are
+   square 1.4px ink frames). ruled: no box; the labels and their lines sit
+   in a row that closes with one rule in the strip colour, the icon chips
+   gone, the labels as tracked light caps (Editorial: rules, not boxes). */
+.c-strip-framed :is(.famtime-meta, .school-meta, .emg-top, .vac-meta, .maint-meta, .focus-strip) {
+  border-radius: 0;
+}
+.c-strip-ruled :is(.famtime-meta, .school-meta, .emg-top, .vac-meta, .maint-meta, .focus-strip) {
+  border: 0; border-radius: 0; border-bottom: 1px solid var(--c-strip);
+  padding: 0.02in 0 0.09in;
+}
+.c-strip-ruled :is(.meta-cell, .emg-top-col .row) > .chip { display: none; }
+.c-strip-ruled :is(.famtime-meta, .school-meta, .emg-top, .vac-meta, .maint-meta) .field .label {
+  font-weight: 600; font-size: 7pt; letter-spacing: 0.14em; text-transform: uppercase;
+}
+
+/* --- table_head: filled (base) | rule | outlined ------------------------------
+   rule: no fill; the column names in the structure colour as tracked light
+   caps over a 1px rule in the structure colour (a weekend column in the
+   weekend accent), no hairline doubling it under the first row. On the two
+   tables with a second head row of day initials (chores, health) the rule
+   closes that row. */
+.c-table-head-rule .tbl th.th-fill, .c-table-head-rule .tbl th.corner { background: none; }
+.c-table-head-rule .tbl th {
+  color: var(--c-structure); font-weight: 600; letter-spacing: 0.14em;
+  border-bottom: 1px solid var(--c-structure);
+}
+.c-table-head-rule .tbl th.we { color: var(--c-weekend); }
+.c-table-head-rule .tbl thead th:first-child, .c-table-head-rule .tbl thead th:last-child { border-radius: 0; }
+.c-table-head-rule .tbl tbody tr:first-child td { border-top: 0; }
+.c-table-head-rule .health-tbl .head-ico { fill: var(--c-structure); }
+.c-table-head-rule :is(.chores-tbl, .health-tbl) thead tr:first-child th { border-bottom: 0; }
+.c-table-head-rule :is(.chores-tbl, .health-tbl) .day-head th {
+  background: none; border-bottom: 1px solid var(--c-structure);
+}
+
+/* --- table_corners: rounded (base) | square ---------------------------------
+   square: the header row's top corners are square. The layouts carry
+   `square` and set it in planner.css already (`.layout .tbl thead th`), the
+   same value at the same specificity; the chores table's own corner rule
+   outranks theirs today (`.chores-tbl thead tr:first-child th:first-child`),
+   so the layouts' chores head keeps its rounded corners until the owner
+   looks at them (HANDOFF.md, "Defects recorded"). */
+.c-table-corners-square .tbl thead th:first-child,
+.c-table-corners-square .tbl thead th:last-child { border-radius: 0; }
+.c-table-corners-square:not(.layout) .chores-tbl thead tr:first-child th:first-child,
+.c-table-corners-square:not(.layout) .chores-tbl thead tr:first-child th:last-child { border-radius: 0; }
+
+/* --- checks: rounded (base) | square | round -------------------------------- */
+.c-checks-square .check { border-radius: 0; }
+
+/* --- marks: circle (base) | square | text -----------------------------------
+   text: a bare numeral with a period in the mark's colour, no disc; the day
+   tags on the family time table as bare bold text, not pills. */
+.c-marks-square .num { border-radius: 0; }
+.c-marks-text .num, .c-marks-text .num.hollow {
+  width: auto; min-width: 0.18in; height: auto; border-radius: 0;
+  background: none; border: 0; color: var(--c);
+  justify-content: flex-start; font-weight: 700;
+}
+.c-marks-text .num::after { content: "."; }
+.c-marks-text .daytag .pill {
+  background: none; color: var(--c-structure); padding: 0.022in 0; text-align: left;
+  letter-spacing: 0.1em;
+}
+.c-marks-text .daytag .pill.we { color: var(--c-weekend); }
+
+/* --- calendar_head: pill (base) | bar | rule | text --------------------------
+   bar: the month name on a square bar in the season colour. rule: the month
+   name in the structure colour, flush left, over a rule in the season
+   colour, its icon in the season colour too. */
+.c-calendar-head-bar .mini .mini-head { border-radius: 0; }
+.c-calendar-head-rule .mini .mini-head {
+  background: none; color: var(--c-structure); border-radius: 0;
+  border-bottom: 1.5px solid var(--c); padding: 0 0 0.03in;
+  justify-content: flex-start; font-weight: 600; letter-spacing: 0.16em;
+}
+.c-calendar-head-rule .mini .mini-head .ico { fill: var(--c); }
+
+/* --- calendar_tile: rounded (base) | square | open --------------------------
+   square: a square 1.4px frame in the frame colour. open: no box at all. */
+.c-calendar-tile-square .mini { border: 1.4px solid var(--c-frame); border-radius: 0; }
+.c-calendar-tile-open .mini { border: 0; border-radius: 0; padding: 0; }
+
+/* The Important Dates bullet the template picks from the catalog
+   (annual_calendar.html): a square box with square tiles, a dot with the
+   corner-shape ornament set. */
+.annual-dates .bullet.mark-box { flex: none; width: 0.115in; height: 0.115in; border: 1.2px solid var(--c-frame); }
+.annual-dates .bullet.mark-dot { flex: none; width: 0.1in; height: 0.1in; border-radius: 50%; background: var(--orange); }
+
+/* --- labels: caps-heavy (base) | caps-light | lower | sentence | italic ------
+   lower: every section label, column head, tab, field label, day tag and
+   month name in lowercase at weight 500, lightly tracked, as Mid-century's
+   month page sets its labels; the two standalone section labels take its
+   orange dot. */
+.c-labels-lower :is(.card-tab, .card-head, .tbl th, .famtime-label, .maint-label, .emg-head,
+  .field .label, .caps, .appt-head, .evt-head, .ie-head, .ye-head, .banner, .daytag .pill,
+  .mini .mini-head, .area-name, .rowlabel, .dayname, .slotcell, .hl-q, .own-rent .label,
+  .total-bar, .belongs-label, .howto-title, .vm-tag, .loved-name, .week-head span) {
+  text-transform: lowercase; font-weight: 500; letter-spacing: 0.08em;
+}
+.c-labels-lower :is(.famtime-label, .maint-label)::before {
+  content: ""; display: inline-block; flex: none; width: 0.1in; height: 0.1in;
+  border-radius: 50%; background: var(--orange); margin-right: 0.07in; vertical-align: middle;
+}
+.c-labels-lower .famtime-label > .ico { display: none; }
+
+/* --- ornaments: none ----------------------------------------------------------
+   The templates leave the heart bullets and footer hearts out (cc.ornaments);
+   nothing else to hide on a look, whose art the `.lk` rules already hide. */
+
+/* --- day tags ---------------------------------------------------------------
+   The day tag on the family time table is a pill like the shared tabs. A
+   design with bar heads and square checks (Farmhouse) sets it square. */
+.c-heads-bar.c-checks-square .daytag .pill { border-radius: 0; }

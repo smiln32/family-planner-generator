@@ -153,10 +153,16 @@ window.addEventListener('load', () => { document.fonts.ready.then(() => {
             && norm(cs['border' + side + 'Color']) === R.weekend) { used.push('border'); break; }
       if (used.length) P.push('weekend accent used for ' + used.join('+') + ' on ' + name(el));
     }
+    // A month tile's head carries its season: as its fill (a pill or bar),
+    // or, on a head with no fill (the catalog's `calendar_head: rule`), as
+    // the rule under the month name.
     const minis = {};
     for (const m of sec.querySelectorAll('.mini[data-season]')) {
-      const head = m.querySelector('.mini-head');
-      (minis[m.dataset.season] = minis[m.dataset.season] || []).push(norm(getComputedStyle(head).backgroundColor));
+      const hs = getComputedStyle(m.querySelector('.mini-head'));
+      const fill = norm(hs.backgroundColor);
+      const ruled = parseFloat(hs.borderBottomWidth) > 0 && hs.borderBottomStyle !== 'none';
+      (minis[m.dataset.season] = minis[m.dataset.season] || []).push(
+        fill !== 'none' ? fill : ruled ? norm(hs.borderBottomColor) : norm(hs.color));
     }
     out.push({page, problems: [...new Set(P)], minis, roles: R,
               seasons: ['winter', 'spring', 'summer', 'autumn'].map(role)});

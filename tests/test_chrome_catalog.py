@@ -143,12 +143,13 @@ def test_the_trio_gap_is_what_the_audit_flagged():
         "calendar_tile": ("open", "rounded"), "ornaments": ("none", "hearts"),
     }
     assert chrome.get("farmhouse").gap() == {
+        "strip": ("framed", "boxed"),
         "table_corners": ("square", "rounded"), "checks": ("square", "rounded"),
         "calendar_head": ("bar", "pill"), "calendar_tile": ("square", "rounded"),
     }
     assert chrome.get("midcentury").gap() == {"labels": ("lower", "caps-heavy")}
     farmhouse = chrome.get("farmhouse").components
-    assert (farmhouse.corners, farmhouse.strip, farmhouse.ornaments) == ("square", "boxed", "stripe")
+    assert (farmhouse.corners, farmhouse.strip, farmhouse.ornaments) == ("square", "framed", "stripe")
     midcentury = chrome.get("midcentury").components
     assert (midcentury.heads, midcentury.calendar_head, midcentury.ornaments) == ("pill", "pill", "corner")
 
@@ -169,8 +170,10 @@ def _body_classes(cfg, design):
 
 @pytest.mark.parametrize("design", ["editorial", "06b", "blank"])
 def test_body_carries_one_class_per_field(cfg, design):
+    """An approved design (the trio, and one that prints as intended)."""
     classes = _body_classes(cfg, design)
     entry = chrome.get(design)
+    assert entry.approved
     expected = entry.components.classes()
     assert len(expected) == len(chrome.VOCAB)
     assert [c for c in classes if c.startswith("c-")] == expected
@@ -180,9 +183,16 @@ def test_body_carries_one_class_per_field(cfg, design):
     assert classes[0] == f"design-{designs.parts(design)['base']}"
 
 
-def test_body_classes_follow_the_intended_spec_not_todays(cfg):
+def test_body_classes_follow_the_intended_spec_once_approved(cfg):
     classes = _body_classes(cfg, "editorial")
     assert "c-strip-ruled" in classes and "c-strip-boxed" not in classes
+    # An unapproved design carries today's spec, so nothing it prints moves
+    # until the owner looks at it (tests/test_chrome_variants.py).
+    classes = _body_classes(cfg, "nordic")
+    nordic = chrome.get("nordic")
+    assert not nordic.approved and nordic.active == nordic.current
+    assert "c-strip-boxed" in classes and "c-strip-ruled" not in classes
+    assert [c for c in classes if c.startswith("c-")] == nordic.current.classes()
 
 
 def test_retired_look_without_an_entry_still_renders(cfg):
@@ -190,12 +200,14 @@ def test_retired_look_without_an_entry_still_renders(cfg):
     assert classes == ["design-07"]
 
 
-def test_no_stylesheet_reads_the_spec_classes_yet():
-    """Step 3 adds the classes; step 4 styles them. Until then no rule may
-    match a `c-` class, so the catalog cannot change a printed page."""
+def test_only_the_variant_sheet_reads_the_spec_classes():
+    """Step 4: static/chrome.css styles the `c-` classes; the shared chrome
+    and the looks read none (tests/test_chrome_variants.py checks the
+    variant sheet's classes against the vocabulary)."""
     for name in ("planner.css", "looks.css"):
         css = (render.STATIC_DIR / name).read_text(encoding="utf-8")
         assert ".c-" not in css, name
+    assert ".c-strip-ruled" in (render.STATIC_DIR / "chrome.css").read_text(encoding="utf-8")
 
 
 # --- the command ------------------------------------------------------------
@@ -213,5 +225,6 @@ def test_chrome_diff_names_the_trio_gaps(capsys):
     out = capsys.readouterr().out
     assert "editorial   strip: ruled (now boxed)" in out
     assert "midcentury  labels: lower (now caps-heavy)" in out
-    assert "farmhouse   table_corners: square (now rounded)" in out
+    assert "farmhouse   strip: framed (now boxed)" in out
     assert "coastal     as it prints today" in out
+    assert out.count("[approved: the intended spec prints]") == 3

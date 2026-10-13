@@ -39,15 +39,15 @@
   <table class="tbl health-tbl">
     <thead>
       <tr>
-        <th style="background:{{ p.structure }}">Family Member</th>
+        <th class="th-fill">Family Member</th>
         {% for icon, colour, label, blurb in habits %}
-        <th style="background:{{ p.structure }}">
+        <th class="th-fill">
           <svg class="ico head-ico"><use href="#i-{{ icon }}"/></svg>
           <span>{{ label }}</span>
           <span class="blurb">{{ blurb|safe }}</span>
         </th>
         {% endfor %}
-        <th style="background:{{ p.structure }}">Notes</th>
+        <th class="th-fill">Notes</th>
       </tr>
       <tr class="day-head">
         <th></th>
