@@ -566,8 +566,10 @@ MIDCENTURY_RECIPE = Recipe(
         "index": _t("body", 8, 600, 0.1),
         "label": _t("body", 8.5, 600, 0.04, "lower"),
         "field": _t("body", 8.5, 600, 0.04, "lower"),
-        "body": _t("body", 9, 400, leading=1.3),
-        "helper": _t("body", 8, 400),
+        # Lowercase everywhere: list items and option labels in the body
+        # role, and helper lines ("police / fire / ambulance") set as labels.
+        "body": _t("body", 9, 400, 0.0, "lower", leading=1.3),
+        "helper": _t("body", 8, 600, 0.04, "lower"),
         "numeral": _t("body", 16, 700, leading=1.0),
         "cal_month": _t("body", 9, 600, 0.02, "lower", leading=1.0),
         "cal_date": _t("body", 10.5, 600, leading=1.0),

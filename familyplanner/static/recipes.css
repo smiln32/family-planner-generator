@@ -107,6 +107,10 @@
   padding-bottom: 0.04in; white-space: nowrap; color: var(--t-text);
   font-family: var(--t-body-font); font-size: var(--t-body-size); font-weight: var(--t-body-weight);
 }
+/* The Family Time ideas are short title-case labels ("Game Night"), so they
+   take the body role's case; the checklists of sentences keep theirs (an
+   all-lowercase "co detectors" would lose the CO). */
+.rx .rx-page .rx-ideas .checklist .row { text-transform: var(--t-body-case); }
 .rx .rx-page .checklist .row .check { margin-bottom: 0.01in; }
 .rx .rx-page .checklist .row .solid-line { margin-bottom: 0.02in; min-width: 0; }
 .rx .rx-page .numbered { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; }
@@ -133,7 +137,7 @@
 }
 .rx .rx-page .rx-ledger th:first-child, .rx .rx-page .rx-ledger td:first-child { padding-left: 0; }
 .rx .rx-page .rx-ledger td { height: 0.47in; padding: 0 0.06in; border-bottom: var(--rx-rule) solid var(--c-line); vertical-align: middle; }
-.rx .rx-page .rx-day { color: var(--t-text); white-space: nowrap; }
+.rx .rx-page .rx-day { color: var(--t-text); white-space: nowrap; text-transform: var(--t-field-case); }
 .rx .rx-page .rx-day .pill { display: none; }
 .rx .rx-page .rx-day.we { color: var(--c-weekend); }
 
@@ -217,7 +221,7 @@
 .rx .rx-page .rx-fields { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; }
 .rx .rx-page .rx-fields > .field, .rx .rx-page .rx-fields > .own-rent { flex: 1 1 0.27in; min-height: 0.26in; max-height: 0.38in; }
 .rx .rx-page .rx-ownrent { display: flex; align-items: flex-end; gap: var(--s2); padding-bottom: 0.04in; }
-.rx .rx-page .rx-ownrent .small { color: var(--t-text); font-size: var(--t-body-size); margin-right: var(--s2); }
+.rx .rx-page .rx-ownrent .small { color: var(--t-text); font-size: var(--t-body-size); margin-right: var(--s2); text-transform: var(--t-body-case); }
 .rx .rx-page .rx-ownrent .check { margin-bottom: 0.01in; }
 .rx .rx-page .rx-tall > .field { flex-direction: column; align-items: stretch; justify-content: space-between; max-height: 0.5in; }
 .rx .rx-page .rx-tall > .field .solid-line { flex: none; }
@@ -378,16 +382,17 @@
 .rx .lay-department.emergency-page .rx-foot3 { margin-top: var(--s3); }
 .rx .lay-department.emergency-page .rx-home { margin-bottom: var(--s2); }
 
-/* broadsheet: three newspaper columns read down, divided by rules. */
+/* broadsheet: three newspaper columns divided by rules, the months read
+   across (January, February, March on the first tier), as the DOM orders them. */
 .rx .lay-broadsheet { --rx-rule: 0.5pt; }
 .rx .lay-broadsheet .rx-cal-cols {
   grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr));
-  grid-auto-flow: column; row-gap: 0.16in; margin-top: 0.14in;
+  row-gap: 0.16in; margin-top: 0.14in;
 }
 .rx .lay-broadsheet .rx-cal .mini { padding: 0 0.16in; }
-.rx .lay-broadsheet .rx-cal .mini:nth-child(-n+4) { padding-left: 0; }
-.rx .lay-broadsheet .rx-cal .mini:nth-child(n+9) { padding-right: 0; }
-.rx .lay-broadsheet .rx-cal .mini:nth-child(n+5) { box-shadow: inset 0.5pt 0 0 var(--c-structure); }
+.rx .lay-broadsheet .rx-cal .mini:nth-child(3n+1) { padding-left: 0; }
+.rx .lay-broadsheet .rx-cal .mini:nth-child(3n) { padding-right: 0; }
+.rx .lay-broadsheet .rx-cal .mini:not(:nth-child(3n+1)) { box-shadow: inset 0.5pt 0 0 var(--c-structure); }
 .rx .lay-broadsheet .rx-cal .mini .mini-head::after,
 .rx .lay-department .rx-cal .mini .mini-head::after {
   counter-increment: rxmonth; content: counter(rxmonth, decimal-leading-zero); margin-left: auto;
@@ -483,6 +488,20 @@
 .rx .lay-shapegrid .rx-side-shapes { flex-direction: column; }
 .rx .lay-shapegrid .rx-foot2 { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: var(--s4); margin-top: var(--s4); }
 .rx .lay-shapegrid .rx-two { flex: none; }
+/* The Emergency directory on the shape grid: the left column runs beside
+   the right column and, under it, Important Information, which spans out
+   under the column of shapes to the right edge (no empty strip there). The
+   right column's last card fills any height the shapes add to its row. */
+.rx .lay-shapegrid .rx-sg.rx-sg-dir {
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr) auto; column-gap: var(--s4); row-gap: var(--s4);
+  grid-template-areas: "main main shapes" "l r shapes" "l info info"; align-items: stretch;
+}
+.rx .lay-shapegrid .rx-sg-dir > .rx-sg-main { grid-area: main; }
+.rx .lay-shapegrid .rx-sg-dir > .rx-sg-l { grid-area: l; }
+.rx .lay-shapegrid .rx-sg-dir > .rx-sg-r { grid-area: r; }
+.rx .lay-shapegrid .rx-sg-dir > .rx-sg-info { grid-area: info; }
+.rx .lay-shapegrid .rx-sg-dir > .rx-side-shapes { grid-area: shapes; align-self: start; margin-left: calc(var(--s5) - var(--s4)); }
+.rx .lay-shapegrid .rx-sg-dir .rx-home { margin-bottom: 0; }
 .rx .lay-shapegrid.annual-page .rx-cal .mini .mini-head { border-bottom: 2pt solid var(--c); align-items: center; gap: 0.07in; }
 .rx .lay-shapegrid.annual-page .rx-cal .mini .mini-head::before {
   content: ""; flex: none; width: 0.15in; height: 0.15in; background: var(--c);
@@ -586,6 +605,9 @@ body.rx.r-motif-ticking .page:not(.lk-cover):not(.lk-month)::before { content: n
   background-image: repeating-linear-gradient(90deg, transparent 0 0.29in, var(--red) 0.29in 0.33in,
     transparent 0.33in 0.39in, var(--red) 0.39in 0.41in, transparent 0.41in 0.7in);
 }
+/* The same room under the band as on the composed pages (.rx-ticking), so a
+   meta row such as "Week of:" never sits tight under it. */
+.r-motif-ticking .page:not(.rx-page):not(.lk-cover):not(.lk-month) .masthead { margin-bottom: var(--s4); }
 
 /* shapegrid: a left title with the kicker over it and the banner as its
    subtitle; three of the cover's shapes at the right, drawn in the palette's
@@ -748,7 +770,7 @@ body.rx.r-motif-shapes .page:not(.lk-cover):not(.lk-month)::after { content: non
 .small-page.rx .rx-page .checklist .row .solid-line { min-width: 0.15in; }
 .small-page.rx .lay-department .rx-ideas .checklist .row { height: auto; min-height: 0.32in; }
 .small-page.rx .rx-page :is(.rx-nm, .rx-nm em, .rx-tall .field .label) { white-space: normal; }
-.small-page.rx .rx-page .rx-dr { max-height: none; }
+.small-page.rx .rx-page .rx-dr { max-height: none; min-height: auto; }
 .small-page.rx .rx-page .rx-ownrent { flex-wrap: wrap; row-gap: 0.02in; }
 .small-page.rx .rx-page .card.rx-blk > .card-tab.rx-sec { letter-spacing: 0.02em; }
 .small-page.rx .lay-recipe .card.rx-blk.rx-frame > .card-tab.rx-sec::before,

@@ -1,6 +1,8 @@
-{# Emergency, "shape grid": the title block, the home details and the
-   directory beside a column of the cover's shapes, then the checklist and
-   notes across the foot; open sections, each under a rule in its shape's
+{# Emergency, "shape grid": the title block and the home details beside a
+   column of the cover's shapes; under them the directory in two columns,
+   the right one's last section (Important Information) running out under
+   the shapes, so no empty strip is left beside it; then the checklist and
+   notes across the foot. Open sections, each under a rule in its shape's
    colour and keyed by that shape. Picked by Mid-century's recipe, which
    leaves the family plan section out (an owner-approved content exception);
    a recipe that keeps it gets it in the right-hand column. #}
@@ -9,17 +11,16 @@
 {% import "compose/emergency-kit.html" as e with context %}
 {% set keep_plan = not rc.omits("emergency", "family_plan") %}
 <section class="page emergency-page rx-page lay-shapegrid">
-  <div class="rx-sg rx-fixed">
+  <div class="rx-sg rx-sg-dir rx-fixed">
     <div class="rx-sg-main">
       {{ head("shapegrid", "Emergency Contacts", sub="& Important Information",
               banner="Be Prepared. Be Safe. Stay Together.") }}
       {{ e.home() }}
-      <div class="rx-two">
-        <div class="rx-col">{{ e.contacts("rx-open", "a", "pink") }}{{ e.utilities("rx-open rx-fill", "c", "orange") }}</div>
-        <div class="rx-col">{{ e.family("rx-open", "q", "navy") }}{{ e.out_of_town("rx-open", "c", "orange") }}
-          {% if keep_plan %}{{ e.plan("rx-open", "q", "navy") }}{% endif %}{{ e.info("rx-open rx-fill", "a", "pink") }}</div>
-      </div>
     </div>
+    <div class="rx-col rx-sg-l">{{ e.contacts("rx-open", "a", "pink") }}{{ e.utilities("rx-open rx-fill", "c", "orange") }}</div>
+    <div class="rx-col rx-sg-r">{{ e.family("rx-open", "q", "navy") }}{{ e.out_of_town("rx-open rx-fill", "c", "orange") }}
+      {% if keep_plan %}{{ e.plan("rx-open", "q", "navy") }}{% endif %}</div>
+    {{ e.info("rx-open rx-sg-info", "a", "pink") }}
     {{ shapes([("a", "pink"), ("c", "orange"), ("q", "navy"), ("s", "orange"), ("d", "navy")], "1.1in", "rx-side-shapes") }}
   </div>
   <div class="rx-foot2 rx-grow">

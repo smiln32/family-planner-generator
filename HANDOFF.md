@@ -36,6 +36,14 @@
 - `tests/test_colour_roles.py`: the page-title exception (titles may print in Farmhouse's barn red, its weekend accent) now covers every part of a title (`.masthead .rx-cont`, `.masthead .year-tint`), and `.rx-cont` is no longer checked as a structure-coloured banner.
 - Re-proved: full suite 1627 passed, 0 skipped; pixel proof on 11 other designs (blank, swiss, coastal, deco, nordic, gazette, cottage, 02a, 06b, 11c, 12a) x 7 pages (cover, family_time, emergency, annual_calendar, year_goals, january, chores; 85 pairs incl. layout weekly sheets), max difference 0. Samples regenerated in `stages/04-review/output/phase2-trio-final/`.
 
+**Owner's look fixes (2026-10-13, after her look at the samples)**
+- Mid-century Emergency: no empty strip beside the shapes. The shape grid is now one grid (`.rx-sg-dir` in `compose/emergency-shapegrid.html`): the left column runs beside the right column, and Important Information runs out under the column of shapes to the right edge, so the strip is writing room on its lines. Shapes unchanged; no line added or removed. Gap shapes to the card's rule: 0.25in (letter), 0.29in (5.5x8), 0.24in (6x9).
+- Mid-century lowercase: "police / fire / ambulance" prints as a label (helper role lowercase, 600, 0.04em); the Family Time day names, idea items ("game night") and the helper line ("this month, we plan to:"), and Owner / Renter print lowercase (Mid-century's body role is `lower`; `.rx-day` takes the field role's case, the ideas list and the option labels the body role's case; Editorial and Farmhouse cases are `none`, so they are unchanged). Found and fixed on the three composed pages: those five; the annual calendar had none. Left as is: the sentence checklists ("Ensure smoke & CO detectors work"), as an all-lowercase "co" loses its meaning.
+- Farmhouse: every default worksheet leaves 0.25in (`--s4`) under the ticking band, as the composed pages do (was 0.08in to 0.18in; Meal Plan's "Week of:" 0.10in, Grocery's "Date:" 0.08in, Health Tracker 0.10in).
+- Editorial Broadsheet: the months read across (January, February, March on the first tier), the column rules and equal date rows kept.
+- Also fixed (found while checking 5.5x8): on small pages the Emergency Contacts' first row ("Emergency" with its helper line) overlapped "Local Police" on all three designs; directory rows now hold their text there (letter unchanged).
+- Re-proved: full suite 1627 passed, 0 skipped; 11 other designs x 7 pages (cover, family_time, emergency, annual_calendar, meal_plan, year_goals, january, 85 pairs) max difference 0; the trio's 30 pages at letter and 5.5x8 differ only where intended. Fit checked at letter, 5.5x8 and 6x9. Samples regenerated.
+
 **Samples for the owner:** `stages/04-review/output/phase2-trio-final/` (gitignored), `INDEX.md` lists every file: same-content sheets (one made-up family, theme `classic`, fonts `elegant`), before/after sheets per design, 300 dpi print-scale crops.
 
 **What to do on resume**
