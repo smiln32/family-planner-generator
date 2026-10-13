@@ -1,4 +1,47 @@
-# Handoff, 2026-10-12
+# Handoff, 2026-10-13
+
+## Parked on 2026-10-13: Phase 2 step 4 awaiting the owner's review (branch `chrome-catalog`, not pushed)
+
+**Why parked:** the owner stopped the session to resume later; nothing is broken.
+
+**What this is:** Phase 2 (chrome catalog) of the four-axis plan. Phase 1 (`four-axis`, PR #10) is merged into `main`. Phase 2 steps 1 to 4 are done on `chrome-catalog`: layouts and shared chrome read colour roles (steps 1-2), the catalog exists and drives rendering (step 3), and the three approved designs (Editorial, Farmhouse, Mid-century) print their catalog spec (step 4). The owner has NOT yet reviewed the step 4 samples; nothing may expand to other designs until she does.
+
+**Where everything lives**
+- Branch `chrome-catalog` from `main` (`ece7dbc`); commits `bf3c78c`, `c9a0d5b` (step 1), `385df55`, `7d29ba4` (step 2), `41d814b`, `3b77779` (step 3), `1cb709d`, `8e46730`, `0be8d60` (step 4). Not pushed.
+- Catalog: `familyplanner/chrome.py` (source of truth), `_config/chrome-catalog.md` (contract), `python planner.py chrome --diff`.
+- Variants: `familyplanner/static/chrome.css` (keyed to the `c-*` body classes), template branches in `templates/macros.html` and `templates/pages/annual_calendar.html`.
+- Samples for the owner: `stages/04-review/output/phase2-step4-samples/` (gitignored; nine per-page sheets, three before/after sheets, `OVERVIEW.png`) and step 2's `stages/04-review/output/phase2-step2-samples/`.
+- Tests: `tests/test_chrome_catalog.py`, `tests/test_chrome_variants.py`, `tests/test_css_tokens.py`, `tests/test_four_axis.py`. Full suite: `python -m pytest -q -p no:cacheprovider`, 1557 passed, 0 skipped (2026-10-13).
+- The approved Phase 2 plan and the owner's adjustments: this file, "Phase 2 handoff" below. The Phase 2 brief she gave is the "Family Planner Generator Phase 2" document (not in the repo).
+
+**Build status**
+
+| Unit | State |
+|---|---|
+| Phase 1, four axes | done, merged (PR #10) |
+| Step 1, layouts read roles | done, `bf3c78c` |
+| Step 2, shared chrome reads roles | done, `385df55`; owner saw samples, no objection recorded |
+| Step 3, chrome catalog | done, `41d814b` |
+| Step 4, trio prints its spec | done, `8e46730`; **awaiting owner review** |
+| Owner answers pending | (1) approve the three languages; (2) keep the faint chores/health day-head tint on all designs; (3) fix Editorial's open annual calendar, which leaves wide empty bands between month rows (coordinator's pick: yes, give the months more vertical presence) |
+| Next batch (other designs) | not started; stays unapproved until the owner looks |
+| Push / PR for Phase 2 | not done; needs the owner's yes |
+
+**Locked decisions (do not relitigate)**
+- Trio = Editorial, Farmhouse, Mid-century. Three only in this phase. No new designs without the owner's reference images.
+- A theme controls frame, mark, border and accent colours too; chrome controls shape and placement only. Precedence design < theme < `palette:`.
+- The catalog is authoritative and fully resolved per design; Blank is an explicit entry, not the implicit default. Only `approved` designs render their intended spec; the rest render `current` (pixel-identical to before).
+- Shared components stay reusable: catalog-driven variants, never duplicated templates.
+- Defects `.layout .banner` and Bauhaus chip alternation are recorded and deferred (see "Defects recorded").
+- Step 2's strip border is option A (full frame colour); option B (45% wash) is one line (`--c-strip`) if the owner prefers it.
+- Section ORDER on worksheets is still the same for all designs (template-level); changing arrangement is a scope extension the owner must decide.
+
+**What to do on resume (Phase 2)**
+1. `git status`; confirm branch `chrome-catalog` at `0be8d60`, clean. Run the full suite once.
+2. Ask the owner the three pending answers above (point her at the step 4 samples folder). Do not expand to other designs before she answers.
+3. If she approves: apply any change she asks for (Editorial calendar bands first if she says yes), re-prove (unapproved designs zero pixel delta, trio writing-space counts equal to Blank, page fit), commit, then offer the push and PR commands (push and PR are hers).
+4. Only after that: the recommended next batch (step 4 section below) one design at a time, each marked `approved` only after she looks at its samples.
+5. Keep the sub-agent ownership / coordinator verification model and the eight-heading reports.
 
 ## State on 2026-10-12: four axes, Phase 1 (branch `four-axis`)
 
@@ -399,7 +442,7 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 
 ## What to do on resume
 
-1. Read this file, then `git status`. The colour rule and page-fit work is on branch `colour-system`, pushed but with no pull request yet (see the top). Everything before it is merged into `main` (PRs #1 to #8). Ask the owner the cover question in "State" first.
+1. Read this file, then `git status`. Everything through Phase 1 is merged into `main` (PRs #1 to #10). Phase 2 is parked on branch `chrome-catalog`: see "Parked on 2026-10-13" at the top and follow its resume list. Ask the owner the cover question in "State on 2026-10-12 (earlier: colour system)" when design work touches the annual calendar.
 2. Run `python -m pytest`. All tests should pass.
 3. If asked to print a book: route through stage 03 (`build`), then stage 04 review.
 4. If asked to continue the editor work: take "Editor audit: still open" in order.
@@ -408,6 +451,6 @@ The print looks and the rules around them. This section replaced `shared/looks-h
 7. Making the repo public is a human call (GitHub Settings → Danger Zone → Change visibility). Nothing in the history blocks it.
 8. Open, optional: try the editor on a real phone. (Layout `06b`'s tilted tape tabs stay as designed; Carla decided on 2026-10-11, see "Looks".)
 9. Do not read previous run outputs (`stages/*/output/`) to learn style. `_config/` is the quality source.
-10. Phase 2 (chrome catalog) starts from "Phase 2 handoff: chrome catalog" near the top of this file; do not start it without the owner's go.
+10. Phase 2 (chrome catalog) is in progress; its state, locked decisions and resume steps are in "Parked on 2026-10-13" at the top. Do not expand beyond the three approved designs without the owner's go.
 
 > FIRST TURN: read the referenced docs ONE AT A TIME (no parallel tool calls, no batched reads). Parallel reads on the first turn can wedge a new session; sequential reads avoid it.
