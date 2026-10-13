@@ -486,3 +486,30 @@ def test_build_without_a_theme_prints_the_look_and_no_note(capsys, tmp_path):
     coastal = designs.LOOKS["coastal"]["palette"]
     assert root["--navy"] == coastal["navy"] and root["--paper"] == coastal["paper"]
     assert typefaces.resolve("anchored").display in root["--font-display"]
+
+
+# Phase 2 step 2 (2026-10-12): the shared worksheet chrome reads roles. The
+# day pill on a month grid is a light wash of the structure colour
+# (planner.css `.cal-cell .n.pill`: 4% structure in white, the --c-wash
+# recipe; 4% is the strongest wash on which the poppy and citrus navies, at
+# 4.6:1 on bare paper, still read), and two muted labels (`.emg-name em`,
+# `.index-lede`) print in the structure colour. Text on the pill (a weekday in
+# navy, a weekend day in the weekend accent) and the muted labels on paper
+# must read at 4.5:1 for every design, with no theme and with each theme.
+PILL_WASH = 0.04
+
+
+@pytest.mark.parametrize("theme", [""] + themes.names())
+@pytest.mark.parametrize("design", designs.names() + ["original"])
+def test_text_reads_on_the_shared_chrome_washes(design, theme):
+    roles, palette = _roles(design, theme)
+    pill = colours.mix("#FFFFFF", roles["structure"], PILL_WASH)
+    for who in ("weekend", "structure"):
+        assert colours.contrast(roles[who], pill) >= colours.TEXT_CONTRAST, (who, pill)
+    for token in ("navy", "ink"):
+        assert colours.contrast(palette[token], pill) >= colours.TEXT_CONTRAST, (token, pill)
+    assert colours.contrast(roles["structure"], palette["paper"]) >= colours.TEXT_CONTRAST
+    # The strip border (the frame role) and the hairlines (the line role) are
+    # visible on paper.
+    assert colours.contrast(roles["frame"], palette["paper"]) >= 1.5
+    assert colours.contrast(roles["line"], palette["paper"]) >= 1.1

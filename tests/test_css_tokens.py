@@ -5,9 +5,12 @@ used for frames, marks, borders and decorative accents. Chrome controls
 their shape and placement, not fixed colours." So `planner.css` and
 `looks.css` read the twelve palette tokens and the `--c-*` roles that
 `book.html` writes on `:root` (config.resolve_palette, colours.roles) and
-never redefine them, and no design-scoped rule prints a chromatic hex of
-its own. The retired looks, which are not offered and keep their old CSS,
-are allowed by name below.
+never redefine them, and no rule outside `:root` prints a chromatic hex of
+its own: not a design-scoped rule (step 1) and not the shared worksheet
+chrome either (step 2: meta strips, table and calendar hairlines, write-on
+lines, the day pill wash). The retired looks, which are not offered and keep
+their old CSS, the three look-art colours and the budget donut (a chart) are
+allowed by name below, each with its reason.
 """
 
 from __future__ import annotations
@@ -41,7 +44,18 @@ SCOPED = re.compile(r"\.design-|\.box-|\.lx|\.lk|\.d1|\.daily-")
 # - `.daily-11` to `.daily-17` and `.d11-*` to `.d17-*`: the retired looks'
 #   daily covers. 11 and 12 read the roles where a colour was a token or a
 #   role already; their slate and sage greys stay.
-RETIRED = re.compile(r"\.design-(0[345789]|10|1[34567])\b|\.famcover-|\.daily-1[1-7]\b|\.d1[1-7]-")
+# - `.fc02-*` to `.fc10-*`: the parts inside those `.famcover-NN` title pages
+#   (Botanical's book, School notebook's red holes and blue rules, Swiss
+#   grid's red, Keepsake's gold frame). pages/cover.html reaches them only
+#   for a retired base look: a layout (`02a`, `06b`) takes the `look.layout`
+#   branch first.
+RETIRED = re.compile(
+    r"\.design-(0[345789]|10|1[34567])\b|\.famcover-|\.daily-1[1-7]\b|\.d1[1-7]-|\.fc(0[2-9]|10)-")
+
+# The budget donut (pages/budget.html `.pie`): a chart needs one colour per
+# category, so its rule may keep a colour. Today the template sets each arc's
+# stroke from the palette (`p[colour]`) and the rule holds none.
+CHART = re.compile(r"\.pie\b")
 
 # looks.css look art: colours a look keeps as its own that are not tokens
 # (Bauhaus butter, Almanac gold, the Terracotta sun; _config/design-system.md,
@@ -106,20 +120,57 @@ def test_only_root_declares_tokens_and_roles():
     assert bad == []
 
 
-def test_design_scoped_rules_print_no_fixed_colour():
-    """Chrome rules read tokens and roles. A neutral (white, paper, grey:
-    Lab chroma under 6) may stay a literal; a colour may not."""
+def allowed(name: str, selector: str, prop: str) -> bool:
+    """A rule that may keep a colour of its own, and why (see the lists above)."""
+    if retired(selector):                                 # retired looks' CSS
+        return True
+    if name == "looks.css" and prop in LOOK_ART:          # look art tokens
+        return True
+    if all(CHART.search(part) for part in selector.split(",")):  # the donut
+        return True
+    return False
+
+
+def fixed_colours(scoped_only: bool = False) -> list[str]:
+    """Every chromatic hex (Lab chroma 6 or more; a neutral white, paper or
+    grey may stay a literal) in a rule outside `:root` that is not allowed."""
     bad = []
     for name, selector, body in ALL_RULES:
-        if not SCOPED.search(selector) or retired(selector):
+        if selector == ":root" or (scoped_only and not SCOPED.search(selector)):
             continue
         for prop, value in declarations(body):
-            if name == "looks.css" and prop in LOOK_ART:
+            if allowed(name, selector, prop):
                 continue
             for hex_colour in HEX.findall(value):
                 if chroma(hex_colour) >= NEUTRAL_CHROMA:
                     bad.append(f"{name}: {selector} {{ {prop}: {value} }}")
-    assert bad == []
+    return bad
+
+
+def test_design_scoped_rules_print_no_fixed_colour():
+    """Step 1: the design-scoped chrome reads tokens and roles."""
+    assert fixed_colours(scoped_only=True) == []
+
+
+def test_no_rule_outside_root_prints_a_fixed_colour():
+    """Step 2: the shared chrome too. The meta strips, the table and calendar
+    hairlines, the write-on lines, the check boxes and the day pill wash read
+    `--c-frame`, `--c-line` and a wash of `--c-structure`, so every design
+    and every theme colours them; a fixed colour cannot be reached by a theme
+    and looked wrong on the black-and-white and Deco designs."""
+    assert fixed_colours() == []
+
+
+def test_the_allow_lists_name_only_what_they_say():
+    """Each allow-list entry matches what its reason describes."""
+    assert allowed("planner.css", ".famcover-03 .fc03-book", "color")
+    assert allowed("planner.css", ".fc06-holes i", "box-shadow")
+    assert allowed("looks.css", ".design-bauhaus", "--butter")
+    assert not allowed("planner.css", ".design-bauhaus", "--butter")
+    assert allowed("planner.css", ".pie circle", "stroke")
+    assert not allowed("planner.css", ".pie-key, .card", "color")
+    assert not allowed("planner.css", ".famtime-meta", "border")
+    assert not allowed("planner.css", ".fc-fam", "color")
 
 
 def test_layout_kit_colour_tokens_read_only_vars():
